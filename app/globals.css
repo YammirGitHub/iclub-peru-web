@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@theme {
+  /* Fondo Blanco Puro */
+  --color-background: #ffffff;
+  /* Texto 'Apple Black' (Gris muy oscuro, no negro) */
+  --color-foreground: #1d1d1f;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
