@@ -43,7 +43,7 @@ export default function Navbar() {
             href="/"
             className="text-xl font-bold tracking-tighter text-[#1d1d1f] z-50 hover:opacity-70 transition-opacity"
           >
-            iClub<span className="text-[#0071e3]">.</span>
+            iClub Perú<span className="text-[#0071e3]">.</span>
           </Link>
 
           {/* 2. MENÚ DESKTOP (Usando NAV_LINKS centralizados) */}
