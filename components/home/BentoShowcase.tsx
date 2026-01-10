@@ -3,8 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-import { motion } from "framer-motion";
-
+import { motion, Variants } from "framer-motion";
 // --- BOTONES APPLE STYLE (Optimizados) ---
 const ActionButtons = ({ dark = false, link }: { dark?: boolean; link: string }) => (
   <div className="flex items-center gap-4 mt-6 z-20 relative">
@@ -29,7 +28,7 @@ const ActionButtons = ({ dark = false, link }: { dark?: boolean; link: string })
 );
 
 // --- ANIMACIONES ---
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -37,7 +36,7 @@ const containerVariants = {
   }
 };
 
-const cardVariants = {
+const cardVariants: Variants = {
   hidden: { opacity: 0, y: 30, scale: 0.98 },
   visible: { 
     opacity: 1, 
