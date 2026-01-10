@@ -1,4 +1,4 @@
-// app/[category]/page.tsx
+// app/(shop)/[category]/page.tsx
 import { notFound } from "next/navigation";
 import {
   getProductsByCategory,
@@ -8,47 +8,45 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 
-// Esto genera las rutas estáticas al compilar (Rendimiento extremo)
+// Generación Estática (Se mantiene igual)
 export async function generateStaticParams() {
   const categories = await getAllCategories();
   return categories.map((cat) => ({ category: cat }));
 }
 
-// Metadatos dinámicos (Para que la pestaña diga "Mac" o "iPhone" automáticamente)
+// CORRECCIÓN 1: params es Promise<{ category: string }>
 export async function generateMetadata({
   params,
 }: {
-  params: { category: string };
+  params: Promise<{ category: string }>;
 }) {
-  // Capitalizar primera letra: mac -> Mac
-  const title =
-    params.category.charAt(0).toUpperCase() + params.category.slice(1);
+  const { category } = await params; // <--- EL AWAIT MÁGICO
+
+  const title = category.charAt(0).toUpperCase() + category.slice(1);
   return {
     title: `${title} - iClub Perú`,
   };
 }
 
+// CORRECCIÓN 2: params es Promise también aquí
 export default async function CategoryPage({
   params,
 }: {
-  params: { category: string };
+  params: Promise<{ category: string }>;
 }) {
-  const { category } = params;
+  const { category } = await params; // <--- EL AWAIT MÁGICO
 
-  // 1. Validar que la categoría exista
   const validCategories = await getAllCategories();
 
-  // OJO: Aquí casteamos a string para validar, asumiendo que tu type Category es string
-  if (!validCategories.includes(category as any)) {
+  // Validación segura
+  if (!validCategories.includes(category as Category)) {
     return notFound();
   }
 
-  // 2. Obtener productos de esa categoría
   const products = await getProductsByCategory(category);
 
   return (
     <div className="min-h-screen bg-[#F5F5F7] pt-24 pb-10">
-      {/* HEADER DE LA CATEGORÍA */}
       <div className="text-center mb-16 space-y-4">
         <h1 className="text-5xl font-semibold text-gray-900 capitalize tracking-tight">
           {category === "seminuevos" ? "Seminuevos" : category}
@@ -60,13 +58,12 @@ export default async function CategoryPage({
         </p>
       </div>
 
-      {/* GRID DE PRODUCTOS */}
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {products.map((product) => (
             <Link
               key={product.id}
-              href={`/${category}/${product.slug}`} // URL Dinámica
+              href={`/${category}/${product.slug}`}
               className="group bg-white rounded-3xl p-8 hover:shadow-2xl transition-all duration-500 hover:-translate-y-1"
             >
               <div className="relative w-full h-64 mb-6">
