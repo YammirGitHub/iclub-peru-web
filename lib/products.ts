@@ -1,69 +1,148 @@
 // lib/products.ts
 
-// 1. Definimos la estructura obligatoria de un producto
-// lib/products.ts
+// ----------------------------------------------------------------------
+// 1. DEFINICIONES DE TIPO
+// ----------------------------------------------------------------------
+
+// CORRECCIÓN: Ahora se llama 'Category' para que coincida con tu page.tsx
+export type Category = 
+  | 'mac' 
+  | 'ipad' 
+  | 'iphone' 
+  | 'watch' 
+  | 'airpods' 
+  | 'seminuevos' 
+  | 'accesorios';
+
 export interface Product {
   id: string;
   slug: string;
-  category: "iphone" | "mac" | "ipad" | "watch" | "airpods" | "accesorios" | "seminuevo";
   name: string;
-  tagline: string;
-  description: string;
+  category: Category; // Usamos el tipo Category aquí
   price: number;
-  mainImage: string; // Imagen principal para las tarjetas
-  images: { [key: string]: string }; // Mapa de imágenes por color
-  colors: { name: string; code: string; id: string }[];
-  storage: { capacity: string; priceModifier: number }[];
+  previousPrice?: number;
+  image: string;
+  isNew?: boolean;
+  description: string;
+  colors?: string[];
 }
 
-export const products: Product[] = [
+// ----------------------------------------------------------------------
+// 2. CONSTANTES DE UI (Menú de Navegación)
+// ----------------------------------------------------------------------
+
+export const NAV_LINKS = [
+  { name: 'Mac', href: '/mac' },
+  { name: 'iPad', href: '/ipad' },
+  { name: 'iPhone', href: '/iphone' },
+  { name: 'Watch', href: '/watch' },
+  { name: 'AirPods', href: '/airpods' },
+  { name: 'Seminuevos', href: '/seminuevos' },
+  { name: 'Accesorios', href: '/accesorios' },
+  { name: 'Soporte', href: '/soporte' },
+];
+
+// ----------------------------------------------------------------------
+// 3. BASE DE DATOS SIMULADA
+// ----------------------------------------------------------------------
+
+const products: Product[] = [
+  // --- MAC ---
   {
-    id: "iphone-17-pro-max",
-    slug: "iphone-17-pro-max",
-    category: "iphone",
-    name: "iPhone 17 Pro Max",
-    tagline: "El titán del titanio.",
-    description: "Diseñado con titanio de grado aeroespacial. El chip A18 Pro más rápido de la historia.",
-    price: 1499,
-    mainImage: "/products/iphone-17-pro-max.png", // Asegúrate que esta imagen exista en public/products/
-    images: {
-      "titanio-natural": "/products/iphone-17-pro-max.png",
-      "titanio-azul": "/products/iphone-16-pro-max.png", // Ejemplo temporal
-    },
-    colors: [
-      { name: "Titanio Natural", code: "#bebdb8", id: "titanio-natural" },
-      { name: "Titanio Azul", code: "#2f384a", id: "titanio-azul" },
-    ],
-    storage: [
-      { capacity: "256 GB", priceModifier: 0 },
-      { capacity: "512 GB", priceModifier: 200 },
-      { capacity: "1 TB", priceModifier: 400 },
-    ]
+    id: 'm1',
+    slug: 'macbook-pro-14-m3',
+    name: 'MacBook Pro 14"',
+    category: 'mac',
+    price: 1599,
+    image: '/products/macbook-pro-14.webp',
+    isNew: true,
+    description: 'El chip M3 Pro más avanzado. Potencia bestial.'
   },
   
-
-  // --- PRODUCTO 2: SEMINUEVO (Ejemplo corregido) ---
+  // --- IPAD ---
   {
-    id: "iphone-13-seminuevo",
-    slug: "iphone-13-128gb-seminuevo",
-    category: "seminuevo",
-    name: "iPhone 13 (128GB)",
-    tagline: "Seminuevo Certificado - Grado A",
-    description: "Equipo 100% funcional. Batería sobre el 85%. Garantía de 6 meses iClub.",
-    price: 650,
-    mainImage: "/products/iphone-13-midnight.png", // Asegúrate que exista
-    images: {
-      "midnight": "/products/iphone-13-midnight.png",
-      "starlight": "/products/iphone-13-starlight.png"
-    },
-    colors: [
-      { name: "Medianoche", code: "#192029", id: "midnight" },
-      { name: "Blanco Estelar", code: "#f0f2f2", id: "starlight" }
-    ],
-    storage: [
-      { capacity: "128 GB", priceModifier: 0 } // Solo una opción si es único
-    ]
+    id: 'ip1',
+    slug: 'ipad-pro-12-9',
+    name: 'iPad Pro 12.9"',
+    category: 'ipad',
+    price: 1099,
+    image: '/products/ipad-pro.webp',
+    isNew: true,
+    description: 'La experiencia iPad definitiva con chip M2.'
+  },
+
+  // --- IPHONE ---
+  {
+    id: 'i1',
+    slug: 'iphone-15-pro-max',
+    name: 'iPhone 15 Pro Max',
+    category: 'iphone',
+    price: 1199,
+    image: '/products/iphone-15-pro-max.webp',
+    isNew: true,
+    description: 'Titanio. Tan robusto. Tan ligero. Tan Pro.'
+  },
+
+  // --- WATCH ---
+  {
+    id: 'w1',
+    slug: 'apple-watch-ultra-2',
+    name: 'Apple Watch Ultra 2',
+    category: 'watch',
+    price: 799,
+    image: '/products/watch-ultra-2.webp',
+    isNew: true,
+    description: 'El reloj deportivo y de aventura definitivo.'
+  },
+
+  // --- AIRPODS ---
+  {
+    id: 'a1',
+    slug: 'airpods-max',
+    name: 'AirPods Max',
+    category: 'airpods',
+    price: 549,
+    image: '/products/airpods-max.webp',
+    description: 'Sonido de alta fidelidad con un diseño espectacular.'
+  },
+
+  // --- SEMINUEVOS ---
+  {
+    id: 's1',
+    slug: 'iphone-13-seminuevo',
+    name: 'iPhone 13 (Seminuevo)',
+    category: 'seminuevos',
+    price: 499,
+    previousPrice: 699,
+    image: '/products/iphone-13-used.webp',
+    description: '100% funcional, batería al 90%. Garantía iClub.'
+  },
+
+  // --- ACCESORIOS ---
+  {
+    id: 'ac1',
+    slug: 'magsafe-charger',
+    name: 'Cargador MagSafe',
+    category: 'accesorios',
+    price: 39,
+    image: '/products/magsafe.webp',
+    description: 'Carga inalámbrica rápida y sencilla.'
   }
-
-
 ];
+
+// ----------------------------------------------------------------------
+// 4. DATA ACCESS LAYER
+// ----------------------------------------------------------------------
+
+export const getProductsByCategory = async (category: string): Promise<Product[]> => {
+  return products.filter((product) => product.category === category);
+};
+
+export const getProductBySlug = async (slug: string): Promise<Product | undefined> => {
+  return products.find((product) => product.slug === slug);
+};
+
+// Devuelve array de tipo 'Category' para que coincida con generateStaticParams
+export const getAllCategories = async (): Promise<Category[]> => {
+  return ['mac', 'ipad', 'iphone', 'watch', 'airpods', 'seminuevos', 'accesorios'];
+};
