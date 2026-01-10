@@ -39,8 +39,7 @@ export default function AirPodsPage() {
 
                 <div className="relative w-full h-64 mb-8 flex items-center justify-center bg-white">
                   <Image
-                    src={product.image}
-                    alt={product.name}
+src={product.mainImage || Object.values(product.images)[0]}                    alt={product.name}
                     fill
                     className="object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-700 ease-in-out"
                     unoptimized

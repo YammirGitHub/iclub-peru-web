@@ -1,104 +1,130 @@
-"use client"; // Obligatorio porque usamos interacción (Click)
+// app/iphone/[slug]/page.tsx
+"use client";
 
-import { products } from "@/lib/products";
+import { useState } from "react";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { Check, ShieldCheck, Truck, Zap } from "lucide-react";
-import { useCart } from "@/context/CartContext"; // Importamos el cerebro del carrito
-import { use } from "react"; 
+import { products } from "@/lib/products"; // Asegúrate que la ruta sea correcta
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, ShoppingBag } from "lucide-react";
+import Link from "next/link";
+import { useCart } from "@/context/CartContext"; 
 
-export default function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
-  // Desempaquetamos los parámetros (Next.js 15)
-  const { slug } = use(params);
+export default function ProductPage({ params }: { params: { slug: string } }) {
+  // 1. Buscar producto
+  const product = products.find((p) => p.slug === params.slug);
   
-  // Usamos la función para guardar en el carrito
-  const { addToCart } = useCart(); 
-
-  const product = products.find((p) => p.id === slug);
-
   if (!product) return notFound();
 
+  // 2. Estados (Hooks) siempre al inicio
+  const [selectedColor, setSelectedColor] = useState(product.colors[0]);
+  const [selectedStorage, setSelectedStorage] = useState(product.storage[0]);
+  const { addItem } = useCart();
+
+  const finalPrice = product.price + selectedStorage.priceModifier;
+
   return (
-    <main className="bg-[#fbfbfd] min-h-screen pt-32 pb-20">
-      
-      {/* SECCIÓN PRINCIPAL */}
-      <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center mb-24">
+    <div className="min-h-screen bg-white pt-32 pb-20">
+      <div className="max-w-[1100px] mx-auto px-6">
         
-        {/* Columna Izquierda: Imagen */}
-        <div className="relative w-full aspect-square md:aspect-[4/3] flex items-center justify-center bg-white rounded-[3rem] shadow-xl shadow-black/5 p-8">
-          <Image 
-             src={product.image}
-             alt={product.name}
-             width={800} height={800}
-             className="object-contain w-full h-full mix-blend-multiply"
-             unoptimized priority
-          />
-        </div>
+        <Link href="/iphone" className="inline-flex items-center text-gray-500 hover:text-black mb-8 transition-colors text-sm font-medium">
+          <ChevronLeft size={16} /> Volver
+        </Link>
 
-        {/* Columna Derecha: Información */}
-        <div className="flex flex-col justify-center">
-          <span className="text-orange-500 font-bold tracking-widest uppercase text-sm mb-2">
-            Nuevo Ingreso
-          </span>
-          <h1 className="text-5xl md:text-7xl font-semibold text-[#1d1d1f] mb-4 tracking-tight">
-            {product.name}
-          </h1>
-          <p className="text-2xl font-medium text-[#1d1d1f] mb-6">
-            {product.tagline}
-          </p>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
           
-          <div className="text-5xl font-bold text-[#1d1d1f] mb-8">
-            {product.price}
+          {/* GALERÍA */}
+          <div className="lg:col-span-7 sticky top-32">
+            <div className="relative h-[500px] md:h-[600px] w-full bg-[#f5f5f7] rounded-[2.5rem] flex items-center justify-center overflow-hidden">
+                <AnimatePresence mode="wait">
+                  <motion.div 
+                    key={selectedColor.id} // Clave única para la animación
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.4 }}
+                    className="relative w-full h-full p-10"
+                  >
+                    <Image 
+                      // CORRECCIÓN: Usamos fallback a mainImage si no hay imagen de color específico
+                      src={product.images[selectedColor.id] || product.mainImage}
+                      alt={product.name}
+                      fill
+                      className="object-contain"
+                      priority
+                    />
+                  </motion.div>
+                </AnimatePresence>
+            </div>
           </div>
 
-          <div className="flex flex-col gap-4 mb-8">
-             {/* BOTÓN: AÑADIR A LA BOLSA (Abre el carrito lateral) */}
-             <button 
-                onClick={() => addToCart(product)}
-                className="w-full py-4 rounded-full bg-[#0071e3] text-white font-semibold text-lg hover:bg-[#0077ed] transition-all shadow-lg hover:scale-[1.02] active:scale-95"
-             >
-               Añadir a la Bolsa
-             </button>
-             <p className="text-center text-sm text-[#86868b]">
-               Envío gratuito y seguro a todo el Perú.
-             </p>
-          </div>
+          {/* DETALLES */}
+          <div className="lg:col-span-5 flex flex-col gap-8">
+            <div>
+              <h1 className="text-4xl font-semibold text-[#1d1d1f] mb-2">{product.name}</h1>
+              <p className="text-gray-500 font-medium">{product.tagline}</p>
+            </div>
 
-          {/* Características (Specs) */}
-          <div className="grid grid-cols-2 gap-4">
-             {product.specs?.map((spec, i) => (
-                <div key={i} className="flex items-center gap-2 text-[#424245] font-medium bg-white px-4 py-3 rounded-xl border border-gray-200 shadow-sm">
-                   <Check size={16} className="text-[#0071e3]" />
-                   {spec}
-                </div>
-             ))}
+            {/* Selector COLOR */}
+            <div>
+              <span className="text-sm font-semibold text-gray-900 block mb-3">Color: {selectedColor.name}</span>
+              <div className="flex gap-3">
+                {product.colors.map((color) => (
+                  <button
+                    key={color.id} // ID único
+                    onClick={() => setSelectedColor(color)}
+                    className={`w-10 h-10 rounded-full border-2 transition-all ${selectedColor.id === color.id ? 'border-blue-500 scale-110' : 'border-transparent hover:scale-105'}`}
+                  >
+                    <span className="block w-full h-full rounded-full shadow-sm" style={{ backgroundColor: color.code }} />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Selector ALMACENAMIENTO (Corrección del BUG KEY) */}
+            <div>
+              <span className="text-sm font-semibold text-gray-900 block mb-3">Almacenamiento</span>
+              <div className="grid grid-cols-3 gap-3">
+                {product.storage.map((store) => (
+                  <button
+                    key={store.capacity} // CORRECCIÓN AQUÍ: Usamos store.capacity, NO el objeto store
+                    onClick={() => setSelectedStorage(store)}
+                    className={`py-3 rounded-xl border text-sm font-medium transition-all ${
+                      selectedStorage.capacity === store.capacity 
+                        ? 'border-blue-500 text-blue-600 bg-blue-50' 
+                        : 'border-gray-200 text-gray-600 hover:border-gray-400'
+                    }`}
+                  >
+                    {store.capacity}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* COMPRAR */}
+            <div className="pt-6 border-t border-gray-100">
+              <div className="flex justify-between items-center mb-6">
+                <span className="text-3xl font-bold text-[#1d1d1f]">${finalPrice}</span>
+              </div>
+              <button 
+                onClick={() => addItem({
+                  id: product.id,
+                  name: product.name,
+                  price: finalPrice,
+                  image: product.mainImage,
+                  color: selectedColor.name,
+                  storage: selectedStorage.capacity,
+                  quantity: 1
+                })}
+                className="w-full bg-[#0071e3] hover:bg-[#0077ed] text-white font-medium py-4 rounded-full transition-all shadow-lg shadow-blue-500/20 active:scale-95 flex items-center justify-center gap-2"
+              >
+                <ShoppingBag size={18} /> Añadir a la Bolsa
+              </button>
+            </div>
+
           </div>
         </div>
       </div>
-
-      {/* SECCIÓN INFERIOR: CONFIANZA (Features) */}
-      <div className="max-w-4xl mx-auto px-6 text-center">
-         <h2 className="text-3xl font-semibold text-[#1d1d1f] mb-12">La experiencia iClub</h2>
-         
-         <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 group hover:-translate-y-1 transition-transform">
-               <ShieldCheck className="w-10 h-10 text-[#0071e3] mx-auto mb-4" />
-               <h3 className="font-semibold text-[#1d1d1f] mb-2">Garantía Real</h3>
-               <p className="text-sm text-[#86868b]">1 año en sellados y 10 meses en seminuevos.</p>
-            </div>
-            <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 group hover:-translate-y-1 transition-transform">
-               <Truck className="w-10 h-10 text-[#0071e3] mx-auto mb-4" />
-               <h3 className="font-semibold text-[#1d1d1f] mb-2">Envíos Seguros</h3>
-               <p className="text-sm text-[#86868b]">Tu equipo viaja 100% asegurado.</p>
-            </div>
-            <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 group hover:-translate-y-1 transition-transform">
-               <Zap className="w-10 h-10 text-[#0071e3] mx-auto mb-4" />
-               <h3 className="font-semibold text-[#1d1d1f] mb-2">Soporte</h3>
-               <p className="text-sm text-[#86868b]">Expertos en Apple a tu servicio.</p>
-            </div>
-         </div>
-      </div>
-
-    </main>
+    </div>
   );
 }

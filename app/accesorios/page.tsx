@@ -43,12 +43,12 @@ export default function AccesoriosPage() {
 
                   <div className="relative w-full h-64 mb-8 flex items-center justify-center bg-white">
                     <Image
-                      src={product.image}
-                      alt={product.name}
-                      fill
-                      className="object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-700 ease-in-out"
-                      unoptimized
-                    />
+  src={product.mainImage || "/placeholder.png"} // Tu corrección anterior
+  alt={product.name}                            // 👈 ¡ESTA ES LA LÍNEA QUE FALTA!
+  fill
+  className="object-contain"
+  unoptimized={true}                            // Veo en tu error que usas esta propiedad
+/>
                   </div>
 
                   <div className="mt-auto flex items-end justify-between pt-6 border-t border-gray-100">

@@ -25,7 +25,10 @@ export default function WatchPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
            {watchProducts.map((product) => (
               <Link 
-                href={`/iphone/${product.id}`} 
+                // CORRECCIÓN 1: Usamos 'slug' en lugar de 'id' para la URL
+                // NOTA: Si quieres una URL tipo /watch/nombre, deberás crear la carpeta [slug] dentro de /app/watch
+                // Por ahora lo enviamos a /iphone/slug porque es donde tienes la plantilla de detalle creada.
+                href={`/iphone/${product.slug}`} 
                 key={product.id} 
                 className="group relative flex flex-col h-full bg-white rounded-[2rem] p-8 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 ease-out"
               >
@@ -38,8 +41,9 @@ export default function WatchPage() {
                 </div>
 
                 <div className="relative w-full h-64 mb-8 flex items-center justify-center bg-white">
+                  {/* CORRECCIÓN 2: Usamos mainImage */}
                   <Image
-                    src={product.image}
+                    src={product.mainImage || "/placeholder.png"}
                     alt={product.name}
                     fill
                     className="object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-700 ease-in-out"
@@ -49,7 +53,10 @@ export default function WatchPage() {
 
                 <div className="mt-auto flex items-end justify-between pt-6 border-t border-gray-100">
                   <div className="flex flex-col gap-1">
-                    <span className="text-[#1d1d1f] font-semibold text-2xl tracking-tight">{product.price}</span>
+                    {/* CORRECCIÓN 3: Formato de precio */}
+                    <span className="text-[#1d1d1f] font-semibold text-2xl tracking-tight">
+                        ${product.price}
+                    </span>
                     <span className="text-[11px] text-gray-400 font-medium uppercase tracking-wide">Envío a todo el Perú</span>
                   </div>
                   <div className="w-8 h-8 rounded-full bg-[#0071e3] text-white flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:scale-110 transition-all">

@@ -40,7 +40,7 @@ export default function MacPage() {
                 {/* Imagen Limpia */}
                 <div className="relative w-full h-64 mb-8 flex items-center justify-center bg-white">
                   <Image
-                    src={product.image}
+                    src={product.mainImage}
                     alt={product.name}
                     fill
                     className="object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-700 ease-in-out"

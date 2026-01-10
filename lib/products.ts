@@ -1,65 +1,69 @@
-export const products = [
-  // --- IPHONE 17 SERIES (NUEVO INGRESO) ---
+// lib/products.ts
+
+// 1. Definimos la estructura obligatoria de un producto
+// lib/products.ts
+export interface Product {
+  id: string;
+  slug: string;
+  category: "iphone" | "mac" | "ipad" | "watch" | "airpods" | "accesorios" | "seminuevo";
+  name: string;
+  tagline: string;
+  description: string;
+  price: number;
+  mainImage: string; // Imagen principal para las tarjetas
+  images: { [key: string]: string }; // Mapa de imágenes por color
+  colors: { name: string; code: string; id: string }[];
+  storage: { capacity: string; priceModifier: number }[];
+}
+
+export const products: Product[] = [
   {
     id: "iphone-17-pro-max",
+    slug: "iphone-17-pro-max",
+    category: "iphone",
     name: "iPhone 17 Pro Max",
-    tagline: "El titán definitivo. Chip A19 Pro.",
-    price: "S/ 5,600", // Precio PDF Pag 21 (256GB)
-    category: "iphone",
-    condition: "new",
-    image: "/products/iphone-17-pro-max.png", 
-    description: "El iPhone más potente jamás creado.",
-    specs: ["Chip A19 Pro", "Titanio Grado 5", "Botón Acción"],
-    images: []
-  },
-  {
-    id: "iphone-17-pro",
-    name: "iPhone 17 Pro",
-    tagline: "Potencia inmensa. Tamaño perfecto.",
-    price: "S/ 5,000", // Precio PDF Pag 20
-    category: "iphone",
-    condition: "new",
-    image: "/products/iphone-17-pro.png",
-    description: "Rendimiento profesional en tu bolsillo.",
-    specs: ["Chip A19 Pro", "Cámara 48MP", "120Hz"],
-    images: []
-  },
-  {
-    id: "iphone-17-air",
-    name: "iPhone 17 Air",
-    tagline: "Increíblemente delgado. Totalmente Air.",
-    price: "S/ 4,100", // Precio PDF Pag 19
-    category: "iphone",
-    condition: "new",
-    image: "/products/iphone-17-air.png", 
-    description: "Diseño ultradelgado con potencia de sobra.",
-    specs: ["Diseño Slim", "Chip A19", "Aluminio"],
-    images: []
-  },
-  {
-    id: "iphone-17",
-    name: "iPhone 17",
-    tagline: "El estándar de oro.",
-    price: "S/ 3,900", // Precio PDF Pag 19
-    category: "iphone",
-    condition: "new",
-    image: "/products/iphone-17.png",
-    description: "Todo lo que buscas en un iPhone.",
-    specs: ["Chip A19", "Cámara Avanzada", "Batería todo el día"],
-    images: []
+    tagline: "El titán del titanio.",
+    description: "Diseñado con titanio de grado aeroespacial. El chip A18 Pro más rápido de la historia.",
+    price: 1499,
+    mainImage: "/products/iphone-17-pro-max.png", // Asegúrate que esta imagen exista en public/products/
+    images: {
+      "titanio-natural": "/products/iphone-17-pro-max.png",
+      "titanio-azul": "/products/iphone-16-pro-max.png", // Ejemplo temporal
+    },
+    colors: [
+      { name: "Titanio Natural", code: "#bebdb8", id: "titanio-natural" },
+      { name: "Titanio Azul", code: "#2f384a", id: "titanio-azul" },
+    ],
+    storage: [
+      { capacity: "256 GB", priceModifier: 0 },
+      { capacity: "512 GB", priceModifier: 200 },
+      { capacity: "1 TB", priceModifier: 400 },
+    ]
   },
   
-  // --- SEMINUEVOS (Mantener para variedad) ---
+
+  // --- PRODUCTO 2: SEMINUEVO (Ejemplo corregido) ---
   {
     id: "iphone-13-seminuevo",
+    slug: "iphone-13-128gb-seminuevo",
+    category: "seminuevo",
     name: "iPhone 13 (128GB)",
     tagline: "Seminuevo Certificado - Grado A",
-    price: "S/ 1,900", // Ajustado a PDF Pag 7 (aprox)
-    category: "seminuevos",
-    condition: "used",
-    image: "/products/iphone-13-blue.png",
-    description: "Equipo 100% funcional.",
-    specs: ["Garantía 10 meses", "Batería >85%", "Cable incluido"],
-    images: []
+    description: "Equipo 100% funcional. Batería sobre el 85%. Garantía de 6 meses iClub.",
+    price: 650,
+    mainImage: "/products/iphone-13-midnight.png", // Asegúrate que exista
+    images: {
+      "midnight": "/products/iphone-13-midnight.png",
+      "starlight": "/products/iphone-13-starlight.png"
+    },
+    colors: [
+      { name: "Medianoche", code: "#192029", id: "midnight" },
+      { name: "Blanco Estelar", code: "#f0f2f2", id: "starlight" }
+    ],
+    storage: [
+      { capacity: "128 GB", priceModifier: 0 } // Solo una opción si es único
+    ]
   }
+
+
 ];
