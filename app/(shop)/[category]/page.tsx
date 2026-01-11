@@ -1,96 +1,88 @@
-// app/(shop)/[category]/page.tsx
-import { notFound } from "next/navigation";
-import {
-  getProductsByCategory,
-  getAllCategories,
-  Category,
-} from "@/lib/products";
-import Link from "next/link";
+import { getProductsByCategory, getAllCategories } from "@/lib/products";
 import Image from "next/image";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 
-// Generación Estática (Se mantiene igual)
+// ESTO ES CLAVE: Genera las rutas estáticas para SEO y Velocidad
 export async function generateStaticParams() {
-  const categories = await getAllCategories();
-  return categories.map((cat) => ({ category: cat }));
+  const categories = getAllCategories();
+  return categories.map((category) => ({
+    category: category,
+  }));
 }
 
-// CORRECCIÓN 1: params es Promise<{ category: string }>
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ category: string }>;
-}) {
-  const { category } = await params; // <--- EL AWAIT MÁGICO
-
-  const title = category.charAt(0).toUpperCase() + category.slice(1);
-  return {
-    title: `${title} - iClub Perú`,
+interface Props {
+  params: {
+    category: string;
   };
 }
 
-// CORRECCIÓN 2: params es Promise también aquí
-export default async function CategoryPage({
-  params,
-}: {
-  params: Promise<{ category: string }>;
-}) {
-  const { category } = await params; // <--- EL AWAIT MÁGICO
+export default function CategoryPage({ params }: Props) {
+  const { category } = params;
+  const products = getProductsByCategory(category);
 
-  const validCategories = await getAllCategories();
-
-  // Validación segura
-  if (!validCategories.includes(category as Category)) {
-    return notFound();
+  if (products.length === 0) {
+    // Si la categoría no existe o está vacía
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4">
+        <h1 className="text-4xl font-semibold text-[#1d1d1f] mb-4">
+          Categoría no encontrada
+        </h1>
+        <p className="text-[#86868b]">
+          Lo sentimos, no encontramos productos en &quot;{category}&quot;.
+        </p>
+        <Link href="/" className="mt-8 text-[#0066cc] hover:underline">
+          Volver al inicio
+        </Link>
+      </div>
+    );
   }
 
-  const products = await getProductsByCategory(category);
-
   return (
-    <div className="min-h-screen bg-[#F5F5F7] pt-24 pb-10">
-      <div className="text-center mb-16 space-y-4">
-        <h1 className="text-5xl font-semibold text-gray-900 capitalize tracking-tight">
-          {category === "seminuevos" ? "Seminuevos" : category}
+    <div className="min-h-screen pt-32 pb-20 px-6 max-w-[1200px] mx-auto">
+      <div className="border-b border-gray-200 pb-8 mb-12">
+        <h1 className="text-5xl font-semibold tracking-tight text-[#1d1d1f] capitalize">
+          {category}
         </h1>
-        <p className="text-xl text-gray-500">
-          {category === "seminuevos"
-            ? "Calidad certificada a precios increíbles."
-            : `Explora nuestra colección de ${category}.`}
-        </p>
       </div>
 
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {products.map((product) => (
-            <Link
-              key={product.id}
-              href={`/${category}/${product.slug}`}
-              className="group bg-white rounded-3xl p-8 hover:shadow-2xl transition-all duration-500 hover:-translate-y-1"
-            >
-              <div className="relative w-full h-64 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
+        {products.map((product) => (
+          <Link
+            href={`/${category}/${product.slug}`}
+            key={product.id}
+            className="group flex flex-col gap-6"
+          >
+            {/* Contenedor Imagen (Efecto Apple: Zoom suave y fondo gris sutil) */}
+            <div className="relative w-full aspect-[4/3] bg-[#f5f5f7] rounded-[24px] overflow-hidden flex items-center justify-center">
+              <div className="relative w-[80%] h-[80%] transition-transform duration-500 group-hover:scale-105">
                 <Image
                   src={product.image}
-                  alt={product.name}
+                  alt={product.title}
                   fill
-                  className="object-contain transition-transform duration-700 group-hover:scale-110"
+                  className="object-contain"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
               </div>
+            </div>
 
-              <div className="text-center">
-                {product.isNew && (
-                  <span className="text-orange-600 text-xs font-bold uppercase tracking-wide mb-2 block">
-                    Nuevo
-                  </span>
-                )}
-                <h3 className="text-2xl font-semibold text-gray-900 mb-2">
-                  {product.name}
-                </h3>
-                <p className="text-lg text-gray-900">
-                  Desde S/ {product.price}
-                </p>
-              </div>
-            </Link>
-          ))}
-        </div>
+            {/* Info Producto */}
+            <div className="flex flex-col gap-2">
+              <span className="text-xs font-bold text-orange-600 uppercase tracking-wider">
+                Nuevo
+              </span>
+              <h3 className="text-2xl font-semibold text-[#1d1d1f] group-hover:text-[#0066cc] transition-colors leading-tight">
+                {product.title}
+              </h3>
+              <p className="text-lg text-[#1d1d1f]">
+                S/{" "}
+                {product.price.toLocaleString("es-PE", {
+                  minimumFractionDigits: 2,
+                })}
+              </p>
+            </div>
+          </Link>
+        ))}
       </div>
     </div>
   );

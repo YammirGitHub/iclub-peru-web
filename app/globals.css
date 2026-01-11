@@ -1,15 +1,67 @@
 @import "tailwindcss";
 
 @theme {
-  /* Fondo Blanco Puro */
-  --color-background: #ffffff;
-  /* Texto 'Apple Black' (Gris muy oscuro, no negro) */
-  --color-foreground: #1d1d1f;
+  /* Definición de la fuente Inter como la principal del sistema */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  /* Colores de identidad Apple optimizados */
+  --color-apple-blue: #0071e3;
+  --color-apple-gray: #86868b;
+  --color-apple-black: #1d1d1f;
 }
 
-body {
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
+@layer base {
+  html {
+    /* El suavizado de fuente es lo que da el look "Premium" de Apple */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    /* SOLUCIÓN LATENCIA: Eliminamos scroll-behavior: smooth para evitar conflictos con Lenis */
+  }
+
+  body {
+    background-color: white;
+    color: var(--color-apple-black);
+    font-family: var(--font-sans);
+  }
+
+  /* Ajuste de títulos para mayor nitidez */
+  h1,
+  h2,
+  h3,
+  h4 {
+    letter-spacing: -0.02em;
+    font-weight: 600;
+  }
+}
+
+/* --- BARRA DE SCROLL ESTILO MACOS --- */
+:root {
+  --sb-track-color: transparent;
+  --sb-thumb-color: #d1d1d6;
+  --sb-size: 8px;
+}
+
+::-webkit-scrollbar {
+  width: var(--sb-size);
+}
+
+::-webkit-scrollbar-track {
+  background: var(--sb-track-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--sb-thumb-color);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #86868b;
+}
+
+/* --- OPTIMIZACIÓN DE GPU --- */
+.motion-safe-gpu {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: transform;
 }

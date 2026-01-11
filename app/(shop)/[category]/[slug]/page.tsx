@@ -1,109 +1,107 @@
-// app/(shop)/[category]/[slug]/page.tsx
-import { notFound } from "next/navigation";
+import { getProductBySlug, products } from "@/lib/products";
+import AddToCart from "@/components/ui/AddToCart";
 import Image from "next/image";
-import {
-  getProductBySlug,
-  getProductsByCategory,
-  getAllCategories,
-} from "@/lib/products";
+import { notFound } from "next/navigation";
+import { ShieldCheck, Truck, Box } from "lucide-react";
 
+// Optimización SEO: Pre-generar todas las páginas de productos
 export async function generateStaticParams() {
-  const categories = await getAllCategories();
-  const paths = [];
-
-  for (const category of categories) {
-    const products = await getProductsByCategory(category);
-    for (const product of products) {
-      paths.push({
-        category: category,
-        slug: product.slug,
-      });
-    }
-  }
-  return paths;
+  return products.map((product) => ({
+    category: product.category,
+    slug: product.slug,
+  }));
 }
 
-// CORRECCIÓN 1: Tipado Promise
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params; // <--- AWAIT
-  const product = await getProductBySlug(slug);
-
-  if (!product) return { title: "Producto no encontrado" };
-
-  return {
-    title: `${product.name} - Comprar | iClub Perú`,
-    description: product.description,
+interface Props {
+  params: {
+    slug: string;
   };
 }
 
-// CORRECCIÓN 2: Tipado Promise
-export default async function ProductPage({
-  params,
-}: {
-  params: Promise<{ category: string; slug: string }>;
-}) {
-  const { slug } = await params; // <--- AWAIT
-  const product = await getProductBySlug(slug);
+export default function ProductPage({ params }: Props) {
+  const { slug } = params;
+  const product = getProductBySlug(slug);
 
   if (!product) {
     notFound();
   }
 
   return (
-    <div className="min-h-screen bg-white pt-28 pb-20">
-      <div className="container mx-auto px-4 max-w-6xl">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20 items-start">
-          <div className="relative h-[500px] md:h-[600px] w-full bg-[#F5F5F7] rounded-[30px] flex items-center justify-center overflow-hidden md:sticky md:top-32">
-            <div className="relative w-[80%] h-[80%] transition-transform duration-700 hover:scale-105">
-              <Image
-                src={product.image}
-                alt={product.name}
-                fill
-                className="object-contain"
-                priority
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-col space-y-8 pt-4">
-            <div>
-              <span className="text-orange-600 font-semibold text-sm tracking-widest uppercase mb-2 block">
-                {product.isNew ? "Nuevo Lanzamiento" : "Disponible"}
-              </span>
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight mb-4">
-                {product.name}
-              </h1>
-              <p className="text-xl text-gray-500 leading-relaxed font-medium">
-                {product.description}
-              </p>
-            </div>
-
-            <div className="border-t border-b border-gray-100 py-6">
-              <div className="flex items-baseline gap-4">
-                <span className="text-3xl font-bold text-gray-900">
-                  S/ {product.price.toLocaleString()}
-                </span>
-                {product.previousPrice && (
-                  <span className="text-lg text-gray-400 line-through">
-                    S/ {product.previousPrice.toLocaleString()}
-                  </span>
-                )}
+    <div className="min-h-screen pt-32 pb-20 bg-white">
+      <div className="max-w-[1100px] mx-auto px-6 md:px-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-24">
+          
+          {/* COLUMNA IZQUIERDA: IMAGEN (Sticky) */}
+          {/* 'sticky top-32' hace que la imagen te siga mientras bajas */}
+          <div className="relative">
+            <div className="sticky top-32 w-full aspect-square md:aspect-[4/5] bg-[#f5f5f7] rounded-[30px] flex items-center justify-center overflow-hidden">
+              <div className="relative w-[85%] h-[85%]">
+                <Image
+                  src={product.image}
+                  alt={product.title}
+                  fill
+                  className="object-contain hover:scale-105 transition-transform duration-700"
+                  priority
+                />
               </div>
-              <p className="text-sm text-gray-400 mt-2">
-                Incluye IGV y envío gratuito a todo Chiclayo.
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-3 pt-4">
-              <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-full font-medium text-lg transition-all duration-300 transform active:scale-95 shadow-lg shadow-blue-600/20">
-                Añadir a la bolsa
-              </button>
             </div>
           </div>
+
+          {/* COLUMNA DERECHA: INFO */}
+          <div className="flex flex-col justify-center py-8">
+            <span className="text-orange-600 font-bold tracking-wider text-xs mb-3 uppercase">
+              Nuevo Ingreso
+            </span>
+            <h1 className="text-4xl md:text-5xl font-semibold text-[#1d1d1f] tracking-tight mb-2 leading-[1.1]">
+              {product.title}
+            </h1>
+            <div className="text-2xl md:text-3xl font-medium text-[#1d1d1f] mb-8">
+              S/ {product.price.toLocaleString('es-PE', { minimumFractionDigits: 2 })}
+            </div>
+
+            <div className="space-y-6 text-[#86868b] text-lg font-medium leading-relaxed mb-10">
+              <p>{product.description}</p>
+              <p>Diseñado para potenciar tu creatividad y productividad al máximo nivel.</p>
+            </div>
+
+            {/* Selector de Color Simulado (Visual) */}
+            <div className="mb-10">
+              <span className="text-sm font-semibold text-[#1d1d1f] block mb-3">Color</span>
+              <div className="flex gap-3">
+                <div className="w-8 h-8 rounded-full bg-[#2f353b] border-2 border-transparent ring-2 ring-blue-500 cursor-pointer"></div>
+                <div className="w-8 h-8 rounded-full bg-[#f0f0f0] border border-gray-300 cursor-pointer hover:border-gray-400"></div>
+                <div className="w-8 h-8 rounded-full bg-[#e3e4e5] border border-gray-300 cursor-pointer hover:border-gray-400"></div>
+              </div>
+            </div>
+
+            {/* Componente Cliente: Botón Agregar */}
+            <AddToCart product={product} />
+
+            <div className="mt-12 pt-10 border-t border-gray-100 grid grid-cols-1 gap-4">
+              <div className="flex items-start gap-4">
+                <ShieldCheck className="w-6 h-6 text-[#1d1d1f]" />
+                <div>
+                  <h4 className="text-sm font-semibold text-[#1d1d1f]">Garantía iClub</h4>
+                  <p className="text-sm text-gray-500">1 año de garantía certificada.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <Truck className="w-6 h-6 text-[#1d1d1f]" />
+                <div>
+                  <h4 className="text-sm font-semibold text-[#1d1d1f]">Envío Rápido</h4>
+                  <p className="text-sm text-gray-500">Envíos a todo Chiclayo y Perú.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <Box className="w-6 h-6 text-[#1d1d1f]" />
+                <div>
+                  <h4 className="text-sm font-semibold text-[#1d1d1f]">Caja Sellada</h4>
+                  <p className="text-sm text-gray-500">Producto 100% nuevo y original.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>

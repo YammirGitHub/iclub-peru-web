@@ -1,120 +1,189 @@
 "use client";
 
 import { useCart } from "@/context/CartContext";
-import { X, Trash2, MessageCircle } from "lucide-react";
+import { X, Trash2, ShoppingBag, ArrowRight, Minus, Plus } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useRef } from "react";
 
 export default function CartSidebar() {
-  // 1. CORRECCIÓN: Usamos los nombres correctos definidos en tu nuevo CartContext
-  const { cart, isOpen, closeCart, removeItem, total } = useCart();
+  const { cart, isCartOpen, toggleCart, removeFromCart, addToCart, cartTotal } =
+    useCart();
+  const sidebarRef = useRef<HTMLDivElement>(null);
 
-  // Generar mensaje de WhatsApp detallado
-  const handleCheckout = () => {
-    const phoneNumber = "51945341516";
-    let message = "Hola iClub Perú, deseo comprar los siguientes productos:\n\n";
-    
-    // 2. MEJORA: El mensaje ahora incluye Color, Almacenamiento y Cantidad
-    cart.forEach((item) => {
-      message += `• ${item.quantity}x ${item.name} | ${item.color} | ${item.storage} - $${item.price}\n`;
-    });
-    
-    message += `\n*TOTAL A PAGAR: $${total.toLocaleString("en-US")}*\n\n¿Me confirman stock y cuenta BCP?`;
-    
-    window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, "_blank");
-  };
+  // Cerrar al hacer click fuera (UX Essential)
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target as Node) &&
+        isCartOpen
+      ) {
+        toggleCart();
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isCartOpen, toggleCart]);
+
+  // Bloquear scroll del body cuando el carrito está abierto
+  useEffect(() => {
+    if (isCartOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+  }, [isCartOpen]);
 
   return (
     <AnimatePresence>
-      {/* 3. CORRECCIÓN: Usamos 'isOpen' en lugar de 'isCartOpen' */}
-      {isOpen && (
+      {isCartOpen && (
         <>
-          {/* Fondo oscuro (Overlay) */}
+          {/* OVERLAY (Fondo Oscuro) */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={closeCart} // Usamos closeCart para cerrar al dar clic fuera
-            className="fixed inset-0 bg-black/40 z-[60] backdrop-blur-sm"
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60]"
           />
 
-          {/* Panel Lateral (Carrito) */}
+          {/* SIDEBAR */}
           <motion.div
+            ref={sidebarRef}
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed top-0 right-0 h-full w-full md:w-[450px] bg-white/90 backdrop-blur-xl z-[70] shadow-2xl flex flex-col border-l border-gray-200"
+            className="fixed top-0 right-0 h-full w-full sm:w-[400px] bg-white/90 backdrop-blur-xl shadow-2xl z-[70] border-l border-white/20 flex flex-col"
           >
-            {/* Cabecera */}
-            <div className="p-6 flex justify-between items-center border-b border-gray-200/50">
-              <h2 className="text-xl font-semibold text-[#1d1d1f]">Tu Bolsa ({cart.length})</h2>
-              <button onClick={closeCart} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                <X size={24} className="text-gray-500" />
+            {/* HEADER */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-100/50">
+              <h2 className="text-xl font-semibold text-[#1d1d1f] flex items-center gap-2">
+                Bolsa de Compras{" "}
+                <span className="text-gray-400 text-sm font-medium">
+                  ({cart.length})
+                </span>
+              </h2>
+              <button
+                onClick={toggleCart}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500 hover:text-black"
+              >
+                <X size={24} />
               </button>
             </div>
 
-            {/* Lista de Productos */}
-            <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
+            {/* BODY (Lista de Productos) */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-6">
               {cart.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 space-y-4">
-                  <ShoppingBagIcon />
-                  <p>Tu bolsa está vacía.</p>
-                  <button onClick={closeCart} className="text-[#0071e3] font-medium hover:underline">
+                <div className="h-full flex flex-col items-center justify-center text-center space-y-4 text-gray-400">
+                  <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-2">
+                    <ShoppingBag size={32} className="text-gray-300" />
+                  </div>
+                  <p className="text-lg font-medium text-gray-900">
+                    Tu bolsa está vacía
+                  </p>
+                  <p className="text-sm max-w-[200px]">
+                    Descubre lo último en tecnología Apple.
+                  </p>
+                  <button
+                    onClick={toggleCart}
+                    className="mt-4 text-blue-600 font-medium hover:underline"
+                  >
                     Seguir comprando
                   </button>
                 </div>
               ) : (
-                cart.map((item, index) => (
-                  // Usamos una key compuesta para que React no se confunda
-                  <div key={`${item.id}-${item.color}-${item.storage}-${index}`} className="flex gap-4 items-start">
-                    <div className="relative w-20 h-24 bg-[#f5f5f7] rounded-xl flex-shrink-0 overflow-hidden">
-                      <Image 
-                        src={item.image || "/placeholder.png"} 
-                        alt={item.name} 
-                        fill 
-                        className="object-contain p-2" 
+                cart.map((item) => (
+                  <motion.div
+                    layout
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    key={item.id}
+                    className="flex gap-4"
+                  >
+                    {/* Imagen Miniatura */}
+                    <div className="relative w-20 h-20 bg-[#f5f5f7] rounded-xl flex-shrink-0 p-2">
+                      <Image
+                        src={item.image}
+                        alt={item.title}
+                        fill
+                        className="object-contain"
                       />
                     </div>
-                    <div className="flex-1">
-                      <div className="flex justify-between items-start">
-                        <h3 className="font-semibold text-[#1d1d1f] text-base">{item.name}</h3>
-                        <p className="font-bold text-[#1d1d1f]">${item.price * item.quantity}</p>
+
+                    {/* Info */}
+                    <div className="flex-1 flex flex-col justify-between">
+                      <div>
+                        <h3 className="text-sm font-semibold text-[#1d1d1f] leading-tight line-clamp-2">
+                          {item.title}
+                        </h3>
+                        <p className="text-sm text-gray-500 mt-1">
+                          S/{" "}
+                          {item.price.toLocaleString("es-PE", {
+                            minimumFractionDigits: 2,
+                          })}
+                        </p>
                       </div>
-                      
-                      {/* Detalles del producto */}
-                      <p className="text-sm text-gray-500 mt-1">{item.color} - {item.storage}</p>
-                      <p className="text-sm text-gray-400 mt-1">Cantidad: {item.quantity}</p>
+
+                      {/* Controles Cantidad */}
+                      <div className="flex items-center justify-between mt-2">
+                        <div className="flex items-center gap-3 bg-gray-50 rounded-full px-2 py-1">
+                          {/* Aquí podrías implementar lógica para restar cantidad si quisieras */}
+                          <span className="text-xs font-medium text-gray-600 px-1">
+                            Cant: {item.quantity}
+                          </span>
+                        </div>
+                        <button
+                          onClick={() => removeFromCart(item.id)}
+                          className="text-red-500 hover:text-red-600 hover:bg-red-50 p-1.5 rounded-full transition-colors"
+                          title="Eliminar"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                     </div>
-                    
-                    {/* 4. CORRECCIÓN: Borrar ítem específico pasando los 3 datos */}
-                    <button 
-                      onClick={() => removeItem(item.id, item.color, item.storage)}
-                      className="text-gray-400 hover:text-red-500 transition-colors p-1"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
+                  </motion.div>
                 ))
               )}
             </div>
 
-            {/* Pie de Carrito (Total + WhatsApp) */}
+            {/* FOOTER (Totales y Checkout) */}
             {cart.length > 0 && (
-              <div className="p-6 border-t border-gray-200 bg-white">
-                <div className="flex justify-between items-center mb-6">
-                  <span className="text-lg font-medium text-gray-500">Total estimada</span>
-                  <span className="text-2xl font-bold text-[#1d1d1f]">${total.toLocaleString("en-US")}</span>
+              <div className="p-6 border-t border-gray-100 bg-white/50 backdrop-blur-md">
+                <div className="space-y-3 mb-6">
+                  <div className="flex justify-between text-sm text-gray-500">
+                    <span>Subtotal</span>
+                    <span>
+                      S/{" "}
+                      {cartTotal.toLocaleString("es-PE", {
+                        minimumFractionDigits: 2,
+                      })}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm text-gray-500">
+                    <span>Envío</span>
+                    <span className="text-green-600 font-medium">Gratis</span>
+                  </div>
+                  <div className="flex justify-between text-xl font-semibold text-[#1d1d1f] pt-2 border-t border-gray-100">
+                    <span>Total</span>
+                    <span>
+                      S/{" "}
+                      {cartTotal.toLocaleString("es-PE", {
+                        minimumFractionDigits: 2,
+                      })}
+                    </span>
+                  </div>
                 </div>
-                <button
-                  onClick={handleCheckout}
-                  className="w-full py-4 rounded-full bg-[#25D366] text-white font-semibold text-lg hover:bg-[#1ebc57] transition-all flex items-center justify-center gap-2 shadow-lg shadow-green-500/20 active:scale-[0.98]"
-                >
-                  <MessageCircle size={24} />
-                  Pedir por WhatsApp
-                </button>
-                <p className="text-center text-xs text-gray-400 mt-4">
-                  Envío calculado en el chat. Garantía iClub incluida.
+
+                <Link href="/checkout" onClick={toggleCart}>
+                  <button className="w-full bg-[#0071e3] text-white py-4 rounded-full font-medium text-lg hover:bg-[#0077ED] transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 active:scale-[0.98]">
+                    Pagar Ahora <ArrowRight size={20} />
+                  </button>
+                </Link>
+                <p className="text-center text-[10px] text-gray-400 mt-4 flex items-center justify-center gap-1">
+                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                  Pagos encriptados y seguros
                 </p>
               </div>
             )}
@@ -122,20 +191,5 @@ export default function CartSidebar() {
         </>
       )}
     </AnimatePresence>
-  );
-}
-
-// Icono simple para bolsa vacía
-function ShoppingBagIcon() {
-  return (
-    <svg 
-      className="w-16 h-16 text-gray-200" 
-      fill="none" 
-      viewBox="0 0 24 24" 
-      stroke="currentColor" 
-      strokeWidth={1.5}
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-    </svg>
   );
 }
