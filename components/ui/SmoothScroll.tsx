@@ -1,4 +1,3 @@
-// components/ui/SmoothScroll.tsx
 "use client";
 import { ReactLenis } from "@studio-freight/react-lenis";
 
@@ -7,13 +6,16 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
     <ReactLenis
       root
       options={{
-        lerp: 0.12, // EL PUNTO DULCE: Rápido pero con inercia de lujo.
-        duration: 1.2, // Duración perfecta para sentir el peso.
+        duration: 0.7,
+        lerp: 0.1,
         smoothWheel: true,
-        wheelMultiplier: 1, // 1:1 con el dedo/mouse, sin aceleración falsa.
+        wheelMultiplier: 1.2,
+        touchMultiplier: 2,
+        infinite: false,
       }}
-      // IMPORTANTE: Pasamos children aquí con "as any" para arreglar el error de tipos y mostrar tu web
-      children={children as any}
-    />
+    >
+      {/* CORRECCIÓN: Usamos 'as any' para evitar el conflicto de tipos con React 18 */}
+      {children as any}
+    </ReactLenis>
   );
 }

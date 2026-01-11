@@ -10,13 +10,37 @@
   --color-apple-black: #1d1d1f;
 }
 
+/* --- CLASES OBLIGATORIAS PARA LENIS SCROLL --- */
+/* Esto soluciona que el scroll se sienta trabado o no avance */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+/* ------------------------------------------- */
+
 @layer base {
   html {
-    /* El suavizado de fuente es lo que da el look "Premium" de Apple */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    /* SOLUCIÓN LATENCIA: Eliminamos scroll-behavior: smooth para evitar conflictos con Lenis */
+    /* ELIMINADO scroll-behavior: smooth para que Lenis tenga control total */
   }
 
   body {
@@ -25,7 +49,6 @@
     font-family: var(--font-sans);
   }
 
-  /* Ajuste de títulos para mayor nitidez */
   h1,
   h2,
   h3,
