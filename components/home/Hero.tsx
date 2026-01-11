@@ -141,43 +141,45 @@ export default function Hero() {
           </motion.div>
         </div>
 
-        {/* --- COLUMNA 2: IMAGEN --- */}
-        <div className="lg:col-span-6 relative h-[50vh] md:h-[60vh] lg:h-full w-full flex items-end lg:items-center justify-center lg:justify-center order-2">
+        {/* --- COLUMNA 2: IMAGEN (Ajustada para efecto Gigante) --- */}
+        <div className="lg:col-span-6 relative h-[50vh] md:h-[60vh] lg:h-full w-full flex items-center justify-center order-2">
           <motion.div
             style={{ y: yParallax }}
             variants={imageVariants}
             initial="hidden"
             animate="visible"
-            className="relative w-full h-full max-h-[85vh] origin-center flex justify-center"
+            className="relative w-full h-full flex items-center justify-center"
           >
             <Image
-              src="/tu-imagen-hero.webp"
-              alt="iPhone 15 Pro"
+              src="/products/iphone-17-lineup.webp"
+              alt="Familia iPhone 17 Pro y modelos nuevos"
               fill
-              priority={true} // <--- ESTO ES VITAL: Le dice al navegador "carga esto primero que todo"
-              sizes="(max-width: 768px) 100vw, 100vw" // <--- ESTO AYUDA A MOBILE: Le dice qué tamaño esperar
-              className="object-cover"
+              priority={true}
+              sizes="(max-width: 768px) 100vw, 50vw"
+              // EXPLICACIÓN DE CLASES SENIOR:
+              // 1. object-contain: Mantiene la forma perfecta del celular.
+              // 2. scale-110: En móvil, un zoom pequeño (10%) para llenar espacio.
+              // 3. md:scale-125: En Tablet, un poco más grande.
+              // 4. lg:scale-[1.6]: EN PC, UN ZOOM MASIVO (60%).
+              //    Al haber quitado el aire en Squoosh, esto hará que los cels llenen todo.
+              className="object-contain scale-110 md:scale-125 lg:scale-[1.6] transition-transform duration-700"
             />
 
-            {/* Widget: Ajustado para que contraste mejor en fondo blanco */}
+            {/* Widget Flotante (Garantía) */}
             <motion.div
               variants={widgetVariants}
               initial="hidden"
               animate="visible"
-              // CAMBIO 3: Fondo 'bg-white/70' con un borde más notable 'border-gray-100' para separarlo del fondo blanco puro
-              className="hidden sm:flex absolute bottom-6 right-6 md:bottom-[15%] md:right-0 bg-white/70 backdrop-blur-xl p-3 md:p-4 pr-5 md:pr-6 rounded-[16px] md:rounded-[20px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.08)] border border-gray-100 items-center gap-3 md:gap-4 max-w-[200px] md:max-w-[240px]"
+              className="hidden sm:flex absolute bottom-4 right-4 lg:bottom-20 lg:right-10 bg-white/80 backdrop-blur-xl p-4 pr-6 rounded-2xl shadow-xl border border-white/40 items-center gap-4 z-20"
             >
-              <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-tr from-green-400 to-emerald-600 flex items-center justify-center text-white shadow-lg shadow-green-500/30">
-                <ShieldCheck
-                  className="w-4 h-4 md:w-5 md:h-5"
-                  strokeWidth={2.5}
-                />
+              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-green-400 to-emerald-600 flex items-center justify-center text-white shadow-lg shadow-green-500/30">
+                <ShieldCheck className="w-5 h-5" strokeWidth={2.5} />
               </div>
               <div>
-                <p className="text-[9px] md:text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">
                   iClub Protect
                 </p>
-                <p className="text-xs md:text-sm font-bold text-[#1d1d1f]">
+                <p className="text-sm font-bold text-[#1d1d1f]">
                   Garantía Incluida
                 </p>
               </div>

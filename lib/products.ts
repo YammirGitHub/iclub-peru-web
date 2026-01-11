@@ -74,12 +74,11 @@ const products: Product[] = [
   // --- IPHONE ---
   {
     id: "i1",
-    slug: "iphone-15-pro-max",
-    name: "iPhone 15 Pro Max",
+    slug: "iphone-17-lineup.webp",
+    name: "iphone 17",
     category: "iphone",
     price: 1199,
-    // CAMBIO AQUÍ: de .png a .webp
-    image: "/products/iphone-16-pro-max.webp",
+    image: "/products/iphone-17-lineup.webp",
     isNew: true,
     description: "Titanio. Tan robusto. Tan ligero. Tan Pro.",
   },
