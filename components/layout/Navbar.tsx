@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { ShoppingBag, Menu, X, Search } from "lucide-react";
-import { motion, AnimatePresence, Variants } from "framer-motion"; // Importamos Variants
+import { ShoppingBag, Search } from "lucide-react"; // Quitamos Menu y X, los haremos a mano
+import { motion, AnimatePresence, Variants, MotionConfig } from "framer-motion";
 import { useCart } from "@/context/CartContext";
 import { NAV_LINKS } from "@/lib/products";
 
@@ -13,8 +13,8 @@ const navContainerVariants: Variants = {
   visible: {
     opacity: 1,
     transition: {
-      delayChildren: 0.3, // Espera a que baje la barra
-      staggerChildren: 0.1, // Efecto cascada entre links
+      delayChildren: 0.3,
+      staggerChildren: 0.1,
     },
   },
 };
@@ -34,14 +34,12 @@ export default function Navbar() {
   const { toggleCart, cart } = useCart();
 
   useEffect(() => {
-    // Optimizamos el listener para que no sature el hilo principal
     const handleScroll = () => {
-      // Usamos requestAnimationFrame para sincronizar con la tasa de refresco
       requestAnimationFrame(() => {
         setIsScrolled(window.scrollY > 20);
       });
     };
-    window.addEventListener("scroll", handleScroll, { passive: true }); // passive: true mejora rendimiento
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -59,14 +57,12 @@ export default function Navbar() {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        // AGREGADO: transform-gpu y will-change para evitar lag con el blur
         className={`fixed top-0 left-0 right-0 z-50 flex justify-center px-4 transition-all duration-300 transform-gpu will-change-transform ${
           isScrolled ? "pt-4" : "pt-0 md:pt-6"
         }`}
       >
         <div
           className={`relative flex items-center justify-between px-6 py-3 transition-all duration-300 ${
-            // Bajamos a duration-300 para que sea más "snappy"
             isScrolled
               ? "w-full max-w-5xl rounded-full bg-white/70 backdrop-blur-xl backdrop-saturate-150 shadow-sm border border-white/20 ring-1 ring-black/5"
               : "w-full max-w-7xl bg-transparent border-transparent"
@@ -81,7 +77,7 @@ export default function Navbar() {
             <span className="text-[#0071e3]">.</span>
           </Link>
 
-          {/* MENÚ DESKTOP CON EFECTO DE ENTRADA */}
+          {/* MENÚ DESKTOP */}
           <motion.div
             variants={navContainerVariants}
             initial="hidden"
@@ -127,19 +123,49 @@ export default function Navbar() {
               )}
             </motion.button>
 
-            {/* Menú Móvil Toggle */}
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              className="md:hidden p-2 hover:bg-black/5 rounded-full transition-colors"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            {/* --- NUEVO SANGUCHE ANIMADO (MORPHING) --- */}
+            <MotionConfig
+              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             >
-              {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-            </motion.button>
+              <motion.button
+                initial={false}
+                animate={isMobileMenuOpen ? "open" : "closed"}
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="md:hidden relative h-10 w-10 rounded-full hover:bg-black/5 transition-colors flex flex-col justify-center items-center gap-[5px]" // gap controla la separación
+              >
+                {/* LÍNEA SUPERIOR */}
+                <motion.span
+                  variants={{
+                    closed: { rotate: 0, y: 0 },
+                    open: { rotate: 45, y: 7 }, // Baja y gira
+                  }}
+                  className="w-5 h-[2px] bg-[#1d1d1f] rounded-full block origin-center"
+                />
+
+                {/* LÍNEA DEL MEDIO */}
+                <motion.span
+                  variants={{
+                    closed: { opacity: 1, x: 0 },
+                    open: { opacity: 0, x: 20 }, // Se desvanece hacia la derecha
+                  }}
+                  className="w-5 h-[2px] bg-[#1d1d1f] rounded-full block"
+                />
+
+                {/* LÍNEA INFERIOR */}
+                <motion.span
+                  variants={{
+                    closed: { rotate: 0, y: 0 },
+                    open: { rotate: -45, y: -7 }, // Sube y gira
+                  }}
+                  className="w-5 h-[2px] bg-[#1d1d1f] rounded-full block origin-center"
+                />
+              </motion.button>
+            </MotionConfig>
           </div>
         </div>
       </motion.nav>
 
-      {/* MENÚ MÓVIL */}
+      {/* MENÚ MÓVIL (Sin cambios, solo funciona con el nuevo botón) */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
