@@ -74,7 +74,7 @@ const products: Product[] = [
   // --- IPHONE ---
   {
     id: "i1",
-    slug: "iphone-17-lineup.webp",
+    slug: "iphone-1-lineup.webp",
     name: "iphone 17",
     category: "iphone",
     price: 1199,
