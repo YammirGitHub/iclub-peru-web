@@ -1,14 +1,71 @@
 "use client";
+
 import { useCart } from "@/context/CartContext";
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { MessageCircle, ArrowLeft, MapPin, User, Phone } from "lucide-react";
+import { MessageCircle, User, MapPin, Phone, ShoppingBag } from "lucide-react";
+
+// ---------------------------------------------------------
+// 1. GENERADOR DE MENSAJE WHATSAPP (ESTILO PREMIUM APPLE)
+// ---------------------------------------------------------
+const createWhatsAppMessage = (cart: any[], formData: any, total: number) => {
+  const orderId = `WEB-${Math.floor(Math.random() * 10000)
+    .toString()
+    .padStart(4, "0")}`;
+  const date = new Date().toLocaleDateString("es-PE", {
+    day: "2-digit",
+    month: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  const itemsList = cart
+    .map((item) => {
+      return `
+📦 *${item.title || item.name}*
+   └ Cantidad: ${item.quantity}
+   └ Precio: S/ ${(item.price * item.quantity).toLocaleString("en-US")}
+`.trim();
+    })
+    .join("\n\n");
+
+  const message = `
+ *iClub Store | Solicitud de Pedido*
+─────────────────────
+🆔 *Orden:* ${orderId}
+📅 *Fecha:* ${date}
+
+Hola, he finalizado mi selección en la web y deseo concretar la compra:
+
+*DETALLE DEL PEDIDO*
+─────────────────────
+${itemsList}
+─────────────────────
+💰 *TOTAL A PAGAR: S/ ${total.toLocaleString("en-US")}*
+
+*DATOS DE ENTREGA*
+👤 *Cliente:* ${formData.name}
+📱 *Teléfono:* ${formData.phone}
+📍 *Dirección:* ${formData.address}
+🏙 *Distrito:* ${formData.district || "No especificado"}
+
+✅ *Método de Pago:* Transferencia / Yape / Plin
+
+Quedo a la espera de la confirmación y los datos bancarios. Gracias.
+`.trim();
+
+  // Reemplaza con tu número real
+  return `https://wa.me/51945341516?text=${encodeURIComponent(message)}`;
+};
+// ---------------------------------------------------------
 
 export default function CheckoutPage() {
-  const { cart, cartTotal } = useCart();
+  const { cart } = useCart();
 
-  // Estado para los datos del cliente
+  // Calculamos el total aquí mismo para evitar errores de contexto
+  const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -22,39 +79,31 @@ export default function CheckoutPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Generador del Mensaje de WhatsApp INTELIGENTE
-  const generateWhatsAppUrl = () => {
-    const phone = "51945341516"; // Tu número
-    let message = `Hola iClub, quiero realizar el siguiente pedido:\n\n`;
+  const isFormValid =
+    formData.name && formData.phone && formData.district && formData.address;
 
-    // Lista de productos
-    cart.forEach((item) => {
-      message += `▪️ ${item.title} x${item.quantity} - S/ ${(
-        item.price * item.quantity
-      ).toLocaleString("es-PE")}\n`;
-    });
-
-    message += `\n💰 *TOTAL A PAGAR: S/ ${cartTotal.toLocaleString(
-      "es-PE"
-    )}*\n`;
-    message += `----------------------------\n`;
-    message += `👤 *Mis Datos:*\n`;
-    message += `Nombre: ${formData.name}\n`;
-    message += `Teléfono: ${formData.phone}\n`;
-    message += `Distrito: ${formData.district}\n`;
-    message += `Dirección: ${formData.address}\n`;
-    message += `\nQuedo atento a la confirmación de stock y métodos de pago.`;
-
-    return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+  const handleCheckout = () => {
+    if (!isFormValid) return;
+    const url = createWhatsAppMessage(cart, formData, total);
+    window.open(url, "_blank");
   };
-
-  const isFormValid = formData.name && formData.phone && formData.district;
 
   if (cart.length === 0) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-white text-center px-4">
-        <h2 className="text-2xl font-semibold mb-4">Tu bolsa está vacía</h2>
-        <Link href="/" className="text-[#0071e3] hover:underline">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#F5F5F7] text-center px-4">
+        <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-6 shadow-sm">
+          <ShoppingBag size={40} className="text-gray-300" />
+        </div>
+        <h2 className="text-2xl font-semibold text-[#1d1d1f] mb-2">
+          Tu bolsa está vacía
+        </h2>
+        <p className="text-gray-500 mb-8">
+          Parece que no has añadido nada aún.
+        </p>
+        <Link
+          href="/"
+          className="bg-[#0071e3] text-white px-8 py-3 rounded-full font-medium hover:bg-[#0077ED] transition-colors"
+        >
           Volver a la tienda
         </Link>
       </div>
@@ -62,68 +111,86 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f5f7] pt-32 pb-20">
-      <div className="max-w-4xl mx-auto px-6 grid grid-cols-1 md:grid-cols-12 gap-8">
-        {/* FORMULARIO DE DATOS */}
+    <div className="min-h-screen bg-[#F5F5F7] pt-32 pb-20">
+      <div className="max-w-5xl mx-auto px-6 grid grid-cols-1 md:grid-cols-12 gap-8">
+        {/* --- COLUMNA 1: FORMULARIO (Diseño Limpio) --- */}
         <div className="md:col-span-7">
-          <div className="bg-white p-8 rounded-[20px] shadow-sm">
-            <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
-              <User size={20} className="text-[#0071e3]" /> Datos de Envío
+          <div className="bg-white p-8 rounded-[32px] shadow-sm">
+            <h2 className="text-2xl font-semibold mb-8 text-[#1d1d1f] flex items-center gap-3">
+              <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                <User size={20} className="text-[#1d1d1f]" />
+              </div>
+              Datos de Envío
             </h2>
-            <form className="space-y-4">
+
+            <form className="space-y-6">
               <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">
                   Nombre Completo
                 </label>
                 <input
                   type="text"
                   name="name"
                   onChange={handleChange}
-                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#0071e3] outline-none transition-all"
+                  className="w-full p-4 bg-[#F5F5F7] border-transparent rounded-2xl text-[#1d1d1f] placeholder-gray-400 focus:bg-white focus:ring-2 focus:ring-[#0071e3] outline-none transition-all font-medium"
                   placeholder="Ej. Juan Pérez"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1">
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">
                     Teléfono
                   </label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    onChange={handleChange}
-                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#0071e3] outline-none"
-                    placeholder="999 999 999"
-                  />
+                  <div className="relative">
+                    <Phone
+                      className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                      size={18}
+                    />
+                    <input
+                      type="tel"
+                      name="phone"
+                      onChange={handleChange}
+                      className="w-full p-4 pl-12 bg-[#F5F5F7] border-transparent rounded-2xl text-[#1d1d1f] placeholder-gray-400 focus:bg-white focus:ring-2 focus:ring-[#0071e3] outline-none transition-all font-medium"
+                      placeholder="999 999 999"
+                    />
+                  </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1">
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">
                     Distrito
                   </label>
-                  <select
-                    name="district"
-                    onChange={handleChange}
-                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#0071e3] outline-none"
-                  >
-                    <option value="">Seleccionar</option>
-                    <option value="Chiclayo">Chiclayo</option>
-                    <option value="La Victoria">La Victoria</option>
-                    <option value="JLO">José L. Ortiz</option>
-                    <option value="Pimentel">Pimentel</option>
-                    <option value="Lambayeque">Lambayeque</option>
-                    <option value="Otro">Otro (Coordinar)</option>
-                  </select>
+                  <div className="relative">
+                    <MapPin
+                      className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                      size={18}
+                    />
+                    <select
+                      name="district"
+                      onChange={handleChange}
+                      className="w-full p-4 pl-12 bg-[#F5F5F7] border-transparent rounded-2xl text-[#1d1d1f] focus:bg-white focus:ring-2 focus:ring-[#0071e3] outline-none transition-all font-medium appearance-none cursor-pointer"
+                    >
+                      <option value="">Seleccionar...</option>
+                      <option value="Chiclayo">Chiclayo</option>
+                      <option value="La Victoria">La Victoria</option>
+                      <option value="JLO">José L. Ortiz</option>
+                      <option value="Pimentel">Pimentel</option>
+                      <option value="Lambayeque">Lambayeque</option>
+                      <option value="Otro">Otro (Coordinar)</option>
+                    </select>
+                  </div>
                 </div>
               </div>
+
               <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">
                   Dirección / Referencia
                 </label>
                 <input
                   type="text"
                   name="address"
                   onChange={handleChange}
-                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#0071e3] outline-none"
+                  className="w-full p-4 bg-[#F5F5F7] border-transparent rounded-2xl text-[#1d1d1f] placeholder-gray-400 focus:bg-white focus:ring-2 focus:ring-[#0071e3] outline-none transition-all font-medium"
                   placeholder="Av. Balta 123, frente al parque..."
                 />
               </div>
@@ -131,65 +198,86 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        {/* RESUMEN DE PEDIDO */}
+        {/* --- COLUMNA 2: RESUMEN (Sticky) --- */}
         <div className="md:col-span-5">
-          <div className="bg-white p-8 rounded-[20px] shadow-sm sticky top-32">
-            <h2 className="text-xl font-semibold mb-6">Resumen</h2>
-            <div className="space-y-4 mb-6 max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
+          <div className="bg-white p-8 rounded-[32px] shadow-sm sticky top-32">
+            <h2 className="text-xl font-semibold mb-6 text-[#1d1d1f]">
+              Resumen del Pedido
+            </h2>
+
+            <div className="space-y-4 mb-8 max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
               {cart.map((item) => (
-                <div key={item.id} className="flex gap-4 items-center">
-                  <div className="relative w-12 h-12 bg-gray-50 rounded-lg shrink-0">
+                <div
+                  key={item.id}
+                  className="flex gap-4 items-center p-2 hover:bg-gray-50 rounded-xl transition-colors"
+                >
+                  <div className="relative w-14 h-14 bg-[#F5F5F7] rounded-xl shrink-0 border border-gray-100">
                     <Image
                       src={item.image}
-                      alt={item.title}
+                      alt={item.title || item.name}
                       fill
-                      className="object-contain p-1"
+                      className="object-contain p-2"
                     />
                   </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-[#1d1d1f] line-clamp-1">
-                      {item.title}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-[#1d1d1f] truncate">
+                      {item.title || item.name}
                     </p>
                     <p className="text-xs text-gray-500">
                       Cant: {item.quantity}
                     </p>
                   </div>
-                  <p className="text-sm font-semibold">
+                  <p className="text-sm font-semibold whitespace-nowrap">
                     S/ {(item.price * item.quantity).toLocaleString("es-PE")}
                   </p>
                 </div>
               ))}
             </div>
 
-            <div className="border-t border-gray-100 pt-4 space-y-2">
-              <div className="flex justify-between text-gray-500">
+            <div className="border-t border-gray-100 pt-6 space-y-3">
+              <div className="flex justify-between text-gray-500 text-sm">
                 <span>Subtotal</span>
-                <span>S/ {cartTotal.toLocaleString("es-PE")}</span>
+                <span>S/ {total.toLocaleString("es-PE")}</span>
               </div>
-              <div className="flex justify-between text-[#1d1d1f] text-xl font-bold pt-2">
+              <div className="flex justify-between text-[#1d1d1f] text-2xl font-bold pt-2">
                 <span>Total</span>
-                <span>S/ {cartTotal.toLocaleString("es-PE")}</span>
+                <span>S/ {total.toLocaleString("es-PE")}</span>
               </div>
             </div>
 
-            <a
-              href={isFormValid ? generateWhatsAppUrl() : "#"}
-              target={isFormValid ? "_blank" : "_self"}
-              className={`mt-6 w-full py-4 rounded-full font-semibold flex items-center justify-center gap-2 transition-all shadow-lg ${
-                isFormValid
-                  ? "bg-[#25D366] text-white hover:bg-[#128C7E] cursor-pointer shadow-green-500/30"
-                  : "bg-gray-200 text-gray-400 cursor-not-allowed"
-              }`}
-            >
-              <MessageCircle size={20} />
-              {isFormValid
-                ? "Enviar Pedido por WhatsApp"
-                : "Completa tus datos"}
-            </a>
-            <p className="text-[10px] text-center text-gray-400 mt-3">
-              Al enviar, un asesor confirmará el stock y te dará los datos de
-              pago.
-            </p>
+            {/* BOTÓN Y TEXTO DE ADVERTENCIA (Tal cual la imagen) */}
+            <div className="mt-8">
+              <button
+                onClick={handleCheckout}
+                disabled={!isFormValid}
+                className={`w-full py-4 rounded-full font-semibold flex items-center justify-center gap-2 transition-all duration-300 shadow-lg ${
+                  isFormValid
+                    ? "bg-[#25D366] hover:bg-[#128C7E] text-white hover:scale-[1.02] shadow-green-500/30 cursor-pointer"
+                    : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                }`}
+              >
+                {isFormValid ? (
+                  <>
+                    <MessageCircle size={20} className="fill-current" />
+                    Confirmar Pedido en WhatsApp
+                  </>
+                ) : (
+                  <>
+                    {/* Estilo visual similar al "Completa tus datos" de tu imagen */}
+                    <span className="flex items-center gap-2">
+                      <MessageCircle size={20} />
+                      Completa tus datos
+                    </span>
+                  </>
+                )}
+              </button>
+
+              {/* TEXTO EXACTO DE TU IMAGEN */}
+              <p className="text-[11px] text-center text-gray-400 mt-4 leading-relaxed px-4">
+                Al enviar, un asesor confirmará el stock y te dará los datos de
+                pago.
+              </p>
+            </div>
           </div>
         </div>
       </div>
