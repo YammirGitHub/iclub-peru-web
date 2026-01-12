@@ -1,7 +1,7 @@
 "use client";
 
 import { useCart } from "@/context/CartContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -13,13 +13,13 @@ import {
   ArrowRight,
   ShieldCheck,
   ChevronRight,
+  AlertCircle, // Icono para errores
 } from "lucide-react";
 
 // ---------------------------------------------------------
-// 1. GENERADOR DE MENSAJE WHATSAPP (CORREGIDO PARA EMOJIS)
+// 1. GENERADOR DE MENSAJE WHATSAPP
 // ---------------------------------------------------------
 const createWhatsAppMessage = (cart: any[], formData: any, total: number) => {
-  // Generamos un ID de pedido
   const orderId = `WEB-${Math.floor(Math.random() * 10000)
     .toString()
     .padStart(4, "0")}`;
@@ -28,15 +28,14 @@ const createWhatsAppMessage = (cart: any[], formData: any, total: number) => {
     .map((item) => `▪️ ${item.title || item.name} (x${item.quantity})`)
     .join("\n");
 
-  // Construimos el mensaje con emojis
   const message = `
 👋 *Hola iClub, soy ${formData.name.split(" ")[0]}!*
 Vengo de su tienda online y quiero cerrar este pedido:
 
 🧾 *TICKET DE PEDIDO: ${orderId}*
-━━━━━━━━━━━━━━━━━━━━   <-- CAMBIO AQUÍ (Se ve más sólido)
+━━━━━━━━━━━━━━━━━━━━
 ${itemsList}
-━━━━━━━━━━━━━━━━━━━━   <-- CAMBIO AQUÍ
+━━━━━━━━━━━━━━━━━━━━
 💰 *TOTAL FINAL: S/ ${total.toLocaleString("en-US")}*
 
 📍 *MIS DATOS DE ENTREGA:*
@@ -51,9 +50,6 @@ Prefiero: Transferencia / Yape / Plin
 🚀 *Quedo atento a su confirmación de stock para proceder con el pago.*
 `.trim();
 
-  // --- CORRECCIÓN CLAVE ---
-  // Usamos 'api.whatsapp.com/send' en lugar de 'wa.me' para mejor compatibilidad de emojis.
-  // encodeURIComponent se asegura de transformar los emojis en código legible por WhatsApp.
   const baseUrl = "https://api.whatsapp.com/send";
   const phone = "51953654313";
   const encodedMessage = encodeURIComponent(message);
@@ -63,10 +59,9 @@ Prefiero: Transferencia / Yape / Plin
 
 export default function CheckoutPage() {
   const { cart } = useCart();
-
-  // Cálculo de total
   const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
+  // --- ESTADOS DE FORMULARIO ---
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -74,22 +69,108 @@ export default function CheckoutPage() {
     address: "",
   });
 
+  // Estado para saber qué campos ha tocado el usuario (para no mostrar error antes de tiempo)
+  const [touched, setTouched] = useState({
+    name: false,
+    phone: false,
+    district: false,
+    address: false,
+  });
+
+  // Estado de errores
+  const [errors, setErrors] = useState({
+    name: "",
+    phone: "",
+    district: "",
+    address: "",
+  });
+
+  // --- LÓGICA DE VALIDACIÓN ---
+  const validate = (name: string, value: string) => {
+    switch (name) {
+      case "name":
+        if (value.trim().length < 3) return "Ingresa tu nombre completo";
+        return "";
+      case "phone":
+        // Regex para validar celulares peruanos (empiezan con 9, tienen 9 dígitos)
+        if (!/^[9]\d{8}$/.test(value))
+          return "Ingresa un celular válido (9 dígitos)";
+        return "";
+      case "district":
+        if (!value) return "Selecciona un distrito";
+        return "";
+      case "address":
+        if (value.trim().length < 5) return "La dirección es muy corta";
+        return "";
+      default:
+        return "";
+    }
+  };
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    // Restricción especial para teléfono: Solo números
+    if (name === "phone") {
+      const numericValue = value.replace(/\D/g, ""); // Elimina no-números
+      if (numericValue.length > 9) return; // Máximo 9 caracteres
+      setFormData({ ...formData, [name]: numericValue });
+      // Validar en tiempo real
+      setErrors({ ...errors, [name]: validate(name, numericValue) });
+    } else {
+      setFormData({ ...formData, [name]: value });
+      // Validar en tiempo real
+      setErrors({ ...errors, [name]: validate(name, value) });
+    }
   };
 
+  // Se activa cuando el usuario sale del input (blur)
+  const handleBlur = (
+    e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setTouched({ ...touched, [name]: true });
+    setErrors({ ...errors, [name]: validate(name, value) });
+  };
+
+  // Validar si todo el formulario está correcto
   const isFormValid =
-    formData.name.length > 2 &&
-    formData.phone.length > 6 &&
+    !errors.name &&
+    !errors.phone &&
+    !errors.district &&
+    !errors.address &&
+    formData.name.length > 0 &&
+    formData.phone.length === 9 &&
     formData.district !== "" &&
-    formData.address.length > 5;
+    formData.address.length > 0;
 
   const handleCheckout = () => {
-    if (!isFormValid) return;
+    if (!isFormValid) {
+      // Si intenta enviar forzadamente, marcamos todo como tocado para mostrar errores
+      setTouched({
+        name: true,
+        phone: true,
+        district: true,
+        address: true,
+      });
+      return;
+    }
     const url = createWhatsAppMessage(cart, formData, total);
     window.open(url, "_blank");
+  };
+
+  // Helper para clases de input (Normal vs Error)
+  const getInputClasses = (fieldName: keyof typeof errors) => {
+    const hasError = touched[fieldName] && errors[fieldName];
+    const base =
+      "w-full p-4 bg-[#F5F5F7] border-2 rounded-2xl text-[#1d1d1f] placeholder-gray-400 outline-none transition-all font-medium text-base";
+
+    if (hasError) {
+      return `${base} border-red-500/50 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 bg-red-50/50`;
+    }
+    return `${base} border-transparent focus:bg-white focus:border-[#0071e3]/20 focus:ring-4 focus:ring-[#0071e3]/10`;
   };
 
   if (cart.length === 0) {
@@ -119,7 +200,6 @@ export default function CheckoutPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
         {/* --- COLUMNA 1: FORMULARIO --- */}
         <div className="lg:col-span-7 space-y-6">
-          {/* Header de Sección */}
           <div className="flex items-center gap-3 mb-2 px-1">
             <h1 className="text-3xl font-semibold text-[#1d1d1f] tracking-tight">
               Finalizar Pedido
@@ -141,58 +221,83 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            <form className="space-y-6">
-              {/* Input Group: Nombre */}
+            <form className="space-y-6" autoComplete="off">
+              {/* Input: Nombre */}
               <div className="group">
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1 group-focus-within:text-[#0071e3] transition-colors">
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">
                   Nombre Completo
                 </label>
                 <input
                   type="text"
                   name="name"
-                  autoComplete="name"
+                  value={formData.name}
                   onChange={handleChange}
-                  className="w-full p-4 bg-[#F5F5F7] border-transparent rounded-2xl text-[#1d1d1f] placeholder-gray-400 focus:bg-white focus:ring-4 focus:ring-[#0071e3]/10 focus:border-[#0071e3]/20 outline-none transition-all font-medium text-base"
+                  onBlur={handleBlur}
+                  className={getInputClasses("name")}
                   placeholder="Ej. Juan Pérez"
                 />
+                {touched.name && errors.name && (
+                  <div className="flex items-center gap-1 mt-2 text-red-500 text-xs font-medium animate-fade-in">
+                    <AlertCircle size={12} /> {errors.name}
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {/* Input Group: Teléfono */}
+                {/* Input: Teléfono */}
                 <div className="group">
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1 group-focus-within:text-[#0071e3] transition-colors">
-                    Teléfono / WhatsApp
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">
+                    Celular / WhatsApp
                   </label>
                   <div className="relative">
                     <Phone
-                      className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#0071e3] transition-colors"
+                      className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${
+                        touched.phone && errors.phone
+                          ? "text-red-400"
+                          : "text-gray-400 group-focus-within:text-[#0071e3]"
+                      }`}
                       size={20}
                     />
                     <input
                       type="tel"
                       name="phone"
-                      autoComplete="tel"
+                      value={formData.phone}
                       onChange={handleChange}
-                      className="w-full p-4 pl-12 bg-[#F5F5F7] border-transparent rounded-2xl text-[#1d1d1f] placeholder-gray-400 focus:bg-white focus:ring-4 focus:ring-[#0071e3]/10 focus:border-[#0071e3]/20 outline-none transition-all font-medium text-base"
+                      onBlur={handleBlur}
+                      maxLength={9}
+                      className={`${getInputClasses("phone")} pl-12`}
                       placeholder="999 999 999"
                     />
                   </div>
+                  {touched.phone && errors.phone && (
+                    <div className="flex items-center gap-1 mt-2 text-red-500 text-xs font-medium animate-fade-in">
+                      <AlertCircle size={12} /> {errors.phone}
+                    </div>
+                  )}
                 </div>
 
-                {/* Input Group: Distrito */}
+                {/* Input: Distrito */}
                 <div className="group">
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1 group-focus-within:text-[#0071e3] transition-colors">
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">
                     Distrito
                   </label>
                   <div className="relative">
                     <MapPin
-                      className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#0071e3] transition-colors"
+                      className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${
+                        touched.district && errors.district
+                          ? "text-red-400"
+                          : "text-gray-400 group-focus-within:text-[#0071e3]"
+                      }`}
                       size={20}
                     />
                     <select
                       name="district"
+                      value={formData.district}
                       onChange={handleChange}
-                      className="w-full p-4 pl-12 bg-[#F5F5F7] border-transparent rounded-2xl text-[#1d1d1f] focus:bg-white focus:ring-4 focus:ring-[#0071e3]/10 focus:border-[#0071e3]/20 outline-none transition-all font-medium appearance-none cursor-pointer text-base"
+                      onBlur={handleBlur}
+                      className={`${getInputClasses(
+                        "district"
+                      )} pl-12 appearance-none cursor-pointer`}
                     >
                       <option value="">Seleccionar...</option>
                       <option value="Chiclayo">Chiclayo</option>
@@ -203,27 +308,37 @@ export default function CheckoutPage() {
                       <option value="Otro">Otro (Coordinar)</option>
                     </select>
                   </div>
+                  {touched.district && errors.district && (
+                    <div className="flex items-center gap-1 mt-2 text-red-500 text-xs font-medium animate-fade-in">
+                      <AlertCircle size={12} /> {errors.district}
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Input Group: Dirección */}
+              {/* Input: Dirección */}
               <div className="group">
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1 group-focus-within:text-[#0071e3] transition-colors">
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">
                   Dirección Exacta
                 </label>
                 <input
                   type="text"
                   name="address"
-                  autoComplete="street-address"
+                  value={formData.address}
                   onChange={handleChange}
-                  className="w-full p-4 bg-[#F5F5F7] border-transparent rounded-2xl text-[#1d1d1f] placeholder-gray-400 focus:bg-white focus:ring-4 focus:ring-[#0071e3]/10 focus:border-[#0071e3]/20 outline-none transition-all font-medium text-base"
+                  onBlur={handleBlur}
+                  className={getInputClasses("address")}
                   placeholder="Av. Balta 123, Referencia..."
                 />
+                {touched.address && errors.address && (
+                  <div className="flex items-center gap-1 mt-2 text-red-500 text-xs font-medium animate-fade-in">
+                    <AlertCircle size={12} /> {errors.address}
+                  </div>
+                )}
               </div>
             </form>
           </div>
 
-          {/* Sello de Confianza */}
           <div className="flex items-center justify-center gap-2 text-xs text-gray-400 opacity-80">
             <ShieldCheck size={14} />
             <span>Tus datos están protegidos y viajan encriptados.</span>
@@ -249,7 +364,6 @@ export default function CheckoutPage() {
                   <div className="relative w-16 h-16 bg-white rounded-xl shrink-0 border border-gray-100 shadow-sm group-hover:scale-105 transition-transform duration-300">
                     <Image
                       src={item.image}
-                      // CORRECCIÓN: Usamos item.title aquí también
                       alt={item.title}
                       fill
                       className="object-contain p-2"
@@ -257,7 +371,6 @@ export default function CheckoutPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold text-[#1d1d1f] truncate leading-tight mb-1">
-                      {/* CORRECCIÓN: Usamos item.title */}
                       {item.title}
                     </p>
                     <p className="text-xs text-gray-500 font-medium">
@@ -286,7 +399,7 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {/* BOTÓN INTELIGENTE */}
+            {/* BOTÓN INTELIGENTE CON ESTADOS DE VALIDACIÓN */}
             <div className="mt-8 relative">
               <button
                 onClick={handleCheckout}
