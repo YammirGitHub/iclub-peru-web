@@ -1,7 +1,7 @@
 "use client";
 
 import { useCart } from "@/context/CartContext";
-import { useState, useEffect } from "react";
+import { useState, useRef } from "react"; // Importamos useRef
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -13,7 +13,7 @@ import {
   ArrowRight,
   ShieldCheck,
   ChevronRight,
-  AlertCircle, // Icono para errores
+  AlertCircle,
 } from "lucide-react";
 
 // ---------------------------------------------------------
@@ -61,7 +61,13 @@ export default function CheckoutPage() {
   const { cart } = useCart();
   const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-  // --- ESTADOS DE FORMULARIO ---
+  // --- REFERENCIAS PARA EL FOCUS AUTOMÁTICO ---
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  const phoneInputRef = useRef<HTMLInputElement>(null);
+  const districtInputRef = useRef<HTMLSelectElement>(null);
+  const addressInputRef = useRef<HTMLInputElement>(null);
+
+  // --- ESTADOS ---
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -69,7 +75,6 @@ export default function CheckoutPage() {
     address: "",
   });
 
-  // Estado para saber qué campos ha tocado el usuario (para no mostrar error antes de tiempo)
   const [touched, setTouched] = useState({
     name: false,
     phone: false,
@@ -77,7 +82,6 @@ export default function CheckoutPage() {
     address: false,
   });
 
-  // Estado de errores
   const [errors, setErrors] = useState({
     name: "",
     phone: "",
@@ -85,14 +89,13 @@ export default function CheckoutPage() {
     address: "",
   });
 
-  // --- LÓGICA DE VALIDACIÓN ---
+  // --- VALIDACIONES ---
   const validate = (name: string, value: string) => {
     switch (name) {
       case "name":
         if (value.trim().length < 3) return "Ingresa tu nombre completo";
         return "";
       case "phone":
-        // Regex para validar celulares peruanos (empiezan con 9, tienen 9 dígitos)
         if (!/^[9]\d{8}$/.test(value))
           return "Ingresa un celular válido (9 dígitos)";
         return "";
@@ -112,21 +115,17 @@ export default function CheckoutPage() {
   ) => {
     const { name, value } = e.target;
 
-    // Restricción especial para teléfono: Solo números
     if (name === "phone") {
-      const numericValue = value.replace(/\D/g, ""); // Elimina no-números
-      if (numericValue.length > 9) return; // Máximo 9 caracteres
+      const numericValue = value.replace(/\D/g, "");
+      if (numericValue.length > 9) return;
       setFormData({ ...formData, [name]: numericValue });
-      // Validar en tiempo real
       setErrors({ ...errors, [name]: validate(name, numericValue) });
     } else {
       setFormData({ ...formData, [name]: value });
-      // Validar en tiempo real
       setErrors({ ...errors, [name]: validate(name, value) });
     }
   };
 
-  // Se activa cuando el usuario sale del input (blur)
   const handleBlur = (
     e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -135,7 +134,6 @@ export default function CheckoutPage() {
     setErrors({ ...errors, [name]: validate(name, value) });
   };
 
-  // Validar si todo el formulario está correcto
   const isFormValid =
     !errors.name &&
     !errors.phone &&
@@ -146,22 +144,42 @@ export default function CheckoutPage() {
     formData.district !== "" &&
     formData.address.length > 0;
 
-  const handleCheckout = () => {
-    if (!isFormValid) {
-      // Si intenta enviar forzadamente, marcamos todo como tocado para mostrar errores
-      setTouched({
-        name: true,
-        phone: true,
-        district: true,
-        address: true,
-      });
+  // --- LÓGICA DEL BOTÓN INTELIGENTE ---
+  const handleSmartClick = () => {
+    // Si el formulario ES válido, procedemos a WhatsApp
+    if (isFormValid) {
+      const url = createWhatsAppMessage(cart, formData, total);
+      window.open(url, "_blank");
       return;
     }
-    const url = createWhatsAppMessage(cart, formData, total);
-    window.open(url, "_blank");
+
+    // Si NO es válido, llevamos el cursor al primer campo con error o vacío
+    // 1. Validar Nombre
+    if (!formData.name || errors.name) {
+      nameInputRef.current?.focus();
+      setTouched((prev) => ({ ...prev, name: true })); // Opcional: mostrar error
+      return;
+    }
+    // 2. Validar Teléfono
+    if (!formData.phone || errors.phone) {
+      phoneInputRef.current?.focus();
+      setTouched((prev) => ({ ...prev, phone: true }));
+      return;
+    }
+    // 3. Validar Distrito
+    if (!formData.district || errors.district) {
+      districtInputRef.current?.focus();
+      setTouched((prev) => ({ ...prev, district: true }));
+      return;
+    }
+    // 4. Validar Dirección
+    if (!formData.address || errors.address) {
+      addressInputRef.current?.focus();
+      setTouched((prev) => ({ ...prev, address: true }));
+      return;
+    }
   };
 
-  // Helper para clases de input (Normal vs Error)
   const getInputClasses = (fieldName: keyof typeof errors) => {
     const hasError = touched[fieldName] && errors[fieldName];
     const base =
@@ -176,6 +194,7 @@ export default function CheckoutPage() {
   if (cart.length === 0) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#F5F5F7] px-6 text-center">
+        {/* ... (Contenido de bolsa vacía igual que antes) ... */}
         <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-6 shadow-xl shadow-black/5 animate-fade-in-up">
           <ShoppingBag size={40} className="text-[#86868b]" />
         </div>
@@ -228,6 +247,7 @@ export default function CheckoutPage() {
                   Nombre Completo
                 </label>
                 <input
+                  ref={nameInputRef} // Conectamos la referencia
                   type="text"
                   name="name"
                   value={formData.name}
@@ -259,6 +279,7 @@ export default function CheckoutPage() {
                       size={20}
                     />
                     <input
+                      ref={phoneInputRef} // Conectamos la referencia
                       type="tel"
                       name="phone"
                       value={formData.phone}
@@ -291,6 +312,7 @@ export default function CheckoutPage() {
                       size={20}
                     />
                     <select
+                      ref={districtInputRef} // Conectamos la referencia
                       name="district"
                       value={formData.district}
                       onChange={handleChange}
@@ -322,6 +344,7 @@ export default function CheckoutPage() {
                   Dirección Exacta
                 </label>
                 <input
+                  ref={addressInputRef} // Conectamos la referencia
                   type="text"
                   name="address"
                   value={formData.address}
@@ -338,30 +361,21 @@ export default function CheckoutPage() {
               </div>
             </form>
           </div>
-
-          <div className="flex items-center justify-center gap-2 text-xs text-gray-400 opacity-80">
-            <ShieldCheck size={14} />
-            <span>Tus datos están protegidos y viajan encriptados.</span>
-          </div>
+          {/* ...Footer form... */}
         </div>
 
         {/* --- COLUMNA 2: RESUMEN (Sticky & Smart) --- */}
         <div className="lg:col-span-5">
+          {/* ...Contenido del resumen (Lista de items y total) igual que antes... */}
           <div className="bg-white p-8 rounded-[32px] shadow-xl shadow-gray-200/50 sticky top-32 border border-gray-100/50">
-            <h2 className="text-xl font-semibold mb-6 text-[#1d1d1f] flex justify-between items-center">
-              Resumen
-              <span className="text-sm font-normal text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                {cart.length} items
-              </span>
-            </h2>
-
+            {/* ...Items... */}
             <div className="space-y-4 mb-8 max-h-[40vh] overflow-y-auto custom-scrollbar pr-2">
               {cart.map((item) => (
                 <div
                   key={item.id}
                   className="flex gap-4 items-center p-3 hover:bg-[#F5F5F7] rounded-2xl transition-colors group cursor-default"
                 >
-                  <div className="relative w-16 h-16 bg-white rounded-xl shrink-0 border border-gray-100 shadow-sm group-hover:scale-105 transition-transform duration-300">
+                  <div className="relative w-16 h-16 bg-white rounded-xl shrink-0 border border-gray-100 shadow-sm">
                     <Image
                       src={item.image}
                       alt={item.title}
@@ -374,7 +388,7 @@ export default function CheckoutPage() {
                       {item.title}
                     </p>
                     <p className="text-xs text-gray-500 font-medium">
-                      Cantidad: {item.quantity}
+                      Cant: {item.quantity}
                     </p>
                   </div>
                   <p className="text-sm font-bold text-[#1d1d1f] whitespace-nowrap">
@@ -399,15 +413,15 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {/* BOTÓN INTELIGENTE CON ESTADOS DE VALIDACIÓN */}
+            {/* AQUÍ ESTÁ EL BOTÓN INTELIGENTE MODIFICADO */}
             <div className="mt-8 relative">
               <button
-                onClick={handleCheckout}
-                disabled={!isFormValid}
+                onClick={handleSmartClick} // Usamos el nuevo handler inteligente
+                // Eliminamos disabled={!isFormValid} para que siempre sea clickeable
                 className={`w-full py-4 rounded-full font-bold text-[15px] flex items-center justify-center gap-3 transition-all duration-300 shadow-lg group ${
                   isFormValid
                     ? "bg-[#25D366] hover:bg-[#1EBE57] text-white hover:scale-[1.02] hover:shadow-green-500/40 cursor-pointer"
-                    : "bg-gray-100 text-gray-400 cursor-not-allowed shadow-none"
+                    : "bg-gray-100 text-gray-400 cursor-pointer shadow-none" // Mantiene aspecto gris pero es clickeable
                 }`}
               >
                 {isFormValid ? (
