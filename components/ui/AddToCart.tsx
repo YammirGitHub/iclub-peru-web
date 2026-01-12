@@ -10,14 +10,15 @@ export default function AddToCart({ product }: { product: Product }) {
   const [isAdded, setIsAdded] = useState(false);
 
   const handleAdd = () => {
-    // CORRECCIÓN AQUÍ:
-    // 1. Usamos 'basePrice' en lugar de 'price'
-    // 2. Usamos la imagen del primer color disponible (colors[0].image)
+    // Verificamos si existe al menos un color, si no, usamos una cadena vacía o una imagen default
+    const productImage =
+      product.colors?.[0]?.image || "/images/placeholder.png";
+
     addToCart({
       id: product.id,
       title: product.title,
       price: product.basePrice,
-      image: product.colors[0].image,
+      image: productImage, // Usamos la variable segura
       quantity: 1,
     });
 

@@ -38,7 +38,8 @@ export default function ProductPage() {
 
   return (
     <div className="min-h-screen bg-white pt-24 pb-20">
-      <div className="max-w-[1200px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12">
+      {/* Cambiamos px-6 por px-4 en móviles, y px-6 en escritorio */}
+      <div className="max-w-[1200px] mx-auto px-4 md:px-6 grid grid-cols-1 lg:grid-cols-12 gap-12">
         {/* --- COLUMNA IZQUIERDA: IMAGEN (STICKY) --- */}
         <div className="lg:col-span-7 relative">
           <div className="sticky top-32 min-h-[500px] flex items-center justify-center bg-[#f5f5f7] rounded-[30px] p-10 overflow-hidden">
@@ -53,10 +54,12 @@ export default function ProductPage() {
               >
                 <Image
                   src={selectedColor.image}
-                  alt={`${product.title} ${selectedColor.name}`}
+                  alt={product.title}
                   fill
-                  className="object-contain"
                   priority
+                  decoding="sync" // <--- AGREGA ESTO PARA MAXIMA VELOCIDAD
+                  className="object-contain"
+                  sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </motion.div>
             </AnimatePresence>

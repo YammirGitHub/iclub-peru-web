@@ -31,7 +31,7 @@ export default function CategoryPage() {
         {products.length > 0 ? (
           products.map((product) => (
             <Link
-              href={`/product/${product.slug}`}
+              href={`/${product.category}/${product.slug}`}
               key={product.id}
               className="group"
             >

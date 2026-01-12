@@ -1,17 +1,43 @@
 export default function Loading() {
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white">
-      {/* Contenedor con animación de "respiración" (Pulse) */}
-      <div className="animate-pulse">
-        {/* LOGO DE APPLE (SVG Vectorial de Alta Calidad) */}
-        <svg
-          className="w-16 h-16 md:w-20 md:h-20 text-[#1d1d1f]" // Gris oscuro Apple
-          viewBox="0 0 384 512"
-          fill="currentColor"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 43.7-23.2 68.7 26.3 1.8 51.5-11.4 67.2-31.1z" />
-        </svg>
+    <div className="min-h-screen bg-white pt-32 pb-20">
+      <div className="max-w-[1200px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 animate-pulse">
+        {/* --- SKELETON COLUMNA IZQUIERDA (Imagen) --- */}
+        <div className="lg:col-span-7">
+          <div className="sticky top-32 aspect-square bg-gray-100 rounded-[30px] w-full" />
+        </div>
+
+        {/* --- SKELETON COLUMNA DERECHA (Info) --- */}
+        <div className="lg:col-span-5 flex flex-col gap-8 pt-4">
+          {/* Título y Precio */}
+          <div>
+            <div className="h-4 w-20 bg-gray-200 rounded mb-4" />{" "}
+            {/* Tag "Nuevo" */}
+            <div className="h-12 w-3/4 bg-gray-200 rounded mb-4" />{" "}
+            {/* Título */}
+            <div className="h-10 w-1/3 bg-gray-200 rounded" /> {/* Precio */}
+          </div>
+
+          {/* Selector Color */}
+          <div>
+            <div className="h-4 w-16 bg-gray-200 rounded mb-3" />
+            <div className="flex gap-4">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="w-10 h-10 rounded-full bg-gray-200" />
+              ))}
+            </div>
+          </div>
+
+          {/* Selector Almacenamiento */}
+          <div className="space-y-3">
+            <div className="h-4 w-24 bg-gray-200 rounded mb-3" />
+            <div className="h-16 w-full bg-gray-100 rounded-xl" />
+            <div className="h-16 w-full bg-gray-100 rounded-xl" />
+          </div>
+
+          {/* Botón */}
+          <div className="mt-8 bg-gray-100 h-16 rounded-full w-full" />
+        </div>
       </div>
     </div>
   );

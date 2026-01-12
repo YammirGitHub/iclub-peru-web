@@ -1,20 +1,22 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google"; // Importamos Inter, la fuente más parecida a Apple SF Pro
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import CartSidebar from "@/components/layout/CartSidebar";
-import { SmoothScroll } from "@/components/ui/SmoothScroll";
+// Asegúrate de haber creado este archivo en el paso anterior
+import SmoothScrolling from "@/components/ui/SmoothScrolling";
 
-// Configuración "Tight" (Ajustada) para lograr el look premium
 const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-inter", // Variable CSS para usarla en Tailwind si es necesario
+  variable: "--font-inter",
   display: "swap",
 });
 
 export const metadata: Metadata = {
+  // Base URL para que las imágenes de redes sociales funcionen
+  metadataBase: new URL("https://iclub-peru.netlify.app"),
   title: "iClub Perú | Experiencia Apple en Chiclayo",
   description:
     "Tienda especializada en productos Apple en Chiclayo. Garantía real y soporte experto.",
@@ -26,17 +28,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className="scroll-smooth">
+    <html lang="es">
+      {/* Eliminado "scroll-smooth" para evitar conflictos con Lenis */}
       <body
         className={`${inter.className} antialiased bg-white text-[#1d1d1f]`}
       >
         <CartProvider>
-          <SmoothScroll>
+          <SmoothScrolling>
             <Navbar />
             <CartSidebar />
             <main>{children}</main>
             <Footer />
-          </SmoothScroll>
+          </SmoothScrolling>
         </CartProvider>
       </body>
     </html>

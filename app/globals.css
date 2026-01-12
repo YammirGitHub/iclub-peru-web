@@ -1,17 +1,26 @@
 @import "tailwindcss";
 
+/* --- 1. CONFIGURACIÓN DEL TEMA (Tailwind v4) --- */
 @theme {
-  /* Definición de la fuente Inter como la principal del sistema */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-
-  /* Colores de identidad Apple optimizados */
   --color-apple-blue: #0071e3;
   --color-apple-gray: #86868b;
   --color-apple-black: #1d1d1f;
+
+  --animate-fade-in: fade-in 0.5s ease-out;
+
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 1;
+    }
+  }
 }
 
-/* --- CLASES OBLIGATORIAS PARA LENIS SCROLL --- */
-/* Esto soluciona que el scroll se sienta trabado o no avance */
+/* --- 2. OPTIMIZACIÓN CRÍTICA: LENIS SMOOTH SCROLL (120Hz Fix) --- */
 html.lenis,
 html.lenis body {
   height: auto;
@@ -33,58 +42,69 @@ html.lenis body {
   pointer-events: none;
 }
 
-/* ------------------------------------------- */
-
+/* --- 3. ESTILOS BASE & RENDIMIENTO --- */
 @layer base {
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    /* ELIMINADO scroll-behavior: smooth para que Lenis tenga control total */
   }
 
   body {
     background-color: white;
     color: var(--color-apple-black);
     font-family: var(--font-sans);
-  }
-
-  h1,
-  h2,
-  h3,
-  h4 {
-    letter-spacing: -0.02em;
-    font-weight: 600;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
   }
 }
 
-/* --- BARRA DE SCROLL ESTILO MACOS --- */
-:root {
-  --sb-track-color: transparent;
-  --sb-thumb-color: #d1d1d6;
-  --sb-size: 8px;
+/* --- MODO RENDIMIENTO / 144HZ --- */
+main {
+  transform: translateZ(0);
+  will-change: transform;
 }
+
+img {
+  image-rendering: -webkit-optimize-contrast;
+  backface-visibility: hidden;
+}
+
+/* --- 4. SCROLLBAR "PRO ARCHITECTURAL" (Limpio y Pegado) --- */
 
 ::-webkit-scrollbar {
-  width: var(--sb-size);
+  /* 12px: El "Sweet Spot" del diseño UX. 
+     Ni muy grueso (tosco) ni muy fino (difícil de usar). */
+  width: 12px;
+  height: 12px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--sb-track-color);
+  background: white;
+  border: none;
+  margin: 0;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--sb-thumb-color);
-  border-radius: 10px;
+  /* COLOR: #d1d1d6 (Apple System Gray 4)
+     Es más visible que el #e5e5e5 pero sigue siendo muy sutil y limpio.
+     Se ve más "intencional" y menos "deslavado". */
+  background-color: #d1d1d6;
+
+  /* GEOMETRÍA: Cuadrado perfecto (Arquitectónico) */
+  border-radius: 0px;
+  border: none;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #86868b;
+  /* FEEDBACK VISUAL: Se oscurece ligeramente para confirmar que lo agarraste */
+  background-color: #a1a1a6;
 }
 
-/* --- OPTIMIZACIÓN DE GPU --- */
-.motion-safe-gpu {
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  will-change: transform;
+/* Compatibilidad Firefox */
+html {
+  scrollbar-width: thin;
+  /* Firefox usa una versión delgada por defecto que se ve muy pro */
+  scrollbar-color: #d1d1d6 white;
 }
