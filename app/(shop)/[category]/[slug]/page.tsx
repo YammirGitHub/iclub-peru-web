@@ -1,6 +1,6 @@
 import { getProductBySlug, getProductsByCategory } from "@/lib/products";
 import ProductView from "@/components/product/ProductView";
-import RelatedProducts from "@/components/product/RelatedProducts"; // Asegúrate de importar esto
+import RelatedProducts from "@/components/product/RelatedProducts"; // Importante para UX
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 
@@ -8,7 +8,7 @@ interface Props {
   params: Promise<{ category: string; slug: string }>;
 }
 
-// 1. GENERACIÓN DE METADATOS (SEO Nivel Senior)
+// 1. ESTO ES NIVEL SENIOR: Metadata Dinámica para SEO y WhatsApp
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const product = getProductBySlug(slug);
@@ -16,17 +16,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!product) {
     return {
       title: "Producto no encontrado",
-      description: "El producto que buscas no existe.",
     };
   }
 
   return {
-    title: `${product.name} - iClub Store`,
+    title: `${product.name} | iClub Perú`,
     description: product.description,
     openGraph: {
       title: product.name,
       description: product.description,
-      images: [product.image], // Usa la imagen principal para redes sociales
+      images: [product.image], // La imagen saldrá al compartir el link
     },
   };
 }
@@ -39,17 +38,18 @@ export default async function ProductPage({ params }: Props) {
     notFound();
   }
 
-  // 2. Lógica para productos relacionados (Excluyendo el actual)
+  // 2. Lógica para mostrar "Otros productos que te podrían gustar"
+  // Filtramos para no mostrar el mismo producto que ya estamos viendo
   const relatedProducts = getProductsByCategory(category)
     .filter((p) => p.id !== product.id)
     .slice(0, 3);
 
   return (
     <div className="bg-white">
-      {/* Pasamos el producto al componente interactivo */}
+      {/* Componente Interactivo Principal */}
       <ProductView product={product} />
 
-      {/* Sección de relacionados fuera del View principal para estructura limpia */}
+      {/* Sección de productos relacionados para mejorar la navegación */}
       <RelatedProducts products={relatedProducts} />
     </div>
   );

@@ -71,12 +71,26 @@ export default function Navbar() {
           {/* LOGO */}
           <Link
             href="/"
-            className="text-xl font-bold tracking-tighter text-[#1d1d1f] z-50 hover:opacity-70 transition-opacity"
+            className="group flex flex-col items-start z-50 hover:opacity-80 transition-opacity"
           >
-            iClub <span className="hidden sm:inline font-bold">Perú</span>
-            <span className="text-[#0071e3]">.</span>
-          </Link>
+            {/* Título Principal */}
+            <div className="flex items-center leading-none">
+              <span className="text-2xl font-bold tracking-tighter text-[#1d1d1f]">
+                iClub <span className="font-bold">Perú</span>
+              </span>
+              {/* El punto azul subido ligeramente para alineación óptica */}
+              <span className="text-[#0071e3] text-2xl font-bold leading-none mb-[2px]">
+                .
+              </span>
+            </div>
 
+            {/* Subtítulo */}
+            {/* hidden sm:block -> Oculta el subtítulo en celulares muy pequeños para no saturar, aparece en tablets/PC */}
+            {/* Si quieres que salga SIEMPRE, quita 'hidden sm:block' */}
+            <span className="text-[11px] text-[#86868b] font-medium tracking-wide -mt-[2px] hidden sm:block group-hover:text-[#0071e3] transition-colors">
+              Expertos en Apple
+            </span>
+          </Link>
           {/* MENÚ DESKTOP */}
           <motion.div
             variants={navContainerVariants}
