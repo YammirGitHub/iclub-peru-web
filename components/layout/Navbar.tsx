@@ -88,7 +88,9 @@ export default function Navbar() {
               <motion.div key={link.name} variants={navItemVariants}>
                 <Link
                   href={link.href}
-                  className="text-[13px] font-medium text-[#424245] hover:text-[#0071e3] transition-all duration-300 tracking-wide hover:scale-105 block"
+                  // CAMBIO: text-[13px] -> text-[12px] (un pelín más pequeño para que quepan todos)
+                  // CAMBIO: gap-8 -> gap-6 (en el contenedor padre reduce el espacio entre items)
+                  className="text-[12px] lg:text-[13px] font-medium text-[#424245] hover:text-[#0071e3] transition-all duration-300 tracking-wide hover:scale-105 block"
                 >
                   {link.name}
                 </Link>

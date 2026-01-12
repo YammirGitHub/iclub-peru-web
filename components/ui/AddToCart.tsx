@@ -10,11 +10,14 @@ export default function AddToCart({ product }: { product: Product }) {
   const [isAdded, setIsAdded] = useState(false);
 
   const handleAdd = () => {
+    // CORRECCIÓN AQUÍ:
+    // 1. Usamos 'basePrice' en lugar de 'price'
+    // 2. Usamos la imagen del primer color disponible (colors[0].image)
     addToCart({
       id: product.id,
       title: product.title,
-      price: product.price,
-      image: product.image,
+      price: product.basePrice,
+      image: product.colors[0].image,
       quantity: 1,
     });
 

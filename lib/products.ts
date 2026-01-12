@@ -1,15 +1,5 @@
-export interface Product {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  category: 'iphone' | 'mac' | 'ipad' | 'watch' | 'airpods' | 'accesorios';
-  slug: string;
-  image: string;
-  stock: number;
-}
+// @/lib/products.ts
 
-// Menú de navegación centralizado
 export const NAV_LINKS = [
   { name: "Mac", href: "/mac" },
   { name: "iPad", href: "/ipad" },
@@ -17,76 +7,93 @@ export const NAV_LINKS = [
   { name: "Watch", href: "/watch" },
   { name: "AirPods", href: "/airpods" },
   { name: "Accesorios", href: "/accesorios" },
+  { name: "Certificados", href: "/certificados" },
   { name: "Soporte", href: "/soporte" },
 ];
 
-export const products: Product[] = [
-  // --- MACS ---
+// --- INTERFACES ---
+
+export interface ProductVariant {
+  label: string;
+  priceModifier: number;
+}
+
+export interface ProductColor {
+  name: string;
+  hex: string;
+  image: string;
+}
+
+export interface Product {
+  id: string;
+  slug: string;
+  category: string;
+  title: string;
+  description: string;
+  basePrice: number;
+  features: string[];
+  colors: ProductColor[];
+  storageOptions: ProductVariant[];
+}
+
+// --- BASE DE DATOS (MOCK) ---
+
+export const PRODUCTS: Product[] = [
   {
-    id: 'mac-1',
-    title: 'MacBook Air M3 13"',
-    description: 'La laptop más popular del mundo. Superpotenciada por el chip M3.',
-    price: 5299,
-    category: 'mac',
-    slug: 'macbook-air-m3-13',
-    image: '/products/macbook-air.webp', // Asegúrate de tener esta imagen
-    stock: 10,
+    id: "1",
+    slug: "macbook-pro-m4",
+    category: "mac",
+    title: "MacBook Pro M4",
+    description: "La laptop más pro de todas. Rendimiento salvaje y una batería que dura todo el día.",
+    basePrice: 7999,
+    features: ["Chip M4 Pro o M4 Max", "Pantalla Liquid Retina XDR", "Hasta 22 horas de batería"],
+    colors: [
+      { name: "Negro Espacial", hex: "#2e2c2e", image: "/products/macbook-pro-black.png" },
+      { name: "Plata", hex: "#e3e4e5", image: "/products/macbook-pro-silver.png" },
+    ],
+    storageOptions: [
+      { label: "512 GB SSD", priceModifier: 0 },
+      { label: "1 TB SSD", priceModifier: 900 },
+      { label: "2 TB SSD", priceModifier: 2700 },
+    ],
   },
   {
-    id: 'mac-2',
-    title: 'MacBook Pro 14" M3 Pro',
-    description: 'Lo bestia. Chip M3 Pro, pantalla Liquid Retina XDR y hasta 22 horas de batería.',
-    price: 8999,
-    category: 'mac',
-    slug: 'macbook-pro-14-m3-pro',
-    image: '/products/macbook-pro.webp', 
-    stock: 5,
+    id: "2",
+    slug: "iphone-15-pro",
+    category: "iphone",
+    title: "iPhone 15 Pro",
+    description: "Titanio. Tan fuerte. Tan ligero. Tan Pro.",
+    basePrice: 5499,
+    features: ["Chip A17 Pro", "Sistema de cámaras Pro", "Botón de Acción"],
+    colors: [
+      { name: "Titanio Natural", hex: "#bdae9c", image: "/products/iphone-15-natural.png" },
+      { name: "Titanio Azul", hex: "#2f3846", image: "/products/iphone-15-blue.png" },
+      { name: "Titanio Negro", hex: "#181819", image: "/products/iphone-15-black.png" },
+    ],
+    storageOptions: [
+      { label: "128 GB", priceModifier: 0 },
+      { label: "256 GB", priceModifier: 500 },
+      { label: "512 GB", priceModifier: 1500 },
+    ],
   },
-  // --- IPHONES ---
-  {
-    id: 'iphone-1',
-    title: 'iPhone 15 Pro Max',
-    description: 'Titanio. Chip A17 Pro. El iPhone más potente hasta la fecha.',
-    price: 6499,
-    category: 'iphone',
-    slug: 'iphone-15-pro-max',
-    image: '/products/iphone-hero-v3.webp', 
-    stock: 15,
-  },
-  {
-    id: 'iphone-2',
-    title: 'iPhone 15',
-    description: 'Dynamic Island. Cámara de 48 MP. Diseño resistente de aluminio y vidrio.',
-    price: 4299,
-    category: 'iphone',
-    slug: 'iphone-15',
-    image: '/products/iphone-15.webp', 
-    stock: 20,
-  },
-  // --- IPADS ---
-  {
-    id: 'ipad-1',
-    title: 'iPad Pro 12.9" M2',
-    description: 'La experiencia definitiva de iPad con pantalla XDR y potencia M2.',
-    price: 5999,
-    category: 'ipad',
-    slug: 'ipad-pro-12-m2',
-    image: '/products/ipad-pro.webp', 
-    stock: 8,
-  }
+  // Agrega más productos aquí según necesites
 ];
 
-// --- HELPERS (Lógica de Negocio) ---
+// --- HELPERS / FUNCIONES ---
 
-export const getProductsByCategory = (category: string) => {
-  return products.filter(product => product.category === category);
-};
+export const getProductsByCategory = (category: string) => 
+  PRODUCTS.filter((p) => p.category === category);
 
-export const getProductBySlug = (slug: string) => {
-  return products.find(product => product.slug === slug);
-};
+export const getProductBySlug = (slug: string) => 
+  PRODUCTS.find((p) => p.slug === slug);
 
-export const getAllCategories = () => {
-  const categories = Array.from(new Set(products.map(product => product.category)));
-  return categories;
-};
+export async function getAllCategories() {
+  // 1. Obtenemos todas las categorías usando la constante PRODUCTS (en mayúsculas)
+  const categories = PRODUCTS.map((product) => product.category);
+  
+  // 2. Usamos 'Set' para eliminar duplicados
+  const uniqueCategories = new Set(categories);
+  
+  // 3. Devolvemos el array limpio
+  return Array.from(uniqueCategories);
+}

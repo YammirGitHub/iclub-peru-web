@@ -3,12 +3,13 @@ import { MetadataRoute } from "next";
 import { getAllCategories, getProductsByCategory } from "@/lib/products";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // IMPORTANTE: Cambia esto por tu dominio real de Netlify cuando lo tengas (ej: https://iclub-peru.netlify.app)
+  // IMPORTANTE: Asegúrate de que este sea tu dominio final.
+  // Corregí el typo "iclud" -> "iclub"
   const baseUrl = "https://iclub-peru.netlify.app";
 
   // 1. Páginas estáticas principales
   const routes = [
-    "", // Home
+    "",         // Home
     "/soporte", // Página de soporte
   ].map((route) => ({
     url: `${baseUrl}${route}`,
@@ -17,8 +18,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 1,
   }));
 
-  // 2. Categorías Dinámicas (/mac, /iphone)
+  // 2. Obtener categorías (Esta función sí es async en tu products.ts)
   const categories = await getAllCategories();
+
+  // Generar URLs de Categorías (/mac, /iphone, etc.)
   const categoryUrls = categories.map((cat) => ({
     url: `${baseUrl}/${cat}`,
     lastModified: new Date(),
@@ -26,18 +29,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  // 3. Productos individuales (/mac/macbook-pro)
+  // 3. Productos individuales (/mac/macbook-pro-m4)
   let productUrls: MetadataRoute.Sitemap = [];
+
   for (const cat of categories) {
-    const products = await getProductsByCategory(cat);
+    // Esta función es síncrona en products.ts, así que no necesita await
+    const products = getProductsByCategory(cat);
+    
     const pUrls = products.map((product) => ({
       url: `${baseUrl}/${cat}/${product.slug}`,
       lastModified: new Date(),
       changeFrequency: "weekly" as const,
       priority: 0.6,
     }));
+    
     productUrls = [...productUrls, ...pUrls];
   }
 
+  // Fusionamos todo en un solo array para Google
   return [...routes, ...categoryUrls, ...productUrls];
 }
