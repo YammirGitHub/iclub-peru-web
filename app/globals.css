@@ -108,3 +108,24 @@ html {
   /* Firefox usa una versión delgada por defecto que se ve muy pro */
   scrollbar-color: #d1d1d6 white;
 }
+
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  /* Hace que la fuente se vea nítida en Mac */
+}
+
+/* Ocultar barra de scroll fea pero permitir scroll */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+}

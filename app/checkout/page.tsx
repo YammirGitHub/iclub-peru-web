@@ -1,17 +1,18 @@
 "use client";
 
 import { useCart } from "@/context/CartContext";
-import { useState, useRef } from "react"; // Importamos useRef
+import { useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import Logo from "@/components/ui/Logo"; // ✅ Ahora sí funcionará
 import {
   MessageCircle,
   User,
   MapPin,
-  Phone,
-  ShoppingBag,
+  ArrowLeft,
   ArrowRight,
   ShieldCheck,
+  ShoppingBag,
   ChevronRight,
   AlertCircle,
 } from "lucide-react";
@@ -61,7 +62,7 @@ export default function CheckoutPage() {
   const { cart } = useCart();
   const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-  // --- REFERENCIAS PARA EL FOCUS AUTOMÁTICO ---
+  // --- REFERENCIAS ---
   const nameInputRef = useRef<HTMLInputElement>(null);
   const phoneInputRef = useRef<HTMLInputElement>(null);
   const districtInputRef = useRef<HTMLSelectElement>(null);
@@ -114,7 +115,6 @@ export default function CheckoutPage() {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-
     if (name === "phone") {
       const numericValue = value.replace(/\D/g, "");
       if (numericValue.length > 9) return;
@@ -144,35 +144,27 @@ export default function CheckoutPage() {
     formData.district !== "" &&
     formData.address.length > 0;
 
-  // --- LÓGICA DEL BOTÓN INTELIGENTE ---
   const handleSmartClick = () => {
-    // Si el formulario ES válido, procedemos a WhatsApp
     if (isFormValid) {
       const url = createWhatsAppMessage(cart, formData, total);
       window.open(url, "_blank");
       return;
     }
-
-    // Si NO es válido, llevamos el cursor al primer campo con error o vacío
-    // 1. Validar Nombre
     if (!formData.name || errors.name) {
       nameInputRef.current?.focus();
-      setTouched((prev) => ({ ...prev, name: true })); // Opcional: mostrar error
+      setTouched((prev) => ({ ...prev, name: true }));
       return;
     }
-    // 2. Validar Teléfono
     if (!formData.phone || errors.phone) {
       phoneInputRef.current?.focus();
       setTouched((prev) => ({ ...prev, phone: true }));
       return;
     }
-    // 3. Validar Distrito
     if (!formData.district || errors.district) {
       districtInputRef.current?.focus();
       setTouched((prev) => ({ ...prev, district: true }));
       return;
     }
-    // 4. Validar Dirección
     if (!formData.address || errors.address) {
       addressInputRef.current?.focus();
       setTouched((prev) => ({ ...prev, address: true }));
@@ -184,17 +176,14 @@ export default function CheckoutPage() {
     const hasError = touched[fieldName] && errors[fieldName];
     const base =
       "w-full p-4 bg-[#F5F5F7] border-2 rounded-2xl text-[#1d1d1f] placeholder-gray-400 outline-none transition-all font-medium text-base";
-
-    if (hasError) {
+    if (hasError)
       return `${base} border-red-500/50 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 bg-red-50/50`;
-    }
     return `${base} border-transparent focus:bg-white focus:border-[#0071e3]/20 focus:ring-4 focus:ring-[#0071e3]/10`;
   };
 
   if (cart.length === 0) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#F5F5F7] px-6 text-center">
-        {/* ... (Contenido de bolsa vacía igual que antes) ... */}
         <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-6 shadow-xl shadow-black/5 animate-fade-in-up">
           <ShoppingBag size={40} className="text-[#86868b]" />
         </div>
@@ -215,10 +204,23 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F5F7] pt-32 pb-24 transition-colors">
+    <div className="min-h-screen bg-[#F5F5F7] pt-12 pb-24 transition-colors">
+      {/* 1. LOGO DE MARCA REUTILIZABLE */}
+      <div className="flex justify-center mb-8 pt-6">
+        <Logo />
+      </div>
+
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
         {/* --- COLUMNA 1: FORMULARIO --- */}
         <div className="lg:col-span-7 space-y-6">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-[#0071e3] transition-colors pl-1 mb-4"
+          >
+            <ArrowLeft size={16} />
+            Volver a la tienda
+          </Link>
+
           <div className="flex items-center gap-3 mb-2 px-1">
             <h1 className="text-3xl font-semibold text-[#1d1d1f] tracking-tight">
               Finalizar Pedido
@@ -241,13 +243,12 @@ export default function CheckoutPage() {
             </div>
 
             <form className="space-y-6" autoComplete="off">
-              {/* Input: Nombre */}
               <div className="group">
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">
                   Nombre Completo
                 </label>
                 <input
-                  ref={nameInputRef} // Conectamos la referencia
+                  ref={nameInputRef}
                   type="text"
                   name="name"
                   value={formData.name}
@@ -264,29 +265,28 @@ export default function CheckoutPage() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {/* Input: Teléfono */}
                 <div className="group">
                   <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">
                     Celular / WhatsApp
                   </label>
                   <div className="relative">
-                    <Phone
-                      className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${
-                        touched.phone && errors.phone
-                          ? "text-red-400"
-                          : "text-gray-400 group-focus-within:text-[#0071e3]"
-                      }`}
-                      size={20}
-                    />
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2 border-r border-gray-200 pr-3 h-6 text-gray-400 select-none">
+                      <span className="text-lg leading-none filter grayscale opacity-80">
+                        🇵🇪
+                      </span>
+                      <span className="text-gray-500 font-medium text-sm">
+                        +51
+                      </span>
+                    </div>
                     <input
-                      ref={phoneInputRef} // Conectamos la referencia
+                      ref={phoneInputRef}
                       type="tel"
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       maxLength={9}
-                      className={`${getInputClasses("phone")} pl-12`}
+                      className={`${getInputClasses("phone")} pl-28`}
                       placeholder="999 999 999"
                     />
                   </div>
@@ -297,7 +297,6 @@ export default function CheckoutPage() {
                   )}
                 </div>
 
-                {/* Input: Distrito */}
                 <div className="group">
                   <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">
                     Distrito
@@ -312,7 +311,7 @@ export default function CheckoutPage() {
                       size={20}
                     />
                     <select
-                      ref={districtInputRef} // Conectamos la referencia
+                      ref={districtInputRef}
                       name="district"
                       value={formData.district}
                       onChange={handleChange}
@@ -338,13 +337,12 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {/* Input: Dirección */}
               <div className="group">
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">
                   Dirección Exacta
                 </label>
                 <input
-                  ref={addressInputRef} // Conectamos la referencia
+                  ref={addressInputRef}
                   type="text"
                   name="address"
                   value={formData.address}
@@ -361,14 +359,32 @@ export default function CheckoutPage() {
               </div>
             </form>
           </div>
-          {/* ...Footer form... */}
+
+          <div className="flex items-center justify-center gap-2 text-xs text-gray-400 opacity-80">
+            <ShieldCheck size={14} />
+            <span>Tus datos están protegidos y viajan encriptados.</span>
+          </div>
         </div>
 
         {/* --- COLUMNA 2: RESUMEN (Sticky & Smart) --- */}
         <div className="lg:col-span-5">
-          {/* ...Contenido del resumen (Lista de items y total) igual que antes... */}
           <div className="bg-white p-8 rounded-[32px] shadow-xl shadow-gray-200/50 sticky top-32 border border-gray-100/50">
-            {/* ...Items... */}
+            {/* Header Resumen con Editar */}
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-semibold text-[#1d1d1f] flex items-center gap-2">
+                Resumen
+                <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                  {cart.length}
+                </span>
+              </h2>
+              <Link
+                href="/"
+                className="text-sm font-medium text-[#0071e3] hover:underline transition-colors"
+              >
+                Editar
+              </Link>
+            </div>
+
             <div className="space-y-4 mb-8 max-h-[40vh] overflow-y-auto custom-scrollbar pr-2">
               {cart.map((item) => (
                 <div
@@ -413,15 +429,13 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {/* AQUÍ ESTÁ EL BOTÓN INTELIGENTE MODIFICADO */}
             <div className="mt-8 relative">
               <button
-                onClick={handleSmartClick} // Usamos el nuevo handler inteligente
-                // Eliminamos disabled={!isFormValid} para que siempre sea clickeable
+                onClick={handleSmartClick}
                 className={`w-full py-4 rounded-full font-bold text-[15px] flex items-center justify-center gap-3 transition-all duration-300 shadow-lg group ${
                   isFormValid
                     ? "bg-[#25D366] hover:bg-[#1EBE57] text-white hover:scale-[1.02] hover:shadow-green-500/40 cursor-pointer"
-                    : "bg-gray-100 text-gray-400 cursor-pointer shadow-none" // Mantiene aspecto gris pero es clickeable
+                    : "bg-gray-100 text-gray-400 cursor-pointer shadow-none"
                 }`}
               >
                 {isFormValid ? (
@@ -441,7 +455,6 @@ export default function CheckoutPage() {
                   </>
                 )}
               </button>
-
               <div className="mt-4 bg-gray-50 p-4 rounded-2xl border border-gray-100">
                 <p className="text-[11px] text-center text-gray-400 leading-relaxed font-medium">
                   🔒 Al enviar, un asesor verificará el stock en tiempo real y

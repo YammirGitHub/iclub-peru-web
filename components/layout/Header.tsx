@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { ShoppingBag, Search } from "lucide-react"; // Quitamos Menu y X, los haremos a mano
+import { ShoppingBag, Search } from "lucide-react";
 import { motion, AnimatePresence, Variants, MotionConfig } from "framer-motion";
 import { useCart } from "@/context/CartContext";
 import { NAV_LINKS } from "@/lib/products";
+import Logo from "@/components/ui/Logo"; // <--- 1. IMPORTACIÓN NUEVA
 
 // --- ANIMACIONES DE ENTRADA PARA LOS LINKS ---
 const navContainerVariants: Variants = {
@@ -68,27 +69,11 @@ export default function Navbar() {
               : "w-full max-w-7xl bg-transparent border-transparent"
           }`}
         >
-          {/* LOGO */}
-          <Link
-            href="/"
-            className="group flex flex-col items-start z-50 hover:opacity-80 transition-opacity"
-          >
-            {/* Título Principal */}
-            <div className="flex items-center leading-none">
-              <span className="text-2xl font-bold tracking-tighter text-[#1d1d1f]">
-                iClub <span className="font-bold">Perú</span>
-              </span>
-              <span className="text-[#0071e3] text-2xl font-bold leading-none mb-[2px]">
-                .
-              </span>
-            </div>
+          {/* 2. REEMPLAZO DEL LOGO (Mucho más limpio) */}
+          <div className="z-50">
+            <Logo />
+          </div>
 
-            {/* Subtítulo VISIBLE SIEMPRE */}
-            {/* Se eliminó 'hidden' y 'sm:block' */}
-            <span className="text-[11px] text-[#86868b] font-medium tracking-wide -mt-[2px] group-hover:text-[#0071e3] transition-colors">
-              Expertos en Apple
-            </span>
-          </Link>
           {/* MENÚ DESKTOP */}
           <motion.div
             variants={navContainerVariants}
@@ -100,8 +85,6 @@ export default function Navbar() {
               <motion.div key={link.name} variants={navItemVariants}>
                 <Link
                   href={link.href}
-                  // CAMBIO: text-[13px] -> text-[12px] (un pelín más pequeño para que quepan todos)
-                  // CAMBIO: gap-8 -> gap-6 (en el contenedor padre reduce el espacio entre items)
                   className="text-[12px] lg:text-[13px] font-medium text-[#424245] hover:text-[#0071e3] transition-all duration-300 tracking-wide hover:scale-105 block"
                 >
                   {link.name}
@@ -137,7 +120,7 @@ export default function Navbar() {
               )}
             </motion.button>
 
-            {/* --- NUEVO SANGUCHE ANIMADO (MORPHING) --- */}
+            {/* SANGUCHE ANIMADO */}
             <MotionConfig
               transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             >
@@ -145,31 +128,26 @@ export default function Navbar() {
                 initial={false}
                 animate={isMobileMenuOpen ? "open" : "closed"}
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden relative h-10 w-10 rounded-full hover:bg-black/5 transition-colors flex flex-col justify-center items-center gap-[5px]" // gap controla la separación
+                className="md:hidden relative h-10 w-10 rounded-full hover:bg-black/5 transition-colors flex flex-col justify-center items-center gap-[5px]"
               >
-                {/* LÍNEA SUPERIOR */}
                 <motion.span
                   variants={{
                     closed: { rotate: 0, y: 0 },
-                    open: { rotate: 45, y: 7 }, // Baja y gira
+                    open: { rotate: 45, y: 7 },
                   }}
                   className="w-5 h-[2px] bg-[#1d1d1f] rounded-full block origin-center"
                 />
-
-                {/* LÍNEA DEL MEDIO */}
                 <motion.span
                   variants={{
                     closed: { opacity: 1, x: 0 },
-                    open: { opacity: 0, x: 20 }, // Se desvanece hacia la derecha
+                    open: { opacity: 0, x: 20 },
                   }}
                   className="w-5 h-[2px] bg-[#1d1d1f] rounded-full block"
                 />
-
-                {/* LÍNEA INFERIOR */}
                 <motion.span
                   variants={{
                     closed: { rotate: 0, y: 0 },
-                    open: { rotate: -45, y: -7 }, // Sube y gira
+                    open: { rotate: -45, y: -7 },
                   }}
                   className="w-5 h-[2px] bg-[#1d1d1f] rounded-full block origin-center"
                 />
@@ -179,7 +157,7 @@ export default function Navbar() {
         </div>
       </motion.nav>
 
-      {/* MENÚ MÓVIL (Sin cambios, solo funciona con el nuevo botón) */}
+      {/* MENÚ MÓVIL */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
