@@ -100,7 +100,7 @@ export default function SoportePage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {services.map((service) => (
             <a
-              href={`https://wa.me/51945341516?text=Hola iClub, quiero cotizar el servicio de: ${service.name}`}
+              href={`https://wa.me/51953654313text=Hola iClub, quiero cotizar el servicio de: ${service.name}`}
               target="_blank"
               key={service.id}
               // h-full y cursor-pointer

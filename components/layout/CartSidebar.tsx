@@ -178,7 +178,8 @@ export default function CartSidebar() {
 
                 <Link href="/checkout" onClick={toggleCart}>
                   <button className="w-full bg-[#0071e3] text-white py-4 rounded-full font-medium text-lg hover:bg-[#0077ED] transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 active:scale-[0.98]">
-                    Pagar Ahora <ArrowRight size={20} />
+                    Continuar
+                    <ArrowRight size={20} />
                   </button>
                 </Link>
                 <p className="text-center text-[10px] text-gray-400 mt-4 flex items-center justify-center gap-1">
