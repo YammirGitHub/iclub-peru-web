@@ -1,7 +1,16 @@
 "use client";
 
 import { useCart } from "@/context/CartContext";
-import { X, Trash2, ShoppingBag, ArrowRight, Minus, Plus } from "lucide-react";
+// CORRECCIÓN: Agregué ShieldCheck a los imports
+import {
+  X,
+  Trash2,
+  ShoppingBag,
+  ArrowRight,
+  Minus,
+  Plus,
+  ShieldCheck,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -119,7 +128,7 @@ export default function CartSidebar() {
                           {item.title}
                         </h3>
                         <p className="text-sm text-gray-500 mt-1">
-                          {/* BLINDAJE ANTI-NAN: Usamos (item.price || 0) */}
+                          {/* BLINDAJE ANTI-NAN */}
                           S/{" "}
                           {(item.price || 0).toLocaleString("es-PE", {
                             minimumFractionDigits: 2,
@@ -130,7 +139,7 @@ export default function CartSidebar() {
                       {/* Controles Cantidad */}
                       <div className="flex items-center justify-between mt-2">
                         <div className="flex items-center gap-3 bg-gray-50 rounded-full px-2 py-1">
-                          {/* Botón Menos (Decorativo si no tienes updateQuantity) */}
+                          {/* Botón Menos */}
                           <button
                             className="p-1 hover:bg-white rounded-full transition-colors disabled:opacity-50"
                             disabled={item.quantity <= 1}
@@ -142,7 +151,7 @@ export default function CartSidebar() {
                             {item.quantity}
                           </span>
 
-                          {/* Botón Más (Usa addToCart para sumar) */}
+                          {/* Botón Más */}
                           <button
                             onClick={() => addToCart(item)}
                             className="p-1 hover:bg-white rounded-full transition-colors"
@@ -172,21 +181,15 @@ export default function CartSidebar() {
                   <div className="flex justify-between text-sm text-gray-500">
                     <span>Subtotal</span>
                     <span>
-                      {/* BLINDAJE ANTI-NAN EN TOTALES */}
                       S/{" "}
                       {(cartTotal || 0).toLocaleString("es-PE", {
                         minimumFractionDigits: 2,
                       })}
                     </span>
                   </div>
-                  <div className="flex justify-between text-sm text-gray-500">
-                    <span>Envío</span>
-                    <span className="text-green-600 font-medium">Gratis</span>
-                  </div>
                   <div className="flex justify-between text-xl font-semibold text-[#1d1d1f] pt-2 border-t border-gray-100">
                     <span>Total</span>
                     <span>
-                      {/* BLINDAJE ANTI-NAN EN TOTALES */}
                       S/{" "}
                       {(cartTotal || 0).toLocaleString("es-PE", {
                         minimumFractionDigits: 2,
@@ -195,15 +198,17 @@ export default function CartSidebar() {
                   </div>
                 </div>
 
+                {/* AQUÍ ESTÁ BIEN: Llevamos al usuario al Checkout */}
                 <Link href="/checkout" onClick={toggleCart}>
                   <button className="w-full bg-[#0071e3] text-white py-4 rounded-full font-medium text-lg hover:bg-[#0077ED] transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 active:scale-[0.98]">
                     Continuar
                     <ArrowRight size={20} />
                   </button>
                 </Link>
-                <p className="text-center text-[10px] text-gray-400 mt-4 flex items-center justify-center gap-1">
-                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                  Pagos encriptados y seguros
+                <p className="mt-4 flex justify-center gap-4 text-[10px] text-gray-400">
+                  <span className="flex items-center gap-1">
+                    <ShieldCheck size={12} /> Compra Segura
+                  </span>
                 </p>
               </div>
             )}

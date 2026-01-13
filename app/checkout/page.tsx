@@ -4,7 +4,9 @@ import { useCart } from "@/context/CartContext";
 import { useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import Logo from "@/components/ui/Logo"; // ✅ Ahora sí funcionará
+import Logo from "@/components/ui/Logo";
+// Si no tienes el componente Logo, cambia esto por una etiqueta <img /> o texto
+// import Logo from "@/components/ui/Logo";
 import {
   MessageCircle,
   User,
@@ -15,54 +17,18 @@ import {
   ShoppingBag,
   ChevronRight,
   AlertCircle,
+  Lock,
 } from "lucide-react";
 
-// ---------------------------------------------------------
-// 1. GENERADOR DE MENSAJE WHATSAPP
-// ---------------------------------------------------------
-const createWhatsAppMessage = (cart: any[], formData: any, total: number) => {
-  const orderId = `WEB-${Math.floor(Math.random() * 10000)
-    .toString()
-    .padStart(4, "0")}`;
-
-  const itemsList = cart
-    .map((item) => `▪️ ${item.title || item.name} (x${item.quantity})`)
-    .join("\n");
-
-  const message = `
-👋 *Hola iClub, soy ${formData.name.split(" ")[0]}!*
-Vengo de su tienda online y quiero cerrar este pedido:
-
-🧾 *TICKET DE PEDIDO: ${orderId}*
-━━━━━━━━━━━━━━━━━━━━
-${itemsList}
-━━━━━━━━━━━━━━━━━━━━
-💰 *TOTAL FINAL: S/ ${total.toLocaleString("en-US")}*
-
-📍 *MIS DATOS DE ENTREGA:*
-▪️ Cliente: ${formData.name}
-▪️ Fono: ${formData.phone}
-▪️ Ubicación: ${formData.district} 
-   └ ${formData.address}
-
-💳 *MÉTODO DE PAGO:*
-Prefiero: Transferencia / Yape / Plin
-
-🚀 *Quedo atento a su confirmación de stock para proceder con el pago.*
-`.trim();
-
-  const baseUrl = "https://api.whatsapp.com/send";
-  const phone = "51953654313";
-  const encodedMessage = encodeURIComponent(message);
-
-  return `${baseUrl}?phone=${phone}&text=${encodedMessage}`;
-};
+import { generateWhatsAppLink } from "@/lib/whatsapp";
 
 export default function CheckoutPage() {
   const { cart } = useCart();
+
+  // Cálculo del total
   const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-  // --- REFERENCIAS ---
+  // --- REFERENCIAS PARA FOCUS ---
   const nameInputRef = useRef<HTMLInputElement>(null);
   const phoneInputRef = useRef<HTMLInputElement>(null);
   const districtInputRef = useRef<HTMLSelectElement>(null);
@@ -115,7 +81,9 @@ export default function CheckoutPage() {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
+
     if (name === "phone") {
+      // Solo números para el teléfono
       const numericValue = value.replace(/\D/g, "");
       if (numericValue.length > 9) return;
       setFormData({ ...formData, [name]: numericValue });
@@ -144,12 +112,25 @@ export default function CheckoutPage() {
     formData.district !== "" &&
     formData.address.length > 0;
 
+  // --- LÓGICA DE ENVÍO ---
   const handleSmartClick = () => {
+    // 1. Si el formulario es válido, enviamos
     if (isFormValid) {
-      const url = createWhatsAppMessage(cart, formData, total);
+      // Mapeamos los datos para que coincidan con la interfaz de lib/whatsapp.ts
+      const customerData = {
+        name: formData.name,
+        phone: formData.phone,
+        city: formData.district, // Mapeamos distrito a city
+        address: formData.address,
+        paymentMethod: "A coordinar",
+      };
+
+      const url = generateWhatsAppLink(cart, total, customerData);
       window.open(url, "_blank");
       return;
     }
+
+    // 2. Si no es válido, hacemos foco en el primer error (UX Pro)
     if (!formData.name || errors.name) {
       nameInputRef.current?.focus();
       setTouched((prev) => ({ ...prev, name: true }));
@@ -181,6 +162,7 @@ export default function CheckoutPage() {
     return `${base} border-transparent focus:bg-white focus:border-[#0071e3]/20 focus:ring-4 focus:ring-[#0071e3]/10`;
   };
 
+  // --- VISTA VACÍA ---
   if (cart.length === 0) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#F5F5F7] px-6 text-center">
@@ -204,10 +186,14 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F5F7] pt-12 pb-24 transition-colors">
-      {/* 1. LOGO DE MARCA REUTILIZABLE */}
-      <div className="flex justify-center mb-8 pt-6">
-        <Logo />
+    <div className="min-h-screen bg-[#F5F5F7] pt-8 pb-24 transition-colors">
+      {/* 1. HEADER SIMPLE (Si no tienes Logo, pon texto) */}
+      {/* 1. HEADER CON LOGO DE MARCA */}
+      <div className="flex justify-center mb-10 pt-4">
+        {/* Usamos tu componente Logo. Puedes ajustar el tamaño con scale si lo ves muy chico */}
+        <div className="transform scale-110">
+          <Logo />
+        </div>
       </div>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
@@ -242,7 +228,11 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            <form className="space-y-6" autoComplete="off">
+            <form
+              className="space-y-6"
+              autoComplete="off"
+              onSubmit={(e) => e.preventDefault()}
+            >
               <div className="group">
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">
                   Nombre Completo
@@ -377,6 +367,7 @@ export default function CheckoutPage() {
                   {cart.length}
                 </span>
               </h2>
+              {/* Esta acción debería abrir el Sidebar, pero como Link a root funciona */}
               <Link
                 href="/"
                 className="text-sm font-medium text-[#0071e3] hover:underline transition-colors"
@@ -455,10 +446,13 @@ export default function CheckoutPage() {
                   </>
                 )}
               </button>
-              <div className="mt-4 bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                <p className="text-[11px] text-center text-gray-400 leading-relaxed font-medium">
-                  🔒 Al enviar, un asesor verificará el stock en tiempo real y
-                  te proporcionará las cuentas bancarias seguras.
+
+              <div className="mt-4 bg-gray-50 p-4 rounded-2xl border border-gray-100 flex items-start gap-3">
+                <Lock size={16} className="text-gray-400 mt-0.5 shrink-0" />
+                <p className="text-[11px] text-gray-400 leading-relaxed font-medium">
+                  Al enviar, un asesor verificará el stock en tiempo real y te
+                  proporcionará las cuentas bancarias seguras (BCP, Interbank,
+                  Yape).
                 </p>
               </div>
             </div>
