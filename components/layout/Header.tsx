@@ -5,8 +5,19 @@ import { useState, useEffect } from "react";
 import { ShoppingBag, Search } from "lucide-react";
 import { motion, AnimatePresence, Variants, MotionConfig } from "framer-motion";
 import { useCart } from "@/context/CartContext";
-import { NAV_LINKS } from "@/lib/products";
-import Logo from "@/components/ui/Logo"; // <--- 1. IMPORTACIÓN NUEVA
+// import { NAV_LINKS } from "@/lib/products"; <--- ELIMINAMOS ESTA LÍNEA QUE DABA ERROR
+import Logo from "@/components/ui/Logo";
+
+// --- 1. DEFINIMOS LOS LINKS AQUÍ MISMO PARA EVITAR ERRORES DE IMPORTACIÓN ---
+const NAV_LINKS = [
+  { name: "Tienda", href: "/" },
+  { name: "Mac", href: "/mac" },
+  { name: "iPad", href: "/ipad" },
+  { name: "iPhone", href: "/iphone" },
+  { name: "Watch", href: "/watch" },
+  { name: "AirPods", href: "/airpods" },
+  { name: "Accesorios", href: "/accesorios" },
+];
 
 // --- ANIMACIONES DE ENTRADA PARA LOS LINKS ---
 const navContainerVariants: Variants = {
@@ -69,7 +80,7 @@ export default function Navbar() {
               : "w-full max-w-7xl bg-transparent border-transparent"
           }`}
         >
-          {/* 2. REEMPLAZO DEL LOGO (Mucho más limpio) */}
+          {/* LOGO */}
           <div className="z-50">
             <Logo />
           </div>
@@ -120,7 +131,7 @@ export default function Navbar() {
               )}
             </motion.button>
 
-            {/* SANGUCHE ANIMADO */}
+            {/* SANGUCHE ANIMADO (Mobile Toggle) */}
             <MotionConfig
               transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             >

@@ -79,7 +79,7 @@ const categoryStyles: Record<
 // --- DICCIONARIO DE TÍTULOS (Para arreglar "Ipad" -> "iPad") ---
 const categoryTitles: Record<string, string> = {
   iphone: "iPhone",
-  ipad: "iPad", // <--- Aquí forzamos la escritura correcta
+  ipad: "iPad",
   mac: "Mac",
   watch: "Apple Watch",
   airpods: "AirPods",
@@ -91,7 +91,7 @@ export default async function CategoryPage({ params }: Props) {
   const { category } = await params;
   const validCategories = getAllCategories();
 
-  if (!validCategories.includes(category)) {
+  if (!validCategories.includes(category as any)) {
     notFound();
   }
 
@@ -106,7 +106,7 @@ export default async function CategoryPage({ params }: Props) {
     badgeTextColor: "text-blue-600",
   };
 
-  // 2. Obtener título correcto (Soluciona el bug de "Ipad")
+  // 2. Obtener título correcto
   const title =
     categoryTitles[category] ||
     category.charAt(0).toUpperCase() + category.slice(1);
@@ -128,7 +128,6 @@ export default async function CategoryPage({ params }: Props) {
           >
             {styles.subtitle}
           </span>
-          {/* Título corregido */}
           <h1 className="text-5xl font-semibold text-[#1d1d1f] mb-4 tracking-tight">
             {title}
           </h1>
@@ -150,7 +149,8 @@ export default async function CategoryPage({ params }: Props) {
                 <span
                   className={`inline-block px-3 py-1 rounded-full bg-white text-[10px] font-bold uppercase tracking-widest mb-3 shadow-sm ${styles.badgeTextColor}`}
                 >
-                  {product.year >= 2023 ? "Nuevo Lanzamiento" : "Disponible"}
+                  {/* CORRECCIÓN AQUÍ: Usamos product.isNew en lugar de product.year */}
+                  {product.isNew ? "Nuevo Lanzamiento" : "Disponible"}
                 </span>
 
                 <h3 className="text-3xl font-semibold text-[#1d1d1f] mb-2 tracking-tight group-hover:text-black transition-colors">

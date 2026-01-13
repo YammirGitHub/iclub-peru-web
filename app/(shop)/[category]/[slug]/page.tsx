@@ -16,8 +16,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const product = getProductBySlug(slug);
 
-  if (!product) return { title: "Producto no encontrado" };
+  // Si el producto no existe, devolvemos metadatos genéricos
+  if (!product) {
+    return {
+      title: "Producto no encontrado | iClub Perú",
+    };
+  }
 
+  // CORRECCIÓN AQUÍ: Usamos 'product.name' en lugar de 'product.title'
   return {
     title: `${product.name} | iClub Perú`,
     description: product.description,
@@ -27,14 +33,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-// 2. COMPONENTE DE PÁGINA (¡AQUÍ FALTABA EL EXPORT DEFAULT!)
+// 2. COMPONENTE DE PÁGINA
 export default async function ProductPage({ params }: Props) {
   const { category, slug } = await params;
-
-  // Buscamos el producto
   const product = getProductBySlug(slug);
 
-  // Si no existe, error 404
   if (!product) {
     notFound();
   }

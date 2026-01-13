@@ -119,8 +119,9 @@ export default function CartSidebar() {
                           {item.title}
                         </h3>
                         <p className="text-sm text-gray-500 mt-1">
+                          {/* BLINDAJE ANTI-NAN: Usamos (item.price || 0) */}
                           S/{" "}
-                          {item.price.toLocaleString("es-PE", {
+                          {(item.price || 0).toLocaleString("es-PE", {
                             minimumFractionDigits: 2,
                           })}
                         </p>
@@ -129,11 +130,27 @@ export default function CartSidebar() {
                       {/* Controles Cantidad */}
                       <div className="flex items-center justify-between mt-2">
                         <div className="flex items-center gap-3 bg-gray-50 rounded-full px-2 py-1">
-                          {/* Aquí podrías implementar lógica para restar cantidad si quisieras */}
-                          <span className="text-xs font-medium text-gray-600 px-1">
-                            Cant: {item.quantity}
+                          {/* Botón Menos (Decorativo si no tienes updateQuantity) */}
+                          <button
+                            className="p-1 hover:bg-white rounded-full transition-colors disabled:opacity-50"
+                            disabled={item.quantity <= 1}
+                          >
+                            <Minus size={14} className="text-gray-600" />
+                          </button>
+
+                          <span className="text-xs font-medium text-gray-600 w-4 text-center">
+                            {item.quantity}
                           </span>
+
+                          {/* Botón Más (Usa addToCart para sumar) */}
+                          <button
+                            onClick={() => addToCart(item)}
+                            className="p-1 hover:bg-white rounded-full transition-colors"
+                          >
+                            <Plus size={14} className="text-gray-600" />
+                          </button>
                         </div>
+
                         <button
                           onClick={() => removeFromCart(item.id)}
                           className="text-red-500 hover:text-red-600 hover:bg-red-50 p-1.5 rounded-full transition-colors"
@@ -155,8 +172,9 @@ export default function CartSidebar() {
                   <div className="flex justify-between text-sm text-gray-500">
                     <span>Subtotal</span>
                     <span>
+                      {/* BLINDAJE ANTI-NAN EN TOTALES */}
                       S/{" "}
-                      {cartTotal.toLocaleString("es-PE", {
+                      {(cartTotal || 0).toLocaleString("es-PE", {
                         minimumFractionDigits: 2,
                       })}
                     </span>
@@ -168,8 +186,9 @@ export default function CartSidebar() {
                   <div className="flex justify-between text-xl font-semibold text-[#1d1d1f] pt-2 border-t border-gray-100">
                     <span>Total</span>
                     <span>
+                      {/* BLINDAJE ANTI-NAN EN TOTALES */}
                       S/{" "}
-                      {cartTotal.toLocaleString("es-PE", {
+                      {(cartTotal || 0).toLocaleString("es-PE", {
                         minimumFractionDigits: 2,
                       })}
                     </span>

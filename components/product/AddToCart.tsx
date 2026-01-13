@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Product } from "@/lib/products";
 import { useCart } from "@/context/CartContext";
 import { Check, ShoppingBag, ShieldCheck } from "lucide-react";
@@ -8,8 +8,7 @@ import { motion } from "framer-motion";
 export default function AddToCart({ product }: { product: Product }) {
   const { addToCart } = useCart();
 
-  // --- INICIALIZACIÓN SEGURA DE ESTADOS ---
-  // Usamos optional chaining (?.) y valores por defecto (||) para evitar pantallas blancas
+  // --- 1. INICIALIZACIÓN DE ESTADOS ---
   const [selectedColor, setSelectedColor] = useState(
     product.colors?.[0] || { name: "Estándar", hex: "#000000" }
   );
@@ -20,32 +19,37 @@ export default function AddToCart({ product }: { product: Product }) {
 
   const [isAdded, setIsAdded] = useState(false);
 
-  // --- LÓGICA DE AGREGAR AL CARRITO ---
+  // --- 2. VALIDACIÓN DEL PRECIO (Anti-NaN) ---
+  // Nos aseguramos de que el precio a mostrar sea siempre un número.
+  // Si selectedStorage.price falla, usamos product.price, y si falla, 0.
+  const currentPrice = Number(selectedStorage?.price || product.price || 0);
+
+  // --- 3. LÓGICA DE AGREGAR AL CARRITO ---
   const handleAddToCart = () => {
     addToCart({
       ...product,
-      price: selectedStorage.price, // PRECIO DINÁMICO: Se actualiza según la capacidad
+      // BLINDAJE AQUÍ: Forzamos que el precio sea el número validado arriba
+      price: currentPrice,
       title: `${product.name} - ${selectedStorage.capacity} (${selectedColor.name})`,
-      // Generamos un ID único para diferenciar un iPhone de 128GB de uno de 256GB en el carrito
       id: `${product.id}-${
         selectedStorage.capacity
       }-${selectedColor.name.replace(/\s+/g, "")}`,
+      quantity: 1,
     });
 
-    // Animación de feedback
     setIsAdded(true);
     setTimeout(() => setIsAdded(false), 2500);
   };
 
   return (
     <div className="space-y-8 animate-fade-in">
-      {/* 1. SECCIÓN DE PRECIO (Sticky Visual) */}
+      {/* SECCIÓN DE PRECIO */}
       <div className="border-b border-gray-100 pb-6">
         <div className="flex items-end gap-3">
           <span className="text-4xl font-bold tracking-tight text-[#1d1d1f]">
-            S/ {selectedStorage.price.toLocaleString("es-PE")}
+            {/* Usamos currentPrice para renderizar, evitando errores visuales */}
+            S/ {currentPrice.toLocaleString("es-PE")}
           </span>
-          {/* Si tuviera descuento, aquí iría el precio tachado */}
         </div>
         <p className="text-sm text-gray-500 mt-2 font-medium flex items-center gap-1">
           <ShieldCheck size={16} className="text-green-600" />
@@ -53,7 +57,7 @@ export default function AddToCart({ product }: { product: Product }) {
         </p>
       </div>
 
-      {/* 2. SELECTOR DE COLORES (Las "Bolitas") */}
+      {/* SELECTOR DE COLORES */}
       {product.colors && product.colors.length > 0 && (
         <div className="space-y-4">
           <span className="text-sm font-bold text-[#1d1d1f] uppercase tracking-wide">
@@ -75,7 +79,6 @@ export default function AddToCart({ product }: { product: Product }) {
                 style={{ backgroundColor: color.hex }}
                 aria-label={`Seleccionar color ${color.name}`}
               >
-                {/* Indicador sutil de selección */}
                 {selectedColor.name === color.name && (
                   <motion.div
                     layoutId="activeColor"
@@ -88,7 +91,7 @@ export default function AddToCart({ product }: { product: Product }) {
         </div>
       )}
 
-      {/* 3. SELECTOR DE ALMACENAMIENTO (Botones) */}
+      {/* SELECTOR DE ALMACENAMIENTO */}
       {product.storage && product.storage.length > 0 && (
         <div className="space-y-4">
           <span className="text-sm font-bold text-[#1d1d1f] uppercase tracking-wide">
@@ -115,7 +118,7 @@ export default function AddToCart({ product }: { product: Product }) {
         </div>
       )}
 
-      {/* 4. BOTÓN PRINCIPAL (CTA) */}
+      {/* BOTÓN CTA */}
       <div className="pt-6">
         <motion.button
           whileTap={{ scale: 0.98 }}
@@ -139,7 +142,6 @@ export default function AddToCart({ product }: { product: Product }) {
           )}
         </motion.button>
 
-        {/* Microcopy de confianza */}
         <div className="mt-4 flex items-center justify-center gap-6 text-xs text-gray-500 font-medium">
           <span className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>

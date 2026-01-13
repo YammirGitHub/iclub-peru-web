@@ -1,4 +1,8 @@
-// --- INTERFACES ESCALABLES ---
+// --- lib/products.ts ---
+
+// 1. DEFINICIÓN DE TIPOS
+export type ProductCategory = "iphone" | "mac" | "ipad" | "watch" | "airpods" | "accesorios" | "certificados";
+
 export interface ProductMarketing {
   slogan: string;
   subSlogan: string;
@@ -20,28 +24,32 @@ export interface StorageOption {
   price: number;
 }
 
+// 2. INTERFAZ PRINCIPAL (CORREGIDA)
 export interface Product {
   id: string;
   slug: string;
   name: string;
   description: string;
   price: number;
-  category: "iphone" | "mac" | "ipad" | "watch" | "airpods" | "accesorios";
   image: string;
-  images: string[];
-  colors: ProductColor[];
-  storage: StorageOption[];
-  isNew?: boolean;
+  category: ProductCategory;
+  
+  // Opcionales
+  images?: string[];
+  colors?: ProductColor[];
+  storage?: StorageOption[];
   marketing?: ProductMarketing;
+  
+  // ¡AQUÍ ESTABA EL ERROR! FALTABA ESTA LÍNEA:
+  isNew?: boolean; 
 }
 
-// --- BASE DE DATOS DE PRODUCTOS ---
+// 3. BASE DE DATOS DE PRODUCTOS
 export const products: Product[] = [
+  
   // ==========================================
   // MAC SERIES (2021 - 2025)
   // ==========================================
-
-  // --- 2025 MODELS ---
   {
     id: "macbook-pro-14-m5",
     slug: "macbook-pro-14-m5",
@@ -98,8 +106,6 @@ export const products: Product[] = [
     storage: [{ capacity: "512GB", price: 9999 }, { capacity: "1TB", price: 11499 }],
     isNew: true
   },
-
-  // --- 2024 MODELS ---
   {
     id: "macbook-pro-m4-pro",
     slug: "macbook-pro-m4-pro",
@@ -136,8 +142,6 @@ export const products: Product[] = [
     colors: [{ name: "Plata", hex: "#e3e4e5" }],
     storage: [{ capacity: "256GB", price: 2999 }]
   },
-
-  // --- 2023 MODELS ---
   {
     id: "macbook-pro-m3",
     slug: "macbook-pro-m3",
@@ -162,8 +166,6 @@ export const products: Product[] = [
     colors: [{ name: "Medianoche", hex: "#2e3642" }],
     storage: [{ capacity: "256GB", price: 5999 }]
   },
-
-  // --- 2021-2022 MODELS (Vigentes por valor/precio) ---
   {
     id: "macbook-air-m2-redesign",
     slug: "macbook-air-m2-redesign",
@@ -192,8 +194,6 @@ export const products: Product[] = [
   // ==========================================
   // iPAD SERIES (2021 - 2025)
   // ==========================================
-
-  // --- 2025 MODELS ---
   {
     id: "ipad-pro-m5-oled",
     slug: "ipad-pro-m5-oled",
@@ -250,8 +250,6 @@ export const products: Product[] = [
     storage: [{ capacity: "128GB", price: 1899 }, { capacity: "256GB", price: 2399 }],
     isNew: true
   },
-
-  // --- 2024 MODELS ---
   {
     id: "ipad-pro-m4-oled",
     slug: "ipad-pro-m4-oled",
@@ -284,8 +282,6 @@ export const products: Product[] = [
     colors: [{ name: "Gris Espacial", hex: "#6f7173" }, { name: "Púrpura", hex: "#c0b6d4" }],
     storage: [{ capacity: "128GB", price: 2499 }]
   },
-
-  // --- 2022 MODELS ---
   {
     id: "ipad-10-gen",
     slug: "ipad-10-gen",
@@ -310,8 +306,6 @@ export const products: Product[] = [
     colors: [{ name: "Azul", hex: "#8fb2c9" }],
     storage: [{ capacity: "64GB", price: 2299 }]
   },
-
-  // --- 2021 MODELS ---
   {
     id: "ipad-mini-6-gen",
     slug: "ipad-mini-6-gen",
@@ -344,20 +338,26 @@ export const products: Product[] = [
     id: "iphone-17-pro-max",
     slug: "iphone-17-pro-max",
     name: "iPhone 17 Pro Max",
-    description: "La pantalla más grande y el sistema de cámaras más avanzado de Apple.",
+    description: "El futuro de Apple Intelligence.",
     price: 6499,
     category: "iphone",
-    image: "/images/iphone/iphone-17-pro-max.png",
-    images: ["/images/iphone/iphone-17-pro-max.png"],
-    colors: [{ name: "Titanio Aero", hex: "#3c3d3a" }, { name: "Plata", hex: "#e3e4e5" }],
-    storage: [{ capacity: "256GB", price: 6499 }, { capacity: "512GB", price: 7299 }],
+    image: "/images/iphone/iphone-17-lineup.webp",
+    images: ["/images/iphone/iphone-17-lineup.webp"],
+    colors: [
+      { name: "Titanio Aero", hex: "#3c3d3a" },
+      { name: "Titanio Natural", hex: "#beb9b2" }
+    ],
+    storage: [
+      { capacity: "256GB", price: 6499 },
+      { capacity: "512GB", price: 7299 }
+    ],
     isNew: true,
     marketing: {
-      slogan: "El Pro llevado al extremo.",
-      subSlogan: "Chip A19 Pro y rendimiento fotográfico de nivel cinematográfico.",
+      slogan: "Titanio. Muy fuerte. Muy ligero.",
+      subSlogan: "El iPhone más potente hasta hoy.",
       features: [
-        { title: "Chip A19 Pro", description: "Velocidad que redefine lo posible.", icon: "chip" },
-        { title: "Cámara Periscopio", description: "Zoom óptico sin pérdida de calidad.", icon: "camera" }
+        { title: "Chip A19 Pro", description: "Potencia sin precedentes.", icon: "chip" },
+        { title: "Cámara 48MP", description: "Detalle profesional.", icon: "camera" }
       ]
     }
   },
@@ -408,10 +408,6 @@ export const products: Product[] = [
     storage: [{ capacity: "128GB", price: 4499 }],
     isNew: true
   },
-
-  // ==========================================
-  // iPHONE 16 SERIES (2024)
-  // ==========================================
   {
     id: "iphone-16-pro-max",
     slug: "iphone-16-pro-max",
@@ -482,10 +478,6 @@ export const products: Product[] = [
     storage: [{ capacity: "128GB", price: 3499 }],
     isNew: true
   },
-
-  // ==========================================
-  // iPHONE 15 SERIES (2023)
-  // ==========================================
   {
     id: "iphone-15-pro-max",
     slug: "iphone-15-pro-max",
@@ -534,10 +526,6 @@ export const products: Product[] = [
     colors: [{ name: "Verde", hex: "#e2eadf" }],
     storage: [{ capacity: "128GB", price: 3599 }]
   },
-
-  // ==========================================
-  // iPHONE 14 SERIES (2022)
-  // ==========================================
   {
     id: "iphone-14-pro-max",
     slug: "iphone-14-pro-max",
@@ -586,12 +574,6 @@ export const products: Product[] = [
     colors: [{ name: "Rojo", hex: "#af111c" }],
     storage: [{ capacity: "128GB", price: 3199 }]
   },
-
-  
-
-  // ==========================================
-  // iPHONE 13 SERIES (2021)
-  // ==========================================
   {
     id: "iphone-13-pro-max",
     slug: "iphone-13-pro-max",
@@ -644,8 +626,6 @@ export const products: Product[] = [
   // ==========================================
   // APPLE WATCH SERIES (2021 - 2025)
   // ==========================================
-
-  // --- 2025 MODELS ---
   {
     id: "apple-watch-ultra-3",
     slug: "apple-watch-ultra-3",
@@ -702,8 +682,6 @@ export const products: Product[] = [
     storage: [{ capacity: "40mm", price: 1199 }, { capacity: "44mm", price: 1349 }],
     isNew: true
   },
-
-  // --- 2024 MODELS ---
   {
     id: "apple-watch-series-10",
     slug: "apple-watch-series-10",
@@ -728,8 +706,6 @@ export const products: Product[] = [
     colors: [{ name: "Titanio Negro", hex: "#1d1d1f" }],
     storage: [{ capacity: "49mm", price: 3199 }]
   },
-
-  // --- 2023 MODELS ---
   {
     id: "apple-watch-series-9",
     slug: "apple-watch-series-9",
@@ -742,8 +718,6 @@ export const products: Product[] = [
     colors: [{ name: "Rosa", hex: "#f8d7da" }],
     storage: [{ capacity: "41mm", price: 1499 }]
   },
-
-  // --- 2022 MODELS ---
   {
     id: "apple-watch-series-8",
     slug: "apple-watch-series-8",
@@ -780,8 +754,6 @@ export const products: Product[] = [
     colors: [{ name: "Plata", hex: "#e3e4e5" }],
     storage: [{ capacity: "40mm", price: 999 }]
   },
-
-  // --- 2021 MODELS ---
   {
     id: "apple-watch-series-7",
     slug: "apple-watch-series-7",
@@ -798,8 +770,6 @@ export const products: Product[] = [
   // ==========================================
   // AIRPODS SERIES (2021 - 2025)
   // ==========================================
-
-  // --- 2025 MODELS ---
   {
     id: "airpods-pro-3-gen",
     slug: "airpods-pro-3-gen",
@@ -822,8 +792,6 @@ export const products: Product[] = [
       ]
     }
   },
-
-  // --- 2024 MODELS ---
   {
     id: "airpods-4-anc",
     slug: "airpods-4-anc",
@@ -885,8 +853,6 @@ export const products: Product[] = [
       ]
     }
   },
-
-  // --- 2022 - 2023 MODELS ---
   {
     id: "airpods-pro-2-usb-c",
     slug: "airpods-pro-2-usb-c",
@@ -911,8 +877,6 @@ export const products: Product[] = [
     colors: [{ name: "Blanco", hex: "#ffffff" }],
     storage: [{ capacity: "Estuche MagSafe (Lightning)", price: 949 }]
   },
-
-  // --- 2021 MODELS ---
   {
     id: "airpods-3-gen",
     slug: "airpods-3-gen",
@@ -924,328 +888,21 @@ export const products: Product[] = [
     images: ["/images/airpods/airpods-3.png"],
     colors: [{ name: "Blanco", hex: "#ffffff" }],
     storage: [{ capacity: "Estuche MagSafe", price: 799 }]
-  },
-
-// ==========================================
-  // SECCIÓN CERTIFICADOS (SEMINUEVOS / USADOS)
-  // ==========================================
-
-  // --- SERIE 16 CERTIFICADOS ---
-  {
-    id: "cert-iphone-16-pro-max",
-    slug: "cert-iphone-16-pro-max",
-    name: "iPhone 16 Pro Max (Certificado)",
-    description: "Seminuevo en estado 10/10. Inspección de 40 puntos aprobada.",
-    price: 5299,
-    category: "certificados",
-    image: "/images/cert/iphone-16-pm.png",
-    images: ["/images/cert/iphone-16-pm.png"],
-    colors: [{ name: "Titanio Negro", hex: "#1d1d1f" }],
-    storage: [{ capacity: "256GB", price: 5299 }],
-    marketing: {
-      slogan: "Como nuevo, pero mejor precio.",
-      subSlogan: "Garantía iClub de 6 meses incluida en todos nuestros certificados.",
-      features: [
-        { title: "Batería Original", description: "Salud de batería superior al 90%.", icon: "battery" },
-        { title: "Certificado iClub", description: "Inspección técnica de hardware y software.", icon: "shield" }
-      ]
-    }
-  },
-
-  // --- SERIE 15 CERTIFICADOS ---
-  {
-    id: "cert-iphone-15-pro-max",
-    slug: "cert-iphone-15-pro-max",
-    name: "iPhone 15 Pro Max (Certificado)",
-    description: "Estado impecable. Titanio natural disponible.",
-    price: 4399,
-    category: "certificados",
-    image: "/images/cert/iphone-15-pm.png",
-    images: ["/images/cert/iphone-15-pm.png"],
-    colors: [{ name: "Titanio Natural", hex: "#beb9b2" }],
-    storage: [{ capacity: "256GB", price: 4399 }]
-  },
-  {
-    id: "cert-iphone-15-pro",
-    slug: "cert-iphone-15-pro",
-    name: "iPhone 15 Pro (Certificado)",
-    description: "Potencia M3 en la palma de tu mano. Caja original.",
-    price: 3899,
-    category: "certificados",
-    image: "/images/cert/iphone-15-p.png",
-    images: ["/images/cert/iphone-15-p.png"],
-    colors: [{ name: "Titanio Azul", hex: "#2f3846" }],
-    storage: [{ capacity: "128GB", price: 3899 }]
-  },
-
-  // --- SERIE 14 CERTIFICADOS ---
-  {
-    id: "cert-iphone-14-pro-max",
-    slug: "cert-iphone-14-pro-max",
-    name: "iPhone 14 Pro Max (Certificado)",
-    description: "Dynamic Island a un precio increíble.",
-    price: 3599,
-    category: "certificados",
-    image: "/images/cert/iphone-14-pm.png",
-    images: ["/images/cert/iphone-14-pm.png"],
-    colors: [{ name: "Morado Oscuro", hex: "#594f63" }],
-    storage: [{ capacity: "128GB", price: 3599 }]
-  },
-  {
-    id: "cert-iphone-14-plus",
-    slug: "cert-iphone-14-plus",
-    name: "iPhone 14 Plus (Certificado)",
-    description: "Gran pantalla, gran batería, gran ahorro.",
-    price: 2899,
-    category: "certificados",
-    image: "/images/cert/iphone-14-plus.png",
-    images: ["/images/cert/iphone-14-plus.png"],
-    colors: [{ name: "Azul", hex: "#a2b5c7" }],
-    storage: [{ capacity: "128GB", price: 2899 }]
-  },
-
-  // --- SERIE 13 CERTIFICADOS ---
-  {
-    id: "cert-iphone-13-pro-max",
-    slug: "cert-iphone-13-pro-max",
-    name: "iPhone 13 Pro Max (Certificado)",
-    description: "El favorito por su batería y pantalla de 120Hz.",
-    price: 3199,
-    category: "certificados",
-    image: "/images/cert/iphone-13-pm.png",
-    images: ["/images/cert/iphone-13-pm.png"],
-    colors: [{ name: "Azul Sierra", hex: "#9db4c6" }],
-    storage: [{ capacity: "128GB", price: 3199 }]
-  },
-  {
-    id: "cert-iphone-13",
-    slug: "cert-iphone-13",
-    name: "iPhone 13 (Certificado)",
-    description: "Rendimiento sólido para el día a día.",
-    price: 2199,
-    category: "certificados",
-    image: "/images/cert/iphone-13.png",
-    images: ["/images/cert/iphone-13.png"],
-    colors: [{ name: "Medianoche", hex: "#2b3036" }],
-    storage: [{ capacity: "128GB", price: 2199 }]
-  },
-
-  // --- SERIE 12 CERTIFICADOS ---
-  {
-    id: "cert-iphone-12-pro-max",
-    slug: "cert-iphone-12-pro-max",
-    name: "iPhone 12 Pro Max (Certificado)",
-    description: "Diseño premium de acero inoxidable y 5G.",
-    price: 2499,
-    category: "certificados",
-    image: "/images/cert/iphone-12-pm.png",
-    images: ["/images/cert/iphone-12-pm.png"],
-    colors: [{ name: "Pacífico Azul", hex: "#284455" }],
-    storage: [{ capacity: "128GB", price: 2499 }]
-  },
-  {
-    id: "cert-iphone-12",
-    slug: "cert-iphone-12",
-    name: "iPhone 12 (Certificado)",
-    description: "Pantalla OLED y diseño icónico.",
-    price: 1699,
-    category: "certificados",
-    image: "/images/cert/iphone-12.png",
-    images: ["/images/cert/iphone-12.png"],
-    colors: [{ name: "Blanco", hex: "#ffffff" }],
-    storage: [{ capacity: "64GB", price: 1699 }]
-  },
-
-  // --- SERIE 11 CERTIFICADOS ---
-  {
-    id: "cert-iphone-11-pro-max",
-    slug: "cert-iphone-11-pro-max",
-    name: "iPhone 11 Pro Max (Certificado)",
-    description: "Triple cámara y gran autonomía.",
-    price: 1899,
-    category: "certificados",
-    image: "/images/cert/iphone-11-pm.png",
-    images: ["/images/cert/iphone-11-pm.png"],
-    colors: [{ name: "Verde Bosque", hex: "#4e5851" }],
-    storage: [{ capacity: "64GB", price: 1899 }]
-  },
-  {
-    id: "cert-iphone-11",
-    slug: "cert-iphone-11",
-    name: "iPhone 11 (Certificado)",
-    description: "El modelo más versátil de su generación.",
-    price: 1299,
-    category: "certificados",
-    image: "/images/cert/iphone-11.png",
-    images: ["/images/cert/iphone-11.png"],
-    colors: [{ name: "Negro", hex: "#1d1d1f" }],
-    storage: [{ capacity: "64GB", price: 1299 }]
-  },
-
-  // --- MODELOS XR / XS ---
-  {
-    id: "cert-iphone-xs-max",
-    slug: "cert-iphone-xs-max",
-    name: "iPhone XS Max (Certificado)",
-    description: "Elegancia en acero y pantalla Super Retina.",
-    price: 1399,
-    category: "certificados",
-    image: "/images/cert/iphone-xs-max.png",
-    images: ["/images/cert/iphone-xs-max.png"],
-    colors: [{ name: "Oro", hex: "#f5e1c8" }],
-    storage: [{ capacity: "64GB", price: 1399 }]
-  },
-  {
-    id: "cert-iphone-xr",
-    slug: "cert-iphone-xr",
-    name: "iPhone XR (Certificado)",
-    description: "Colorido, potente y muy económico.",
-    price: 999,
-    category: "certificados",
-    image: "/images/cert/iphone-xr.png",
-    images: ["/images/cert/iphone-xr.png"],
-    colors: [{ name: "Coral", hex: "#ff7f50" }],
-    storage: [{ capacity: "64GB", price: 999 }]
-  },
-
-  // --- CARGA AVANZADA ---
-  {
-    id: "acc-adaptador-35w-dual",
-    slug: "adaptador-dual-usb-c-35w",
-    name: "Adaptador de corriente de 35 W con doble puerto USB-C",
-    description: "Carga dos dispositivos al mismo tiempo. Compacto y potente.",
-    price: 249,
-    category: "accesorios",
-    image: "/images/acc/35w-dual-adapter.png",
-    images: ["/images/acc/35w-dual-adapter.png"],
-    colors: [{ name: "Blanco", hex: "#ffffff" }],
-    storage: [{ capacity: "Dual USB-C", price: 249 }],
-    isNew: true
-  },
-  {
-    id: "acc-cable-magsafe-3",
-    slug: "cable-usb-c-magsafe-3",
-    name: "Cable de USB-C a MagSafe 3 (2 m)",
-    description: "Cable tejido de alta calidad con conexión magnética para MacBook Pro y Air.",
-    price: 229,
-    category: "accesorios",
-    image: "/images/acc/magsafe-3-cable.png",
-    images: ["/images/acc/magsafe-3-cable.png"],
-    colors: [
-      { name: "Medianoche", hex: "#2e3642" },
-      { name: "Blanco Estelar", hex: "#f0e5d3" },
-      { name: "Plata", hex: "#e3e4e5" },
-      { name: "Gris Espacial", hex: "#6f7173" }
-    ],
-    storage: [{ capacity: "2 Metros", price: 229 }]
-  },
-
-  // --- PERIFÉRICOS PRO (MAGIC SERIES) ---
-  {
-    id: "acc-magic-keyboard-ipad-pro",
-    slug: "magic-keyboard-ipad-pro-m4",
-    name: "Magic Keyboard para iPad Pro (M4)",
-    description: "Increíblemente delgado y portátil. El compañero perfecto para tu iPad Pro.",
-    price: 1499,
-    category: "accesorios",
-    image: "/images/acc/magic-keyboard-ipad.png",
-    images: ["/images/acc/magic-keyboard-ipad.png"],
-    colors: [{ name: "Negro", hex: "#1d1d1f" }, { name: "Blanco", hex: "#ffffff" }],
-    storage: [{ capacity: "11\" o 13\"", price: 1499 }],
-    isNew: true,
-    marketing: {
-      slogan: "Tu iPad, ahora es una Mac.",
-      subSlogan: "Diseño flotante, teclas retroiluminadas y un trackpad de cristal.",
-      features: [
-        { title: "Trackpad Pro", description: "Respuesta háptica y gestos Multi-Touch.", icon: "screen" },
-        { title: "Puerto Pasivo", description: "Carga tu iPad mientras usas el puerto USB-C para otros accesorios.", icon: "chip" }
-      ]
-    }
-  },
-  {
-    id: "acc-magic-mouse-usbc",
-    slug: "magic-mouse-usb-c",
-    name: "Magic Mouse (USB-C)",
-    description: "Recargable y con una base optimizada para un deslizamiento suave.",
-    price: 399,
-    category: "accesorios",
-    image: "/images/acc/magic-mouse.png",
-    images: ["/images/acc/magic-mouse.png"],
-    colors: [{ name: "Blanco", hex: "#ffffff" }, { name: "Negro", hex: "#1d1d1f" }],
-    storage: [{ capacity: "Multi-Touch", price: 399 }],
-    isNew: true
-  },
-
-  // --- ESTILO Y SEGURIDAD (MAGSAFE) ---
-  {
-    id: "acc-magsafe-wallet",
-    slug: "billetera-magsafe-find-my",
-    name: "Cartera de piel con MagSafe y Buscar",
-    description: "Ten tus tarjetas a la mano y localízalas si se separan de tu iPhone.",
-    price: 299,
-    category: "accesorios",
-    image: "/images/acc/magsafe-wallet.png",
-    images: ["/images/acc/magsafe-wallet.png"],
-    colors: [
-      { name: "Negro", hex: "#1d1d1f" },
-      { name: "Mora Azul", hex: "#3a3a4d" },
-      { name: "Verde Pino", hex: "#2d3a2f" },
-      { name: "Tierra de Sombra", hex: "#5a4a42" }
-    ],
-    storage: [{ capacity: "Cuero / Tejido", price: 299 }],
-    marketing: {
-      slogan: "Estilo. Seguridad. MagSafe.",
-      subSlogan: "La forma más elegante de llevar tus tarjetas con total confianza.",
-      features: [
-        { title: "Soporte Buscar", description: "Recibe una notificación de la última ubicación conocida.", icon: "shield" },
-        { title: "Blindaje Magnético", description: "Tus tarjetas de crédito están protegidas y seguras.", icon: "shield" }
-      ]
-    }
-  },
-
-  // --- ALTO RENDIMIENTO ---
-  {
-    id: "acc-thunderbolt-4-pro",
-    slug: "cable-thunderbolt-4-pro",
-    name: "Cable Thunderbolt 4 Pro (1.8 m)",
-    description: "Transferencia de datos hasta 40 Gb/s y carga de hasta 100 W.",
-    price: 649,
-    category: "accesorios",
-    image: "/images/acc/thunderbolt-4.png",
-    images: ["/images/acc/thunderbolt-4.png"],
-    colors: [{ name: "Negro", hex: "#1d1d1f" }],
-    storage: [{ capacity: "1.8 Metros", price: 649 }],
-    isNew: false
-  },
-  {
-    id: "acc-beats-pill",
-    slug: "beats-pill-new",
-    name: "Beats Pill",
-    description: "Potencia, portabilidad y un sonido que llena cualquier habitación.",
-    price: 749,
-    category: "accesorios",
-    image: "/images/acc/beats-pill.png",
-    images: ["/images/acc/beats-pill.png"],
-    colors: [{ name: "Negro Mate", hex: "#1d1d1f" }, { name: "Rojo Beats", hex: "#e01e3c" }, { name: "Champagne", hex: "#d7c4a3" }],
-    storage: [{ capacity: "Bluetooth / USB-C", price: 749 }],
-    isNew: true
   }
-
-
 ];
 
-// --- NAVEGACIÓN Y HELPERS ---
-export const NAV_LINKS = [
-  { name: "Mac", href: "/mac" },
-  { name: "iPad", href: "/ipad" },
-  { name: "iPhone", href: "/iphone" },
-  { name: "Watch", href: "/watch" },
-  { name: "AirPods", href: "/airpods" },
-  { name: "Certificados", href: "/certificados" },
-  { name: "Accesorios", href: "/accesorios" },
-  { name: "Soporte", href: "/soporte" }
-];
+// 4. FUNCIONES HELPERS (IMPORTANTE: Esto faltaba en tu archivo subido)
+export const getProducts = () => products;
 
-export const getProductsByCategory = (category: string) => products.filter((p) => p.category === category);
-export const getProductBySlug = (slug: string) => products.find((p) => p.slug === slug);
-export const getAllCategories = () => Array.from(new Set(products.map((p) => p.category)));
+export const getProductsByCategory = (category: string) => {
+  return products.filter((product) => product.category === category);
+};
+
+export const getProductBySlug = (slug: string) => {
+  return products.find((product) => product.slug === slug);
+};
+
+export const getAllCategories = () => {
+  const categories = new Set(products.map((product) => product.category));
+  return Array.from(categories);
+};

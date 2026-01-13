@@ -1,7 +1,7 @@
 "use client";
 import { Product } from "@/lib/products";
-import ProductImage from "./ProductImage"; // Asegúrate que este exista
-import AddToCart from "./AddToCart"; // O PurchaseButton si lo renombraste
+import ProductImage from "./ProductImage";
+import AddToCart from "./AddToCart";
 
 export default function ProductDetails({ product }: { product: Product }) {
   return (
@@ -9,7 +9,13 @@ export default function ProductDetails({ product }: { product: Product }) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
         {/* Columna Izquierda: Galería */}
         <div className="relative">
-          <ProductImage images={product.images} title={product.name} />
+          {/* CORRECCIÓN AQUÍ: 
+              Si product.images es undefined, usamos un array con la imagen principal. 
+              Esto satisface el tipo string[] que requiere el componente. */}
+          <ProductImage
+            images={product.images || [product.image]}
+            title={product.name}
+          />
         </div>
 
         {/* Columna Derecha: Info y Compra */}
