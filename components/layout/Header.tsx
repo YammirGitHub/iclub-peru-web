@@ -6,7 +6,7 @@ import { ShoppingBag, Search } from "lucide-react";
 import { motion, AnimatePresence, Variants, MotionConfig } from "framer-motion";
 import { useCart } from "@/context/CartContext";
 import Logo from "@/components/ui/Logo";
-
+import SearchOverlay from "@/components/ui/SearchOverlay";
 // --- 1. NUEVA JERARQUÍA DE MENÚ (Estrategia Apple Premium Reseller) ---
 // Orden lógico: Productos Estrella -> Accesorios -> Oportunidades -> Servicios
 const NAV_LINKS = [
@@ -46,6 +46,7 @@ const navItemVariants: Variants = {
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { toggleCart, cart } = useCart();
 
   useEffect(() => {
@@ -68,6 +69,10 @@ export default function Navbar() {
 
   return (
     <>
+      <SearchOverlay
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+      />
       <motion.nav
         initial={{ y: -100 }}
         animate={{ y: 0 }}
@@ -117,6 +122,7 @@ export default function Navbar() {
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
+              onClick={() => setIsSearchOpen(true)} // AHORA ABRE EL OVERLAY
               className="p-2 hover:bg-black/5 rounded-full transition-colors"
               aria-label="Buscar"
             >

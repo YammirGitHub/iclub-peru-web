@@ -10,22 +10,28 @@ export default function SmoothScrolling({
     <ReactLenis
       root
       options={{
-        // LERP: 0.15
-        // El estándar de oro en UX moderna.
-        // 0.32 es muy brusco. 0.15 es suave como mantequilla pero se detiene donde quieres.
-        lerp: 0.15,
+        // LERP: Cuanto más bajo, más "pesado/suave".
+        // 0.1 es el estándar de Apple. 0.15 puede sentirse lento.
+        lerp: 0.1,
 
-        // WHEEL MULTIPLIER: 1.2
-        // Ni muy lento (1.0) ni muy rápido (1.5).
-        // Permite recorrer la web sin cansar el dedo, pero sin saltos violentos.
-        wheelMultiplier: 1.2,
+        // DURACIÓN: Alternativa a lerp, controla cuánto tarda en frenar.
+        duration: 1.2,
 
-        // TOUCH MULTIPLIER: 1.5
-        // Ajustado para que en móviles se sienta nativo (iOS feel).
-        touchMultiplier: 1.5,
+        // WHEEL MULTIPLIER: Sensibilidad de la rueda
+        wheelMultiplier: 1, // 1.2 a veces se siente artificial, 1 es 1:1 nativo
 
-        // Infinite: False (Por si acaso, esto evita loops raros)
-        infinite: false,
+        // TOUCH MULTIPLIER: CRÍTICO PARA MÓVIL
+        // 2 es demasiado sensible. 1 o 0 (desactivar en touch) es mejor.
+        // Apple NO usa smooth scroll JS en móviles, usa el nativo.
+        // Poner touchMultiplier: 0 hace que en iPhone se sienta nativo (perfecto)
+        // y en PC se sienta suave.
+        touchMultiplier: 0,
+
+        orientation: "vertical",
+        gestureOrientation: "vertical",
+        smoothWheel: true,
+        // smoothTouch: false, // Desactivar en móvil para 100% nativo feel
+        syncTouch: true,
       }}
     >
       {children}

@@ -1,24 +1,27 @@
 @import "tailwindcss";
 
-/* --- CONFIGURACIÓN BASE --- */
 @layer base {
   html {
+    /* 🔴 OBLIGATORIO: Desactiva el scroll nativo para que Lenis tome el control total */
+    scroll-behavior: auto !important;
+
+    /* Suavizado de fuentes hardware-accelerated */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    scroll-behavior: smooth;
   }
 
   body {
-    /* Fondo Gris Apple (#F5F5F7) */
     @apply bg-[#F5F5F7] text-[#1d1d1f] antialiased;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+
+    /* Evita el rebote elástico en Mac que rompe la inmersión */
+    overscroll-behavior-y: none;
   }
 
-  /* Títulos estilo Apple */
   h1,
   h2,
   h3,
@@ -29,80 +32,7 @@
   }
 }
 
-/* --- CLASES UTILITARIAS PERSONALIZADAS --- */
-
-/* Efecto Vidrio (Glassmorphism) */
-.glass {
-  @apply bg-white/70 backdrop-blur-xl border-b border-white/20 shadow-sm;
-}
-
-/* --- ANIMACIONES --- */
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-in {
-  animation: fade-in 0.5s ease-out forwards;
-}
-
-.animate-fade-in-up {
-  animation: fade-in-up 0.6s ease-out forwards;
-}
-
-/* --- SCROLLBAR ESTILO APPLE (Redondeado) --- */
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: #c1c1c1;
-  border-radius: 10px;
-  border: 3px solid transparent;
-  background-clip: content-box;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background-color: #a0a0a0;
-}
-
-/* Scrollbar interno */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
-}
-
-/* --- AJUSTES LENIS (Smooth Scroll) --- */
+/* Configuración interna de Lenis */
 html.lenis,
 html.lenis body {
   height: auto;
@@ -118,8 +48,4 @@ html.lenis body {
 
 .lenis.lenis-stopped {
   overflow: hidden;
-}
-
-.lenis.lenis-scrolling iframe {
-  pointer-events: none;
 }
