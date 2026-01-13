@@ -1,7 +1,6 @@
 "use client";
 
 import { useCart } from "@/context/CartContext";
-// CORRECCIÓN: Agregué ShieldCheck a los imports
 import {
   X,
   Trash2,
@@ -198,13 +197,14 @@ export default function CartSidebar() {
                   </div>
                 </div>
 
-                {/* AQUÍ ESTÁ BIEN: Llevamos al usuario al Checkout */}
+                {/* BOTÓN: Llevamos al Checkout */}
                 <Link href="/checkout" onClick={toggleCart}>
                   <button className="w-full bg-[#0071e3] text-white py-4 rounded-full font-medium text-lg hover:bg-[#0077ED] transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 active:scale-[0.98]">
                     Continuar
                     <ArrowRight size={20} />
                   </button>
                 </Link>
+
                 <p className="mt-4 flex justify-center gap-4 text-[10px] text-gray-400">
                   <span className="flex items-center gap-1">
                     <ShieldCheck size={12} /> Compra Segura

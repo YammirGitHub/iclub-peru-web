@@ -5,10 +5,10 @@ import { useState, useEffect } from "react";
 import { ShoppingBag, Search } from "lucide-react";
 import { motion, AnimatePresence, Variants, MotionConfig } from "framer-motion";
 import { useCart } from "@/context/CartContext";
-// import { NAV_LINKS } from "@/lib/products"; <--- ELIMINAMOS ESTA LÍNEA QUE DABA ERROR
 import Logo from "@/components/ui/Logo";
 
-// --- 1. DEFINIMOS LOS LINKS AQUÍ MISMO PARA EVITAR ERRORES DE IMPORTACIÓN ---
+// --- 1. NUEVA JERARQUÍA DE MENÚ (Estrategia Apple Premium Reseller) ---
+// Orden lógico: Productos Estrella -> Accesorios -> Oportunidades -> Servicios
 const NAV_LINKS = [
   { name: "Tienda", href: "/" },
   { name: "Mac", href: "/mac" },
@@ -17,6 +17,9 @@ const NAV_LINKS = [
   { name: "Watch", href: "/watch" },
   { name: "AirPods", href: "/airpods" },
   { name: "Accesorios", href: "/accesorios" },
+  // Los nuevos agregados estratégicos:
+  { name: "Certificados", href: "/certificados" }, // Alta rentabilidad
+  { name: "Soporte", href: "/soporte" }, // Generador de confianza
 ];
 
 // --- ANIMACIONES DE ENTRADA PARA LOS LINKS ---
@@ -76,27 +79,32 @@ export default function Navbar() {
         <div
           className={`relative flex items-center justify-between px-6 py-3 transition-all duration-300 ${
             isScrolled
-              ? "w-full max-w-5xl rounded-full bg-white/70 backdrop-blur-xl backdrop-saturate-150 shadow-sm border border-white/20 ring-1 ring-black/5"
+              ? "w-full max-w-6xl rounded-full bg-white/70 backdrop-blur-xl backdrop-saturate-150 shadow-sm border border-white/20 ring-1 ring-black/5"
               : "w-full max-w-7xl bg-transparent border-transparent"
           }`}
         >
           {/* LOGO */}
-          <div className="z-50">
+          <div className="z-50 shrink-0">
             <Logo />
           </div>
 
-          {/* MENÚ DESKTOP */}
+          {/* MENÚ DESKTOP (Ajustado el gap para que entren todos) */}
           <motion.div
             variants={navContainerVariants}
             initial="hidden"
             animate="visible"
-            className="hidden md:flex items-center gap-8"
+            className="hidden lg:flex items-center gap-6 xl:gap-8"
           >
             {NAV_LINKS.map((link) => (
               <motion.div key={link.name} variants={navItemVariants}>
                 <Link
                   href={link.href}
-                  className="text-[12px] lg:text-[13px] font-medium text-[#424245] hover:text-[#0071e3] transition-all duration-300 tracking-wide hover:scale-105 block"
+                  className={`text-[12px] xl:text-[13px] font-medium transition-all duration-300 tracking-wide hover:scale-105 block ${
+                    // Destacamos sutilmente "Seminuevos" para venta
+                    link.name === "Seminuevos"
+                      ? "text-[#0071e3] font-semibold"
+                      : "text-[#424245] hover:text-[#0071e3]"
+                  }`}
                 >
                   {link.name}
                 </Link>
@@ -105,7 +113,7 @@ export default function Navbar() {
           </motion.div>
 
           {/* ICONOS */}
-          <div className="flex items-center gap-2 md:gap-4 z-50 text-[#1d1d1f]">
+          <div className="flex items-center gap-2 md:gap-4 z-50 text-[#1d1d1f] shrink-0">
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
@@ -139,7 +147,7 @@ export default function Navbar() {
                 initial={false}
                 animate={isMobileMenuOpen ? "open" : "closed"}
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden relative h-10 w-10 rounded-full hover:bg-black/5 transition-colors flex flex-col justify-center items-center gap-[5px]"
+                className="lg:hidden relative h-10 w-10 rounded-full hover:bg-black/5 transition-colors flex flex-col justify-center items-center gap-[5px]"
               >
                 <motion.span
                   variants={{
@@ -175,9 +183,9 @@ export default function Navbar() {
             initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
             animate={{ opacity: 1, backdropFilter: "blur(20px)" }}
             exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
-            className="fixed inset-0 z-40 bg-[#F5F5F7]/90 pt-28 px-8 md:hidden flex flex-col justify-start"
+            className="fixed inset-0 z-40 bg-[#F5F5F7]/90 pt-28 px-8 lg:hidden flex flex-col justify-start overflow-y-auto"
           >
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 pb-20">
               {NAV_LINKS.map((link, i) => (
                 <motion.div
                   key={link.name}
@@ -188,7 +196,11 @@ export default function Navbar() {
                   <Link
                     href={link.href}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="text-3xl font-semibold text-[#1d1d1f] active:text-[#0071e3] transition-colors block border-b border-gray-200/50 pb-6 pt-2"
+                    className={`text-3xl font-semibold transition-colors block border-b border-gray-200/50 pb-6 pt-2 ${
+                      link.name === "Seminuevos"
+                        ? "text-[#0071e3]"
+                        : "text-[#1d1d1f] active:text-[#0071e3]"
+                    }`}
                   >
                     {link.name}
                   </Link>

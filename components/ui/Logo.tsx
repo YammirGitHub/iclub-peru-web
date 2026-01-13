@@ -18,7 +18,7 @@ export default function Logo() {
       </div>
 
       {/* Subtítulo VISIBLE SIEMPRE */}
-      <span className="text-[11px] text-[#86868b] font-medium tracking-wide -mt-[2px] group-hover:text-[#0071e3] transition-colors">
+      <span className="text-[11px] text-[#86868b] font-medium tracking-wide -mt-[5px] group-hover:text-[#0071e3] transition-colors">
         Expertos en Apple
       </span>
     </Link>

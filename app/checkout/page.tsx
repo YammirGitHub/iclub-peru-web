@@ -4,9 +4,8 @@ import { useCart } from "@/context/CartContext";
 import { useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import Logo from "@/components/ui/Logo";
-// Si no tienes el componente Logo, cambia esto por una etiqueta <img /> o texto
-// import Logo from "@/components/ui/Logo";
+import Logo from "@/components/ui/Logo"; // ✅ Componente de marca oficial
+import { generateWhatsAppLink } from "@/lib/whatsapp"; // ✅ Lógica centralizada
 import {
   MessageCircle,
   User,
@@ -20,15 +19,13 @@ import {
   Lock,
 } from "lucide-react";
 
-import { generateWhatsAppLink } from "@/lib/whatsapp";
-
 export default function CheckoutPage() {
   const { cart } = useCart();
 
   // Cálculo del total
   const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-  // --- REFERENCIAS PARA FOCUS ---
+  // --- REFERENCIAS PARA FOCUS UX ---
   const nameInputRef = useRef<HTMLInputElement>(null);
   const phoneInputRef = useRef<HTMLInputElement>(null);
   const districtInputRef = useRef<HTMLSelectElement>(null);
@@ -83,14 +80,13 @@ export default function CheckoutPage() {
     const { name, value } = e.target;
 
     if (name === "phone") {
-      // Solo números para el teléfono
-      const numericValue = value.replace(/\D/g, "");
-      if (numericValue.length > 9) return;
-      setFormData({ ...formData, [name]: numericValue });
-      setErrors({ ...errors, [name]: validate(name, numericValue) });
+      // Filtro estricto: solo números
+      const numericValue = value.replace(/\D/g, "").slice(0, 9);
+      setFormData((prev) => ({ ...prev, [name]: numericValue }));
+      setErrors((prev) => ({ ...prev, [name]: validate(name, numericValue) }));
     } else {
-      setFormData({ ...formData, [name]: value });
-      setErrors({ ...errors, [name]: validate(name, value) });
+      setFormData((prev) => ({ ...prev, [name]: value }));
+      setErrors((prev) => ({ ...prev, [name]: validate(name, value) }));
     }
   };
 
@@ -98,8 +94,8 @@ export default function CheckoutPage() {
     e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setTouched({ ...touched, [name]: true });
-    setErrors({ ...errors, [name]: validate(name, value) });
+    setTouched((prev) => ({ ...prev, [name]: true }));
+    setErrors((prev) => ({ ...prev, [name]: validate(name, value) }));
   };
 
   const isFormValid =
@@ -112,25 +108,25 @@ export default function CheckoutPage() {
     formData.district !== "" &&
     formData.address.length > 0;
 
-  // --- LÓGICA DE ENVÍO ---
-  const handleSmartClick = () => {
-    // 1. Si el formulario es válido, enviamos
+  // --- LÓGICA CENTRAL DE ENVÍO ---
+  const handleSendOrder = () => {
+    // 1. Si todo está correcto, generamos el enlace
     if (isFormValid) {
-      // Mapeamos los datos para que coincidan con la interfaz de lib/whatsapp.ts
       const customerData = {
         name: formData.name,
         phone: formData.phone,
-        city: formData.district, // Mapeamos distrito a city
+        city: formData.district,
         address: formData.address,
-        paymentMethod: "A coordinar",
+        paymentMethod: "Transferencia/Yape",
       };
 
+      // Usamos la función de 'lib' para mantener el componente limpio
       const url = generateWhatsAppLink(cart, total, customerData);
       window.open(url, "_blank");
       return;
     }
 
-    // 2. Si no es válido, hacemos foco en el primer error (UX Pro)
+    // 2. Si hay errores, UX inteligente: llevar el foco al primer error
     if (!formData.name || errors.name) {
       nameInputRef.current?.focus();
       setTouched((prev) => ({ ...prev, name: true }));
@@ -153,16 +149,19 @@ export default function CheckoutPage() {
     }
   };
 
+  // Helper para clases CSS condicionales (Código Limpio)
   const getInputClasses = (fieldName: keyof typeof errors) => {
     const hasError = touched[fieldName] && errors[fieldName];
     const base =
       "w-full p-4 bg-[#F5F5F7] border-2 rounded-2xl text-[#1d1d1f] placeholder-gray-400 outline-none transition-all font-medium text-base";
+
     if (hasError)
       return `${base} border-red-500/50 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 bg-red-50/50`;
+
     return `${base} border-transparent focus:bg-white focus:border-[#0071e3]/20 focus:ring-4 focus:ring-[#0071e3]/10`;
   };
 
-  // --- VISTA VACÍA ---
+  // --- ESTADO VACÍO ---
   if (cart.length === 0) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#F5F5F7] px-6 text-center">
@@ -187,11 +186,9 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-[#F5F5F7] pt-8 pb-24 transition-colors">
-      {/* 1. HEADER SIMPLE (Si no tienes Logo, pon texto) */}
-      {/* 1. HEADER CON LOGO DE MARCA */}
+      {/* 1. HEADER CON LOGO (Escalado para impacto visual) */}
       <div className="flex justify-center mb-10 pt-4">
-        {/* Usamos tu componente Logo. Puedes ajustar el tamaño con scale si lo ves muy chico */}
-        <div className="transform scale-110">
+        <div className="transform scale-110 transition-transform hover:scale-115">
           <Logo />
         </div>
       </div>
@@ -203,8 +200,7 @@ export default function CheckoutPage() {
             href="/"
             className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-[#0071e3] transition-colors pl-1 mb-4"
           >
-            <ArrowLeft size={16} />
-            Volver a la tienda
+            <ArrowLeft size={16} /> Volver a la tienda
           </Link>
 
           <div className="flex items-center gap-3 mb-2 px-1">
@@ -233,6 +229,7 @@ export default function CheckoutPage() {
               autoComplete="off"
               onSubmit={(e) => e.preventDefault()}
             >
+              {/* CAMPO NOMBRE */}
               <div className="group">
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">
                   Nombre Completo
@@ -254,6 +251,7 @@ export default function CheckoutPage() {
                 )}
               </div>
 
+              {/* GRID CELULAR Y DISTRITO */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="group">
                   <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">
@@ -327,6 +325,7 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
+              {/* CAMPO DIRECCIÓN */}
               <div className="group">
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">
                   Dirección Exacta
@@ -356,18 +355,16 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        {/* --- COLUMNA 2: RESUMEN (Sticky & Smart) --- */}
+        {/* --- COLUMNA 2: RESUMEN FLOTANTE --- */}
         <div className="lg:col-span-5">
           <div className="bg-white p-8 rounded-[32px] shadow-xl shadow-gray-200/50 sticky top-32 border border-gray-100/50">
-            {/* Header Resumen con Editar */}
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-semibold text-[#1d1d1f] flex items-center gap-2">
-                Resumen
+                Resumen{" "}
                 <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
                   {cart.length}
                 </span>
               </h2>
-              {/* Esta acción debería abrir el Sidebar, pero como Link a root funciona */}
               <Link
                 href="/"
                 className="text-sm font-medium text-[#0071e3] hover:underline transition-colors"
@@ -422,7 +419,7 @@ export default function CheckoutPage() {
 
             <div className="mt-8 relative">
               <button
-                onClick={handleSmartClick}
+                onClick={handleSendOrder}
                 className={`w-full py-4 rounded-full font-bold text-[15px] flex items-center justify-center gap-3 transition-all duration-300 shadow-lg group ${
                   isFormValid
                     ? "bg-[#25D366] hover:bg-[#1EBE57] text-white hover:scale-[1.02] hover:shadow-green-500/40 cursor-pointer"
