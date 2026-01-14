@@ -4,51 +4,71 @@ import Link from "next/link";
 import Image from "next/image";
 import { Product } from "@/lib/products";
 import { motion } from "framer-motion";
-import { ShoppingBag } from "lucide-react";
+import { ShoppingBag, ArrowRight } from "lucide-react";
 
 export default function ProductCard({ product }: { product: Product }) {
+  // Formateador de moneda
+  const formatMoney = (amount: number) =>
+    new Intl.NumberFormat("es-PE", {
+      style: "currency",
+      currency: "PEN",
+      minimumFractionDigits: 0,
+    }).format(amount);
+
   return (
     <Link
       href={`/${product.category}/${product.slug}`}
-      className="group relative bg-white rounded-[24px] p-6 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col items-center text-center border border-gray-100 overflow-hidden"
+      className="group relative flex flex-col bg-white rounded-[32px] overflow-hidden transition-all duration-500 ease-out 
+      
+      /* ESTILO SENIOR (Igual que en Categorías) */
+      shadow-xl shadow-gray-200/60 
+      border border-gray-100
+      
+      /* Hover: Levitación */
+      hover:shadow-2xl hover:shadow-gray-300/50 hover:-translate-y-2 hover:border-transparent"
     >
-      {/* Etiqueta de "Nuevo" si aplica */}
+      {/* Badge Nuevo */}
       {product.isNew && (
-        <span className="absolute top-4 left-4 bg-blue-50 text-[#0071e3] text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider">
+        <span className="absolute top-4 left-4 z-20 bg-blue-50 text-blue-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider backdrop-blur-md">
           Nuevo
         </span>
       )}
 
-      {/* Imagen con efecto Zoom */}
-      <div className="relative w-full aspect-square mb-6 overflow-hidden rounded-xl bg-[#F5F5F7]">
+      {/* Imagen */}
+      <div className="relative w-full aspect-square bg-[#F5F5F7] flex items-center justify-center overflow-hidden">
         <motion.div
-          whileHover={{ scale: 1.05 }}
-          transition={{ duration: 0.4 }}
-          className="w-full h-full relative"
+          whileHover={{ scale: 1.1 }}
+          transition={{ duration: 0.5 }}
+          className="w-full h-full relative p-8"
         >
           <Image
             src={product.image}
             alt={product.name}
             fill
-            className="object-contain p-4"
+            className="object-contain drop-shadow-md"
+            sizes="(max-width: 768px) 100vw, 300px"
           />
         </motion.div>
       </div>
 
-      {/* Info del Producto */}
-      <div className="space-y-2 w-full">
-        <h3 className="text-lg font-semibold text-[#1d1d1f] group-hover:text-[#0071e3] transition-colors truncate">
+      {/* Info */}
+      <div className="p-6 flex flex-col flex-1">
+        <h3 className="text-lg font-semibold text-[#1d1d1f] mb-1 group-hover:text-[#0071e3] transition-colors line-clamp-1">
           {product.name}
         </h3>
 
-        {/* Precio y CTA sutil */}
-        <div className="flex items-center justify-center gap-3">
-          <p className="text-[#1d1d1f] font-medium">
-            S/ {product.price.toLocaleString("es-PE")}
-          </p>
+        <p className="text-sm text-gray-500 mb-4 line-clamp-2">
+          {product.description}
+        </p>
 
-          <div className="w-8 h-8 rounded-full bg-[#0071e3] text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
-            <ShoppingBag size={14} />
+        <div className="mt-auto flex items-center justify-between">
+          <span className="text-xl font-bold text-[#1d1d1f]">
+            {formatMoney(product.price)}
+          </span>
+
+          {/* Botón Circular Discreto */}
+          <div className="w-10 h-10 rounded-full bg-[#f5f5f7] flex items-center justify-center text-[#1d1d1f] group-hover:bg-[#0071e3] group-hover:text-white transition-all duration-300">
+            <ShoppingBag size={18} />
           </div>
         </div>
       </div>

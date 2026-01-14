@@ -97,7 +97,7 @@ export default function Hero() {
             className="relative w-full h-full will-change-transform" // EL SECRETO DE LOS 1000FPS
           >
             <Image
-              src="/products/iphone-17-lineup.webp"
+              src="/images/iphone/iphone-17-lineup.webp"
               alt="iPhone 17 Pro"
               fill
               priority

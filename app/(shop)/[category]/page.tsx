@@ -13,43 +13,50 @@ export async function generateStaticParams() {
   return categories.map((category) => ({ category }));
 }
 
-// --- CONFIGURACIÓN VISUAL POR CATEGORÍA ---
-const categoryConfig: Record<
+// --- SISTEMA DE PERSONALIDAD ---
+const categoryTheme: Record<
   string,
   {
     subtitle: string;
-    // TRUCO PRO: Usamos colores muy claros (50) mezclados con blanco
-    // para que parezca luz, no pintura.
-    gradient: string;
+    textColor: string;
+    badgeBg: string;
   }
 > = {
   iphone: {
     subtitle: "DISEÑADO PARA SER AMADO",
-    gradient: "from-blue-50/80 to-white", // Azul hielo
+    textColor: "text-blue-600",
+    badgeBg: "bg-blue-50",
   },
   mac: {
     subtitle: "POTENCIA EN ESTADO PURO",
-    gradient: "from-slate-100 to-white", // Gris Titanio (Más elegante que morado)
+    // CAMBIO AQUI: Usamos Morado (Purple) para creatividad/poder
+    textColor: "text-purple-600",
+    badgeBg: "bg-purple-50",
   },
   ipad: {
     subtitle: "TU PRÓXIMO ORDENADOR",
-    gradient: "from-fuchsia-50/60 to-white", // Un toque creativo muy suave
+    textColor: "text-fuchsia-600",
+    badgeBg: "bg-fuchsia-50",
   },
   watch: {
     subtitle: "EL FUTURO DE LA SALUD",
-    gradient: "from-orange-50/70 to-white", // Cálido
+    textColor: "text-orange-600",
+    badgeBg: "bg-orange-50",
   },
   airpods: {
     subtitle: "MAGIA QUE SE OYE",
-    gradient: "from-sky-50/60 to-white", // Aire/Cielo
+    textColor: "text-sky-500", // Celeste para "Aire"
+    badgeBg: "bg-sky-50",
   },
   accesorios: {
     subtitle: "COMPLEMENTOS PERFECTOS",
-    gradient: "from-gray-100/50 to-white", // Neutro
+    textColor: "text-gray-500",
+    badgeBg: "bg-gray-100",
   },
   certificados: {
     subtitle: "INTELIGENCIA CERTIFICADA",
-    gradient: "from-emerald-50/60 to-white", // Verde confianza
+    textColor: "text-emerald-600",
+    badgeBg: "bg-emerald-50",
   },
 };
 
@@ -72,10 +79,13 @@ export default async function CategoryPage({ params }: Props) {
   }
 
   const products = getProductsByCategory(category);
-  const config = categoryConfig[category] || {
+
+  const theme = categoryTheme[category] || {
     subtitle: "TIENDA",
-    gradient: "from-gray-50 to-white",
+    textColor: "text-gray-900",
+    badgeBg: "bg-gray-50",
   };
+
   const title =
     categoryTitles[category] ||
     category.charAt(0).toUpperCase() + category.slice(1);
@@ -88,12 +98,14 @@ export default async function CategoryPage({ params }: Props) {
     }).format(amount);
 
   return (
-    <main className={`min-h-screen bg-gradient-to-b ${config.gradient}`}>
-      {/* 1. HERO DE CATEGORÍA (Estilo Editorial) */}
+    <main className="min-h-screen bg-white">
+      {/* HERO SECTION */}
       <div className="pt-40 pb-20 px-6 text-center relative overflow-hidden">
         <div className="max-w-4xl mx-auto relative z-10">
-          <span className="text-xs font-bold tracking-[0.2em] text-gray-500 mb-4 block animate-fade-in-up">
-            {config.subtitle}
+          <span
+            className={`text-xs font-bold tracking-[0.2em] mb-4 block animate-fade-in-up ${theme.textColor}`}
+          >
+            {theme.subtitle}
           </span>
           <h1 className="text-6xl md:text-8xl font-bold text-[#1d1d1f] tracking-tighter mb-6 animate-fade-in-up delay-100">
             {title}
@@ -102,12 +114,9 @@ export default async function CategoryPage({ params }: Props) {
             Explora la gama completa. Encuentra el perfecto para ti.
           </p>
         </div>
-
-        {/* Decoración de fondo (Blur de luz) */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-white opacity-60 blur-[100px] -z-0 rounded-full pointer-events-none" />
       </div>
 
-      {/* 2. CHIPS DE FILTRO RÁPIDO (Fake UI para sensación Premium) */}
+      {/* FILTROS */}
       {products.length > 4 && (
         <div className="flex justify-center gap-3 mb-16 overflow-x-auto px-6 pb-4 scrollbar-hide">
           {["Todos", "Pro", "Nuevos", "Ofertas"].map((filter, i) => (
@@ -125,11 +134,10 @@ export default async function CategoryPage({ params }: Props) {
         </div>
       )}
 
-      {/* 3. GRILLA DE PRODUCTOS "BENTO STYLE" */}
+      {/* GRILLA DE PRODUCTOS */}
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pb-32">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {products.map((product, index) => {
-            // Lógica para destacar el primer producto (Hacerlo grande en desktop)
             const isFeatured = index === 0 && products.length > 3;
 
             return (
@@ -138,7 +146,9 @@ export default async function CategoryPage({ params }: Props) {
                 key={product.id}
                 className={`
                   group relative flex flex-col bg-white rounded-[32px] overflow-hidden transition-all duration-500 ease-out 
-                  hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-2
+                  shadow-xl shadow-gray-200/60 
+                  border border-gray-100
+                  hover:shadow-2xl hover:shadow-gray-300/50 hover:-translate-y-2 hover:border-transparent
                   ${
                     isFeatured
                       ? "lg:col-span-2 lg:flex-row lg:items-center"
@@ -146,14 +156,16 @@ export default async function CategoryPage({ params }: Props) {
                   }
                 `}
               >
-                {/* Badge de "Nuevo" flotante */}
+                {/* Badge Nuevo */}
                 {product.isNew && (
-                  <span className="absolute top-6 left-6 z-20 bg-[#0071e3]/10 text-[#0071e3] text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider backdrop-blur-md">
+                  <span
+                    className={`absolute top-6 left-6 z-20 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider backdrop-blur-md ${theme.badgeBg} ${theme.textColor}`}
+                  >
                     Nuevo
                   </span>
                 )}
 
-                {/* IMAGEN DEL PRODUCTO */}
+                {/* IMAGEN */}
                 <div
                   className={`
                   relative bg-[#F5F5F7] overflow-hidden flex items-center justify-center
@@ -171,21 +183,21 @@ export default async function CategoryPage({ params }: Props) {
                     className="object-contain p-8 transition-transform duration-700 ease-out group-hover:scale-110"
                     sizes="(max-width: 768px) 100vw, 50vw"
                   />
-                  {/* Sombra suave debajo del producto */}
                   <div className="absolute bottom-0 w-3/4 h-4 bg-black/5 blur-xl rounded-full translate-y-2 group-hover:scale-110 transition-transform duration-700"></div>
                 </div>
 
-                {/* INFORMACIÓN */}
+                {/* INFO */}
                 <div
                   className={`
                   flex flex-col p-8 md:p-10
                   ${isFeatured ? "w-full lg:w-1/2 order-1" : "flex-1"}
                 `}
                 >
-                  {/* Tags rápidos */}
                   <div className="flex gap-2 mb-4">
                     {product.isNew && (
-                      <div className="flex items-center gap-1 text-[10px] font-bold text-orange-500 uppercase">
+                      <div
+                        className={`flex items-center gap-1 text-[10px] font-bold uppercase ${theme.textColor}`}
+                      >
                         <Star size={12} fill="currentColor" /> Top Ventas
                       </div>
                     )}
@@ -195,9 +207,10 @@ export default async function CategoryPage({ params }: Props) {
                   </div>
 
                   <h3
-                    className={`font-semibold text-[#1d1d1f] tracking-tight mb-2 group-hover:text-[#0071e3] transition-colors ${
-                      isFeatured ? "text-4xl" : "text-2xl"
-                    }`}
+                    className={`font-semibold text-[#1d1d1f] tracking-tight mb-2 transition-colors group-hover:${theme.textColor.replace(
+                      "text-",
+                      "text-"
+                    )} ${isFeatured ? "text-4xl" : "text-2xl"}`}
                   >
                     {product.name}
                   </h3>
@@ -216,7 +229,12 @@ export default async function CategoryPage({ params }: Props) {
                       </p>
                     </div>
 
-                    <span className="w-12 h-12 rounded-full bg-[#f5f5f7] flex items-center justify-center text-[#1d1d1f] group-hover:bg-[#0071e3] group-hover:text-white transition-all duration-300">
+                    <span
+                      className={`w-12 h-12 rounded-full bg-[#f5f5f7] flex items-center justify-center text-[#1d1d1f] transition-all duration-300 group-hover:text-white group-hover:${theme.textColor.replace(
+                        "text-",
+                        "bg-"
+                      )}`}
+                    >
                       <ArrowRight size={20} />
                     </span>
                   </div>

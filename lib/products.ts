@@ -62,7 +62,7 @@ export const products: Product[] = [
       "Poder sin precedentes con el nuevo chip M5. Rendimiento Pro llevado al límite.",
     price: 8499,
     category: "mac",
-    image: "/images/mac/Apple-MacBook-Pro-14-in-hero-lineup.webp",
+    image: "/images/mac/Apple-MacBook-Pro-14-lineup.webp",
     images: ["/images/mac/macbook-pro-m5.png"],
     colors: [
       { name: "Negro Espacial", hex: "#2e3133" },
@@ -782,7 +782,7 @@ export const products: Product[] = [
       "El reloj más capaz y resistente. Conectividad satelital y el mejor GPS deportivo.",
     price: 3499,
     category: "watch",
-    image: "/images/watch/watch-ultra-3.png",
+    image: "/images/watch/Watch-Ultra-3-lineup.webp",
     images: ["/images/watch/watch-ultra-3.png"],
     colors: [
       { name: "Titanio Natural", hex: "#beb9b2" },

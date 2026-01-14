@@ -54,14 +54,14 @@ const containerVariants: Variants = {
 };
 
 const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 20, scale: 0.98 }, // Menos recorrido en Y para rapidez
+  hidden: { opacity: 0, y: 20, scale: 0.98 },
   visible: {
     opacity: 1,
     y: 0,
     scale: 1,
     transition: {
-      duration: 0.5, // Reducido de 0.8 para mayor agilidad
-      ease: [0.23, 1, 0.32, 1], // Curva "Quint" para suavidad final
+      duration: 0.5,
+      ease: [0.23, 1, 0.32, 1],
     },
   },
 };
@@ -83,7 +83,10 @@ export default function BentoShowcase() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-[550px]">
-          {/* 1. MACBOOK PRO */}
+          {/* 1. MACBOOK PRO (DARK MODE) 
+              Este lo dejamos NEGRO porque es el producto "Pro" destacado. 
+              El contraste Negro vs Blanco es muy Apple.
+          */}
           <motion.div
             variants={cardVariants}
             className="relative lg:col-span-2 bg-black rounded-[2.5rem] overflow-hidden group cursor-pointer flex flex-col md:flex-row items-center justify-between p-10 md:p-14 shadow-2xl shadow-black/20"
@@ -99,7 +102,7 @@ export default function BentoShowcase() {
             </div>
             <div className="relative w-full md:w-2/3 h-64 md:h-full transform transition-transform duration-700 group-hover:scale-105 group-hover:-translate-x-2">
               <Image
-                src="/products/Apple-MacBook-Pro-14-in-hero-lineup.webp"
+                src="/images/mac/MacBook-Pro-14-lineup.webp"
                 alt="MacBook Pro"
                 fill
                 className="object-contain"
@@ -108,17 +111,25 @@ export default function BentoShowcase() {
             </div>
           </motion.div>
 
-          {/* 2. APPLE WATCH ULTRA */}
+          {/* 2. APPLE WATCH ULTRA (CAMBIADO A ESTILO SENIOR WHITE) */}
           <motion.div
             variants={cardVariants}
-            className="relative bg-[#f5f5f7] rounded-[2.5rem] overflow-hidden group cursor-pointer flex flex-col items-center pt-12 text-center hover:bg-[#efeff1] transition-colors"
+            className="
+              relative rounded-[2.5rem] overflow-hidden group cursor-pointer flex flex-col items-center pt-12 text-center transition-all duration-500
+              
+              /* 👇 ESTILO LEVITACIÓN (Fondo blanco + Sombra) */
+              bg-white 
+              shadow-xl shadow-gray-200/60 
+              border border-gray-100
+              hover:shadow-2xl hover:shadow-gray-300/50 hover:-translate-y-2 hover:border-transparent
+            "
           >
             <div className="z-10 px-6 mb-4 transform transition-transform duration-500 group-hover:-translate-y-1">
               <span className="text-3xl font-semibold text-[#1d1d1f]">
                 WATCH
               </span>
               <p className="text-orange-600 font-bold tracking-widest text-[10px] uppercase mb-2">
-                ULTRA 2
+                ULTRA 3
               </p>
               <p className="text-lg text-[#1d1d1f] font-medium leading-tight">
                 Aventura de otro nivel.
@@ -129,7 +140,7 @@ export default function BentoShowcase() {
             </div>
             <div className="relative w-full h-full mt-4">
               <Image
-                src="/products/watch-ultra.png"
+                src="/images/watch/Watch-Ultra-3-lineup.webp"
                 alt="Apple Watch"
                 fill
                 className="object-contain object-bottom group-hover:scale-110 transition-transform duration-700 mix-blend-multiply pb-6"
@@ -138,17 +149,25 @@ export default function BentoShowcase() {
             </div>
           </motion.div>
 
-          {/* 3. iPAD AIR */}
+          {/* 3. iPAD AIR (ESTILO SENIOR WHITE) */}
           <motion.div
             variants={cardVariants}
-            className="relative bg-white border border-gray-100 rounded-[2.5rem] overflow-hidden group cursor-pointer flex flex-col items-center justify-center p-8 text-center hover:shadow-xl hover:border-transparent transition-all duration-500"
+            className="
+              relative rounded-[2.5rem] overflow-hidden group cursor-pointer flex flex-col items-center justify-center p-8 text-center transition-all duration-500
+              
+              /* 👇 ESTILO LEVITACIÓN */
+              bg-white 
+              shadow-xl shadow-gray-200/60 
+              border border-gray-100
+              hover:shadow-2xl hover:shadow-gray-300/50 hover:-translate-y-2 hover:border-transparent
+            "
           >
             <div className="mb-6 z-10 transform transition-transform duration-500 group-hover:-translate-y-2">
               <h3 className="text-3xl md:text-4xl font-semibold text-[#1d1d1f] mb-1">
-                iPad Air
+                iPad Pro
               </h3>
               <p className="text-lg text-[#86868b] font-medium">
-                Dos tamaños. Chip M2.
+                Dos tamaños. Chip M5.
               </p>
               <div className="mt-2 flex justify-center scale-90">
                 <ActionButtons link="/ipad" />
@@ -156,7 +175,7 @@ export default function BentoShowcase() {
             </div>
             <div className="relative w-full h-64">
               <Image
-                src="/products/ipad-air.png"
+                src="/images/ipad/Apple-iPad-Pro-lineup.webp"
                 alt="iPad"
                 fill
                 className="object-contain group-hover:scale-105 transition-transform duration-500"
@@ -165,10 +184,18 @@ export default function BentoShowcase() {
             </div>
           </motion.div>
 
-          {/* 4. AIRPODS PRO */}
+          {/* 4. AIRPODS PRO (CAMBIADO A ESTILO SENIOR WHITE) */}
           <motion.div
             variants={cardVariants}
-            className="relative lg:col-span-2 bg-[#f5f5f7] rounded-[2.5rem] overflow-hidden group cursor-pointer flex flex-col md:flex-row-reverse items-center justify-between p-10 md:p-14"
+            className="
+              relative lg:col-span-2 rounded-[2.5rem] overflow-hidden group cursor-pointer flex flex-col md:flex-row-reverse items-center justify-between p-10 md:p-14 transition-all duration-500
+              
+              /* 👇 ESTILO LEVITACIÓN */
+              bg-white 
+              shadow-xl shadow-gray-200/60 
+              border border-gray-100
+              hover:shadow-2xl hover:shadow-gray-300/50 hover:-translate-y-2 hover:border-transparent
+            "
           >
             <div className="z-10 flex flex-col items-center md:items-start text-center md:text-left w-full md:w-1/2 mb-8 md:mb-0 transform transition-transform duration-500 group-hover:-translate-x-2">
               <h3 className="text-3xl md:text-4xl font-semibold text-[#1d1d1f] mb-2">
@@ -181,7 +208,7 @@ export default function BentoShowcase() {
             </div>
             <div className="relative w-full md:w-1/2 h-64 md:h-80 transform transition-transform duration-700 ease-out group-hover:scale-105">
               <Image
-                src="/products/airpods-pro.png"
+                src="/images/airpods/Apple-AirPods-Pro-3-lineup.webp"
                 alt="AirPods Pro"
                 fill
                 className="object-contain mix-blend-multiply"
