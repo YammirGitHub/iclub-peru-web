@@ -24,6 +24,7 @@ export interface ProductColor {
   name: string;
   hex: string;
   class?: string;
+  image?: string;
 }
 
 export interface StorageOption {
@@ -40,7 +41,7 @@ export interface Product {
   price: number;
   image: string;
   category: ProductCategory;
-
+  originalPrice?: number;
   // Opcionales
   images?: string[];
   colors?: ProductColor[];
@@ -455,11 +456,19 @@ export const products: Product[] = [
     description: "El futuro de Apple Intelligence.",
     price: 6499,
     category: "iphone",
-    image: "/images/iphone/iphone-17-lineup.webp",
-    images: ["/images/iphone/iphone-17-lineup.webp"],
+    image: "/images/iphone/Apple-iPhone-17-Pro-orange.webp",
+
     colors: [
-      { name: "Titanio Aero", hex: "#3c3d3a" },
-      { name: "Titanio Natural", hex: "#beb9b2" },
+      {
+        name: "Titanio Aero",
+        hex: "#3c3d3a",
+        image: "/images/iphone/iphone-17-pro-max-titanio-aero.webp", // 👈 FOTO NEGRA
+      },
+      {
+        name: "Titanio Natural",
+        hex: "#beb9b2",
+        image: "/images/iphone/iphone-17-pro-max-titanio-natural.webp", // 👈 FOTO GRIS
+      },
     ],
     storage: [
       { capacity: "256GB", price: 6499 },
@@ -778,18 +787,39 @@ export const products: Product[] = [
     id: "apple-watch-ultra-3",
     slug: "apple-watch-ultra-3",
     name: "Apple Watch Ultra 3",
-    description:
-      "El reloj más capaz y resistente. Conectividad satelital y el mejor GPS deportivo.",
+    description: "El reloj más capaz y resistente. Conectividad satelital y el mejor GPS deportivo.",
+    
+    // Precio Actual (Oferta)
     price: 3499,
+    
+    // 👇 PRECIO ANTERIOR (Para tachar)
+    originalPrice: 3999, 
+    
     category: "watch",
+    // --- PASO 2: CATÁLOGO ---
+    // Esta es la imagen que se ve en la lista de productos (Card)
     image: "/images/watch/Watch-Ultra-3-lineup.webp",
-    images: ["/images/watch/watch-ultra-3.png"],
+// Galería (Opcional, se muestra si no hay selección de color específica aún)
+    images: ["/images/watch/watch-ultra-3-natural.webp"],
+    // --- PASO 3: DETALLE E INTERACCIÓN ---
     colors: [
-      { name: "Titanio Natural", hex: "#beb9b2" },
-      { name: "Titanio Negro", hex: "#1d1d1f" },
+      { 
+        name: "Titanio Natural", 
+        hex: "#beb9b2", 
+        // 1. Color por defecto: Su foto es IGUAL a la principal para que no haya saltos.
+        image: "/images/watch/Watch-Ultra-3-lineup.webp" 
+      },
+      { 
+        name: "Titanio Negro", 
+        hex: "#1d1d1f", 
+        // 2. Color secundario: Su foto es la versión negra.
+        image: "/images/watch/ultra-black.webp" 
+      },
     ],
+    
     storage: [{ capacity: "49mm", price: 3499 }],
     isNew: true,
+    
     marketing: {
       slogan: "Aventuras sin límites.",
       subSlogan:
@@ -972,7 +1002,7 @@ export const products: Product[] = [
       "La mayor innovación en salud auditiva con chip H3 y sensores térmicos.",
     price: 1249,
     category: "airpods",
-    image: "/images/airpods/airpods-pro-3.png",
+    image: "/images/airpods/Apple-AirPods-Pro-3-lineup.webp",
     images: ["/images/airpods/airpods-pro-3.png"],
     colors: [{ name: "Blanco", hex: "#ffffff" }],
     storage: [{ capacity: "Estuche USB-C (Altavoz)", price: 1249 }],

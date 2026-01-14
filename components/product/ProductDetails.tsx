@@ -7,8 +7,9 @@ import AddToCart from "./AddToCart";
 export default function ProductDetails({ product }: { product: Product }) {
   // Estado levantado: El padre controla qué imagen se muestra
   // Si tenemos galería, usamos la primera, si no, la principal.
+  // ✅ Esto fuerza a que la primera foto sea SIEMPRE la del primer color disponible
   const [currentImage, setCurrentImage] = useState(
-    product.images?.[0] || product.image
+    product.colors?.[0]?.image || product.image
   );
 
   return (
