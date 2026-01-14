@@ -40,6 +40,8 @@ export interface Product {
   description: string;
   price: number;
   image: string;
+  video?: string;
+
   category: ProductCategory;
   originalPrice?: number;
   // Opcionales
@@ -787,39 +789,45 @@ export const products: Product[] = [
     id: "apple-watch-ultra-3",
     slug: "apple-watch-ultra-3",
     name: "Apple Watch Ultra 3",
-    description: "El reloj más capaz y resistente. Conectividad satelital y el mejor GPS deportivo.",
-    
+    description:
+      "El reloj más capaz y resistente. Conectividad satelital y el mejor GPS deportivo.",
+
     // Precio Actual (Oferta)
     price: 3499,
-    
+
     // 👇 PRECIO ANTERIOR (Para tachar)
-    originalPrice: 3999, 
-    
+    originalPrice: 3999,
+
     category: "watch",
     // --- PASO 2: CATÁLOGO ---
     // Esta es la imagen que se ve en la lista de productos (Card)
+    // IMAGEN (Lo que se ve los primeros 3 segundos)
     image: "/images/watch/Watch-Ultra-3-lineup.webp",
-// Galería (Opcional, se muestra si no hay selección de color específica aún)
-    images: ["/images/watch/watch-ultra-3-natural.webp"],
+
+    // Galería (Opcional, se muestra si no hay selección de color específica aún)
+    // VIDEO (Lo que aparece después)
+    video: "/images/watch/Watch-Ultra-3.mp4",
+
+
     // --- PASO 3: DETALLE E INTERACCIÓN ---
     colors: [
-      { 
-        name: "Titanio Natural", 
-        hex: "#beb9b2", 
+      {
+        name: "Titanio Natural",
+        hex: "#beb9b2",
         // 1. Color por defecto: Su foto es IGUAL a la principal para que no haya saltos.
-        image: "/images/watch/Watch-Ultra-3-lineup.webp" 
+        image: "/images/watch/Watch-Ultra-3-lineup.webp",
       },
-      { 
-        name: "Titanio Negro", 
-        hex: "#1d1d1f", 
+      {
+        name: "Titanio Negro",
+        hex: "#1d1d1f",
         // 2. Color secundario: Su foto es la versión negra.
-        image: "/images/watch/ultra-black.webp" 
+        image: "/images/watch/ultra-black.webp",
       },
     ],
-    
+
     storage: [{ capacity: "49mm", price: 3499 }],
     isNew: true,
-    
+
     marketing: {
       slogan: "Aventuras sin límites.",
       subSlogan:
