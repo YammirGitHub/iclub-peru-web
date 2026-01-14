@@ -62,7 +62,7 @@ export const products: Product[] = [
       "Poder sin precedentes con el nuevo chip M5. Rendimiento Pro llevado al límite.",
     price: 8499,
     category: "mac",
-    image: "/images/mac/macbook-pro-m5.png",
+    image: "/images/mac/Apple-MacBook-Pro-14-in-hero-lineup.webp",
     images: ["/images/mac/macbook-pro-m5.png"],
     colors: [
       { name: "Negro Espacial", hex: "#2e3133" },

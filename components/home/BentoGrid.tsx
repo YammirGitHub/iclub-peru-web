@@ -99,7 +99,7 @@ export default function BentoShowcase() {
             </div>
             <div className="relative w-full md:w-2/3 h-64 md:h-full transform transition-transform duration-700 group-hover:scale-105 group-hover:-translate-x-2">
               <Image
-                src="/products/macbook-pro-m3.png"
+                src="/products/Apple-MacBook-Pro-14-in-hero-lineup.webp"
                 alt="MacBook Pro"
                 fill
                 className="object-contain"
