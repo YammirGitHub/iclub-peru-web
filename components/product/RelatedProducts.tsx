@@ -10,7 +10,6 @@ interface Props {
 }
 
 export default function RelatedProducts({ products }: Props) {
-  // Si no hay productos relacionados, no renderizamos nada
   if (!products || products.length === 0) return null;
 
   return (
@@ -30,9 +29,9 @@ export default function RelatedProducts({ products }: Props) {
               <motion.div
                 whileHover={{ y: -5 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
-                className="bg-[#f5f5f7] rounded-[24px] p-8 h-full flex flex-col items-center text-center transition-all duration-300 group-hover:shadow-xl group-hover:shadow-black/5"
+                className="bg-[#f5f5f7] rounded-[24px] p-8 h-full flex flex-col items-center text-center transition-all duration-300 
+                border border-transparent hover:border-orange-100 hover:shadow-xl hover:shadow-orange-500/5"
               >
-                {/* CORRECCIÓN 1: La imagen ahora está en la raíz del producto */}
                 <div className="relative w-48 h-48 mb-8 mt-4">
                   <Image
                     src={product.image}
@@ -43,18 +42,17 @@ export default function RelatedProducts({ products }: Props) {
                   />
                 </div>
 
-                {/* CORRECCIÓN 2: Usamos 'name' en lugar de 'title' */}
-                <h3 className="text-xl font-semibold text-[#1d1d1f] mb-2">
+                <h3 className="text-xl font-semibold text-[#1d1d1f] mb-2 group-hover:text-[#F97316] transition-colors">
                   {product.name}
                 </h3>
 
                 <div className="mt-auto flex flex-col items-center gap-4">
-                  {/* CORRECCIÓN 3: Usamos 'price' en lugar de 'basePrice' */}
                   <p className="text-sm text-[#1d1d1f] font-medium">
-                    Desde ${product.price}
+                    Desde S/ {product.price.toLocaleString("es-PE")}
                   </p>
 
-                  <span className="text-[#0071e3] text-sm font-medium opacity-0 -translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                  {/* El enlace aparece y se pone naranja al pasar el mouse */}
+                  <span className="text-[#F97316] text-sm font-medium opacity-0 -translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
                     Ver detalles &rarr;
                   </span>
                 </div>

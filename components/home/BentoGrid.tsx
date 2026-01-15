@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { motion, Variants } from "framer-motion";
 
-// --- BOTONES APPLE STYLE ---
+// --- BOTONES CON TU BRANDING (Naranja Premium) ---
 const ActionButtons = ({
   dark = false,
   link,
@@ -18,10 +18,10 @@ const ActionButtons = ({
       <motion.button
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        className={`px-5 py-2 rounded-full font-medium text-[14px] transition-all duration-300 ${
+        className={`px-6 py-2.5 rounded-full font-semibold text-[14px] transition-all duration-300 ${
           dark
-            ? "bg-white text-black hover:bg-gray-100"
-            : "bg-[#0071e3] text-white hover:bg-[#0077ed] shadow-lg shadow-blue-500/20"
+            ? "bg-white text-black hover:bg-gray-100" // En fondo oscuro, blanco es más elegante
+            : "bg-[#F97316] text-white hover:bg-[#ea580c] shadow-lg shadow-orange-500/20" // 👇 TU NARANJA
         }`}
       >
         Comprar
@@ -32,7 +32,7 @@ const ActionButtons = ({
       className={`group flex items-center gap-1 text-[14px] font-medium transition-colors ${
         dark
           ? "text-gray-300 hover:text-white"
-          : "text-[#0071e3] hover:text-[#0077ed]"
+          : "text-[#1d1d1f] hover:text-[#F97316]" // 👇 HOVER NARANJA
       }`}
     >
       <span className="group-hover:underline">Más información</span>
@@ -83,10 +83,7 @@ export default function BentoShowcase() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-[550px]">
-          {/* 1. MACBOOK PRO (DARK MODE) 
-              Este lo dejamos NEGRO porque es el producto "Pro" destacado. 
-              El contraste Negro vs Blanco es muy Apple.
-          */}
+          {/* 1. MACBOOK PRO (DARK MODE) */}
           <motion.div
             variants={cardVariants}
             className="relative lg:col-span-2 bg-black rounded-[2.5rem] overflow-hidden group cursor-pointer flex flex-col md:flex-row items-center justify-between p-10 md:p-14 shadow-2xl shadow-black/20"
@@ -111,24 +108,23 @@ export default function BentoShowcase() {
             </div>
           </motion.div>
 
-          {/* 2. APPLE WATCH ULTRA (CAMBIADO A ESTILO SENIOR WHITE) */}
+          {/* 2. APPLE WATCH ULTRA */}
           <motion.div
             variants={cardVariants}
             className="
               relative rounded-[2.5rem] overflow-hidden group cursor-pointer flex flex-col items-center pt-12 text-center transition-all duration-500
-              
-              /* 👇 ESTILO LEVITACIÓN (Fondo blanco + Sombra) */
               bg-white 
               shadow-xl shadow-gray-200/60 
               border border-gray-100
-              hover:shadow-2xl hover:shadow-gray-300/50 hover:-translate-y-2 hover:border-transparent
+              hover:shadow-2xl hover:shadow-gray-300/50 hover:-translate-y-2 hover:border-orange-200/50
             "
           >
             <div className="z-10 px-6 mb-4 transform transition-transform duration-500 group-hover:-translate-y-1">
               <span className="text-3xl font-semibold text-[#1d1d1f]">
                 WATCH
               </span>
-              <p className="text-orange-600 font-bold tracking-widest text-[10px] uppercase mb-2">
+              {/* Detalle sutil en naranja */}
+              <p className="text-[#F97316] font-bold tracking-widest text-[10px] uppercase mb-2">
                 ULTRA 3
               </p>
               <p className="text-lg text-[#1d1d1f] font-medium leading-tight">
@@ -149,17 +145,15 @@ export default function BentoShowcase() {
             </div>
           </motion.div>
 
-          {/* 3. iPAD AIR (ESTILO SENIOR WHITE) */}
+          {/* 3. iPAD PRO */}
           <motion.div
             variants={cardVariants}
             className="
               relative rounded-[2.5rem] overflow-hidden group cursor-pointer flex flex-col items-center justify-center p-8 text-center transition-all duration-500
-              
-              /* 👇 ESTILO LEVITACIÓN */
               bg-white 
               shadow-xl shadow-gray-200/60 
               border border-gray-100
-              hover:shadow-2xl hover:shadow-gray-300/50 hover:-translate-y-2 hover:border-transparent
+              hover:shadow-2xl hover:shadow-gray-300/50 hover:-translate-y-2 hover:border-orange-200/50
             "
           >
             <div className="mb-6 z-10 transform transition-transform duration-500 group-hover:-translate-y-2">
@@ -184,17 +178,15 @@ export default function BentoShowcase() {
             </div>
           </motion.div>
 
-          {/* 4. AIRPODS PRO (CAMBIADO A ESTILO SENIOR WHITE) */}
+          {/* 4. AIRPODS PRO */}
           <motion.div
             variants={cardVariants}
             className="
               relative lg:col-span-2 rounded-[2.5rem] overflow-hidden group cursor-pointer flex flex-col md:flex-row-reverse items-center justify-between p-10 md:p-14 transition-all duration-500
-              
-              /* 👇 ESTILO LEVITACIÓN */
               bg-white 
               shadow-xl shadow-gray-200/60 
               border border-gray-100
-              hover:shadow-2xl hover:shadow-gray-300/50 hover:-translate-y-2 hover:border-transparent
+              hover:shadow-2xl hover:shadow-gray-300/50 hover:-translate-y-2 hover:border-orange-200/50
             "
           >
             <div className="z-10 flex flex-col items-center md:items-start text-center md:text-left w-full md:w-1/2 mb-8 md:mb-0 transform transition-transform duration-500 group-hover:-translate-x-2">

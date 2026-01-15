@@ -20,13 +20,35 @@ type FilterType = "Todos" | "Pro" | "Nuevos" | "Ofertas";
 export default function ProductGrid({ products, theme }: Props) {
   const [activeFilter, setActiveFilter] = useState<FilterType>("Todos");
 
-  // Lógica de Filtrado Senior
+  // Detectamos la categoría actual para ajustar los textos de los botones
+  const currentCategory = products[0]?.category;
+
+  // Función para obtener la etiqueta correcta según la categoría
+  const getProLabel = () => {
+    if (currentCategory === "watch") return "Ultra";
+    if (currentCategory === "airpods") return "Pro / Max";
+    return "Pro"; // Default para iPhone, Mac, iPad
+  };
+
+  // Lógica de Filtrado Senior (CORREGIDA)
   const filteredProducts = products.filter((product) => {
     if (activeFilter === "Todos") return true;
+
     if (activeFilter === "Nuevos") return product.isNew;
-    if (activeFilter === "Pro") return product.name.includes("Pro");
-    if (activeFilter === "Ofertas")
+
+    if (activeFilter === "Pro") {
+      // El filtro "Pro" es inteligente: detecta Pro, Ultra o Max
+      return (
+        product.name.includes("Pro") ||
+        product.name.includes("Ultra") ||
+        product.name.includes("Max")
+      );
+    }
+
+    if (activeFilter === "Ofertas") {
       return product.originalPrice && product.originalPrice > product.price;
+    }
+
     return true;
   });
 
@@ -42,24 +64,61 @@ export default function ProductGrid({ products, theme }: Props) {
       {/* 1. BARRA DE FILTROS (STICKY Y RESPONSIVE) */}
       <div className="sticky top-20 z-30 flex justify-center pb-8">
         <div className="flex gap-2 p-1.5 bg-gray-100/80 backdrop-blur-xl rounded-full overflow-x-auto scrollbar-hide max-w-[90vw] shadow-sm border border-gray-200/50">
-          {(["Todos", "Pro", "Nuevos", "Ofertas"] as FilterType[]).map(
-            (filter) => (
-              <button
-                key={filter}
-                onClick={() => setActiveFilter(filter)}
-                className={`
-                px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 whitespace-nowrap
-                ${
-                  activeFilter === filter
-                    ? "bg-[#1d1d1f] text-white shadow-md"
-                    : "text-gray-500 hover:text-[#1d1d1f] hover:bg-white/50"
-                }
-              `}
-              >
-                {filter}
-              </button>
-            )
-          )}
+          {/* Botón Todos */}
+          <button
+            onClick={() => setActiveFilter("Todos")}
+            className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 whitespace-nowrap
+              ${
+                activeFilter === "Todos"
+                  ? "bg-[#1d1d1f] text-white shadow-md"
+                  : "text-gray-500 hover:text-[#1d1d1f] hover:bg-white/50"
+              }
+            `}
+          >
+            Todos
+          </button>
+
+          {/* Botón Dinámico (Pro/Ultra/Max) */}
+          <button
+            onClick={() => setActiveFilter("Pro")}
+            className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 whitespace-nowrap
+              ${
+                activeFilter === "Pro"
+                  ? "bg-[#1d1d1f] text-white shadow-md"
+                  : "text-gray-500 hover:text-[#1d1d1f] hover:bg-white/50"
+              }
+            `}
+          >
+            {getProLabel()}
+          </button>
+
+          {/* Botón Nuevos */}
+          <button
+            onClick={() => setActiveFilter("Nuevos")}
+            className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 whitespace-nowrap
+              ${
+                activeFilter === "Nuevos"
+                  ? "bg-[#1d1d1f] text-white shadow-md"
+                  : "text-gray-500 hover:text-[#1d1d1f] hover:bg-white/50"
+              }
+            `}
+          >
+            Nuevos
+          </button>
+
+          {/* Botón Ofertas */}
+          <button
+            onClick={() => setActiveFilter("Ofertas")}
+            className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 whitespace-nowrap
+              ${
+                activeFilter === "Ofertas"
+                  ? "bg-[#1d1d1f] text-white shadow-md"
+                  : "text-gray-500 hover:text-[#1d1d1f] hover:bg-white/50"
+              }
+            `}
+          >
+            Ofertas
+          </button>
         </div>
       </div>
 
@@ -69,7 +128,7 @@ export default function ProductGrid({ products, theme }: Props) {
           layout
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
         >
-          <AnimatePresence>
+          <AnimatePresence mode="popLayout">
             {filteredProducts.map((product, index) => {
               // El primer producto es destacado SOLO si estamos en "Todos" y hay varios items
               const isFeatured =

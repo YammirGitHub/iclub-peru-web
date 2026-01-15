@@ -4,8 +4,9 @@ import { useCart } from "@/context/CartContext";
 import { useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import Logo from "@/components/ui/Logo"; // ✅ Componente de marca oficial
-import { generateWhatsAppLink } from "@/lib/whatsapp"; // ✅ Lógica centralizada
+// Logo y Utils (Asegúrate que estas rutas existan, si no, usa tus imports)
+import Logo from "@/components/ui/Logo";
+import { generateWhatsAppLink } from "@/lib/whatsapp";
 import {
   MessageCircle,
   User,
@@ -22,8 +23,11 @@ import {
 export default function CheckoutPage() {
   const { cart } = useCart();
 
-  // Cálculo del total
-  const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  // Cálculo del total (usamos finalPrice porque es el precio real calculado)
+  const total = cart.reduce(
+    (acc, item) => acc + item.finalPrice * item.quantity,
+    0
+  );
 
   // --- REFERENCIAS PARA FOCUS UX ---
   const nameInputRef = useRef<HTMLInputElement>(null);
@@ -120,7 +124,6 @@ export default function CheckoutPage() {
         paymentMethod: "Transferencia/Yape",
       };
 
-      // Usamos la función de 'lib' para mantener el componente limpio
       const url = generateWhatsAppLink(cart, total, customerData);
       window.open(url, "_blank");
       return;
@@ -149,7 +152,7 @@ export default function CheckoutPage() {
     }
   };
 
-  // Helper para clases CSS condicionales (Código Limpio)
+  // Helper para clases CSS condicionales
   const getInputClasses = (fieldName: keyof typeof errors) => {
     const hasError = touched[fieldName] && errors[fieldName];
     const base =
@@ -186,7 +189,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-[#F5F5F7] pt-8 pb-24 transition-colors">
-      {/* 1. HEADER CON LOGO (Escalado para impacto visual) */}
+      {/* 1. HEADER CON LOGO */}
       <div className="flex justify-center mb-10 pt-4">
         <div className="transform scale-110 transition-transform hover:scale-115">
           <Logo />
@@ -229,7 +232,7 @@ export default function CheckoutPage() {
               autoComplete="off"
               onSubmit={(e) => e.preventDefault()}
             >
-              {/* CAMPO NOMBRE */}
+              {/* NOMBRE */}
               <div className="group">
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">
                   Nombre Completo
@@ -251,7 +254,7 @@ export default function CheckoutPage() {
                 )}
               </div>
 
-              {/* GRID CELULAR Y DISTRITO */}
+              {/* CELULAR Y DISTRITO */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="group">
                   <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">
@@ -325,7 +328,7 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {/* CAMPO DIRECCIÓN */}
+              {/* DIRECCIÓN */}
               <div className="group">
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">
                   Dirección Exacta
@@ -376,27 +379,39 @@ export default function CheckoutPage() {
             <div className="space-y-4 mb-8 max-h-[40vh] overflow-y-auto custom-scrollbar pr-2">
               {cart.map((item) => (
                 <div
-                  key={item.id}
+                  key={item.cartItemId} // ✅ KEY CORRECTA: Usamos el ID único del carrito
                   className="flex gap-4 items-center p-3 hover:bg-[#F5F5F7] rounded-2xl transition-colors group cursor-default"
                 >
                   <div className="relative w-16 h-16 bg-white rounded-xl shrink-0 border border-gray-100 shadow-sm">
                     <Image
                       src={item.image}
-                      alt={item.title}
+                      alt={item.name} // ✅ CORREGIDO: item.name en lugar de item.title
                       fill
                       className="object-contain p-2"
                     />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold text-[#1d1d1f] truncate leading-tight mb-1">
-                      {item.title}
+                      {item.name} {/* ✅ CORREGIDO */}
                     </p>
-                    <p className="text-xs text-gray-500 font-medium">
-                      Cant: {item.quantity}
-                    </p>
+                    {/* INFO DE LA VARIANTE */}
+                    <div className="flex flex-col text-xs text-gray-500">
+                      {item.selectedSize && (
+                        <span>{item.selectedSize.label}</span>
+                      )}
+                      {item.selectedColor && (
+                        <span>{item.selectedColor.name}</span>
+                      )}
+                      {item.selectedStorage && (
+                        <span>{item.selectedStorage.capacity}</span>
+                      )}
+                      <span>Cant: {item.quantity}</span>
+                    </div>
                   </div>
                   <p className="text-sm font-bold text-[#1d1d1f] whitespace-nowrap">
-                    S/ {(item.price * item.quantity).toLocaleString("es-PE")}
+                    {/* ✅ PRECIO REAL CALCULADO */}
+                    S/{" "}
+                    {(item.finalPrice * item.quantity).toLocaleString("es-PE")}
                   </p>
                 </div>
               ))}
@@ -448,8 +463,7 @@ export default function CheckoutPage() {
                 <Lock size={16} className="text-gray-400 mt-0.5 shrink-0" />
                 <p className="text-[11px] text-gray-400 leading-relaxed font-medium">
                   Al enviar, un asesor verificará el stock en tiempo real y te
-                  proporcionará las cuentas bancarias seguras (BCP, Interbank,
-                  Yape).
+                  proporcionará las cuentas bancarias seguras.
                 </p>
               </div>
             </div>

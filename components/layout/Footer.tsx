@@ -7,20 +7,17 @@ import {
   Twitter,
   Mail,
   Phone,
-  MapPin,
   ArrowRight,
 } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 
 export default function Footer() {
   return (
-    // CAMBIO 1: Reduje py-20 a py-12 (Menos altura general)
     <footer className="bg-[#F5F5F7] text-[#1d1d1f] pt-16 pb-8 border-t border-gray-200">
       <div className="max-w-7xl mx-auto px-6">
         {/* Grid Principal */}
-        {/* CAMBIO 2: Reduje gap-12 a gap-8 para juntar las columnas */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 lg:gap-12 mb-12">
-          {/* COLUMNA 1: MARCA (Ocupa 2 columnas en móvil para dar peso) */}
+          {/* COLUMNA 1: MARCA */}
           <div className="col-span-2 lg:col-span-1 space-y-4">
             <div className="scale-90 origin-left">
               <Logo />
@@ -41,7 +38,6 @@ export default function Footer() {
             <h3 className="font-semibold text-sm text-[#1d1d1f] mb-4">
               Tienda
             </h3>
-            {/* CAMBIO 3: Reduje space-y-4 a space-y-2.5 (Links más juntos) */}
             <ul className="space-y-2.5 text-xs text-[#424245]">
               <li>
                 <FooterLink href="/iphone">iPhone</FooterLink>
@@ -88,7 +84,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* COLUMNA 4: LEGAL (Oculto en móviles muy pequeños si se desea, aquí visible) */}
+          {/* COLUMNA 4: LEGAL */}
           <div>
             <h3 className="font-semibold text-sm text-[#1d1d1f] mb-4">Legal</h3>
             <ul className="space-y-2.5 text-xs text-[#424245]">
@@ -107,7 +103,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* COLUMNA 5: CONTACTO (Más compacto) */}
+          {/* COLUMNA 5: CONTACTO */}
           <div className="col-span-2 md:col-span-4 lg:col-span-1 bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
             <h3 className="font-semibold text-sm text-[#1d1d1f] mb-3">
               ¿Necesitas ayuda?
@@ -118,7 +114,8 @@ export default function Footer() {
             <a
               href="https://wa.me/51953654313"
               target="_blank"
-              className="flex items-center justify-center gap-2 w-full bg-[#0071e3] hover:bg-[#0077ED] text-white text-xs font-medium py-3 rounded-full transition-colors mb-4"
+              // 👇 BOTÓN WHATSAPP NARANJA
+              className="flex items-center justify-center gap-2 w-full bg-[#F97316] hover:bg-[#ea580c] text-white text-xs font-medium py-3 rounded-full transition-colors mb-4 shadow-sm shadow-orange-100"
             >
               Chat en WhatsApp <ArrowRight size={14} />
             </a>
@@ -130,7 +127,6 @@ export default function Footer() {
         </div>
 
         {/* COPYRIGHT BAR */}
-        {/* CAMBIO 4: Reduje py-8 a py-6 */}
         <div className="pt-6 border-t border-gray-300 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-gray-500">
             © {new Date().getFullYear()} iClub Perú. Todos los derechos
@@ -145,7 +141,7 @@ export default function Footer() {
   );
 }
 
-// --- SUBCOMPONENTES PARA CÓDIGO LIMPIO ---
+// --- SUBCOMPONENTES ---
 
 function FooterLink({
   href,
@@ -157,7 +153,7 @@ function FooterLink({
   return (
     <Link
       href={href}
-      className="hover:text-[#0071e3] hover:underline transition-all"
+      className="hover:text-[#F97316] hover:underline transition-all"
     >
       {children}
     </Link>
@@ -168,7 +164,7 @@ function SocialIcon({ icon, href }: { icon: React.ReactNode; href: string }) {
   return (
     <a
       href={href}
-      className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full text-gray-600 hover:bg-[#0071e3] hover:text-white transition-all"
+      className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full text-gray-600 hover:bg-[#F97316] hover:text-white transition-all"
     >
       {icon}
     </a>
@@ -178,7 +174,7 @@ function SocialIcon({ icon, href }: { icon: React.ReactNode; href: string }) {
 function ContactItem({ icon, text }: { icon: React.ReactNode; text: string }) {
   return (
     <div className="flex items-center gap-2 text-xs text-gray-500">
-      <span className="text-[#0071e3]">{icon}</span>
+      <span className="text-[#F97316]">{icon}</span>
       <span>{text}</span>
     </div>
   );

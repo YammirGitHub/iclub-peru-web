@@ -7,8 +7,8 @@ import { motion, AnimatePresence, Variants, MotionConfig } from "framer-motion";
 import { useCart } from "@/context/CartContext";
 import Logo from "@/components/ui/Logo";
 import SearchOverlay from "@/components/ui/SearchOverlay";
-// --- 1. NUEVA JERARQUÍA DE MENÚ (Estrategia Apple Premium Reseller) ---
-// Orden lógico: Productos Estrella -> Accesorios -> Oportunidades -> Servicios
+
+// --- JERARQUÍA DE MENÚ ---
 const NAV_LINKS = [
   { name: "Tienda", href: "/" },
   { name: "Mac", href: "/mac" },
@@ -17,12 +17,11 @@ const NAV_LINKS = [
   { name: "Watch", href: "/watch" },
   { name: "AirPods", href: "/airpods" },
   { name: "Accesorios", href: "/accesorios" },
-  // Los nuevos agregados estratégicos:
-  { name: "Certificados", href: "/certificados" }, // Alta rentabilidad
-  { name: "Soporte", href: "/soporte" }, // Generador de confianza
+  { name: "Certificados", href: "/certificados" },
+  { name: "Soporte", href: "/soporte" },
 ];
 
-// --- ANIMACIONES DE ENTRADA PARA LOS LINKS ---
+// --- ANIMACIONES ---
 const navContainerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
@@ -93,7 +92,7 @@ export default function Navbar() {
             <Logo />
           </div>
 
-          {/* MENÚ DESKTOP (Ajustado el gap para que entren todos) */}
+          {/* MENÚ DESKTOP */}
           <motion.div
             variants={navContainerVariants}
             initial="hidden"
@@ -105,10 +104,9 @@ export default function Navbar() {
                 <Link
                   href={link.href}
                   className={`text-[12px] xl:text-[13px] font-medium transition-all duration-300 tracking-wide hover:scale-105 block ${
-                    // Destacamos sutilmente "Seminuevos" para venta
                     link.name === "Seminuevos"
-                      ? "text-[#0071e3] font-semibold"
-                      : "text-[#424245] hover:text-[#0071e3]"
+                      ? "text-[#F97316] font-semibold" // Destacado Naranja
+                      : "text-[#424245] hover:text-[#F97316]" // Hover Naranja
                   }`}
                 >
                   {link.name}
@@ -122,7 +120,7 @@ export default function Navbar() {
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              onClick={() => setIsSearchOpen(true)} // AHORA ABRE EL OVERLAY
+              onClick={() => setIsSearchOpen(true)}
               className="p-2 hover:bg-black/5 rounded-full transition-colors"
               aria-label="Buscar"
             >
@@ -137,10 +135,11 @@ export default function Navbar() {
               aria-label="Bolsa de compras"
             >
               <ShoppingBag size={18} strokeWidth={2.5} />
+              {/* NOTIFICACIÓN EN NARANJA (Acción requerida) */}
               {cart.length > 0 && (
                 <span className="absolute top-1 right-1 flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#0071e3]"></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#F97316]"></span>
                 </span>
               )}
             </motion.button>
@@ -204,8 +203,8 @@ export default function Navbar() {
                     onClick={() => setIsMobileMenuOpen(false)}
                     className={`text-3xl font-semibold transition-colors block border-b border-gray-200/50 pb-6 pt-2 ${
                       link.name === "Seminuevos"
-                        ? "text-[#0071e3]"
-                        : "text-[#1d1d1f] active:text-[#0071e3]"
+                        ? "text-[#F97316]"
+                        : "text-[#1d1d1f] active:text-[#F97316]"
                     }`}
                   >
                     {link.name}

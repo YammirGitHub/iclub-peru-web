@@ -7,39 +7,40 @@ const values = [
     icon: <ShieldCheck size={32} />,
     title: "Garantía Real",
     description: "Equipos 100% originales con garantía técnica certificada.",
-    color: "text-blue-600",
-    bg: "bg-blue-50",
   },
   {
     icon: <Truck size={32} />,
     title: "Envíos Seguros",
     description: "Llegamos a todo el Perú con empaques de alta seguridad.",
-    color: "text-orange-600",
-    bg: "bg-orange-50",
   },
   {
     icon: <Headphones size={32} />,
     title: "Soporte Experto",
     description: "Asesoría personalizada por WhatsApp post-venta.",
-    color: "text-green-600",
-    bg: "bg-green-50",
   },
   {
     icon: <CreditCard size={32} />,
     title: "Pagos Flexibles",
     description: "Aceptamos todas las tarjetas, Yape y Plin sin recargo.",
-    color: "text-purple-600",
-    bg: "bg-purple-50",
   },
 ];
 
 export default function ServiceValues() {
   return (
     <section className="py-24 bg-white relative overflow-hidden">
-      {/* Fondo decorativo sutil (opcional) */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[400px] bg-gray-50 rounded-full blur-3xl -z-10 opacity-50" />
+      {/* Fondo decorativo sutil */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[400px] bg-orange-50 rounded-full blur-3xl -z-10 opacity-30" />
 
       <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-5xl font-semibold text-[#1d1d1f] tracking-tight mb-4">
+            Experiencia <span className="text-[#F97316]">iClub.</span>
+          </h2>
+          <p className="text-[#86868b] text-xl font-medium">
+            Confianza oficial en cada paso.
+          </p>
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {values.map((item, index) => (
             <motion.div
@@ -48,15 +49,14 @@ export default function ServiceValues() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              // ESTILO UNIFICADO: Tarjeta Blanca con Sombra Suave
               className="bg-white rounded-[2rem] p-8 text-center flex flex-col items-center
               border border-gray-100 shadow-xl shadow-gray-200/40
-              hover:shadow-2xl hover:shadow-gray-300/50 hover:-translate-y-2 transition-all duration-300"
+              hover:shadow-2xl hover:shadow-orange-100/50 hover:-translate-y-2 hover:border-orange-100 transition-all duration-300 group"
             >
-              {/* Icono con fondo de color suave (Estilo Bento) */}
-              <div
-                className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 ${item.bg} ${item.color}`}
-              >
+              {/* 👇 CAMBIO CLAVE: Iconos Unificados en Naranja Premium.
+                 Esto crea una identidad visual corporativa fuerte.
+              */}
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 bg-[#fff7ed] text-[#F97316] group-hover:bg-[#F97316] group-hover:text-white transition-colors duration-300">
                 {item.icon}
               </div>
 
