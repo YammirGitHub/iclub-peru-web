@@ -142,25 +142,41 @@ export default function ProductGrid({ products, theme, category }: Props) {
                        - Si es Grande (2 cols) -> Ocupa 1/2 de ancho (50%)
                        - Si es Normal -> Ocupa todo el ancho (arriba)
                     */}
+                    {/* ZONA DE MEDIA (IMAGEN O VIDEO) */}
                     <div
                       className={`relative bg-[#F5F5F7] overflow-hidden flex items-center justify-center 
-                      ${
-                        isGigante
-                          ? "w-full lg:w-[66%] h-80 lg:h-full order-2" // 👉 GIGANTE: 2/3 Imagen
-                          : isGrande
-                          ? "w-full lg:w-1/2 h-80 lg:h-full order-2" // 👉 GRANDE: 1/2 Imagen
-                          : "w-full h-80 pt-10" // NORMAL
-                      }`}
+  ${
+    isGigante
+      ? "w-full lg:w-[68.4%] h-80 lg:h-full order-2"
+      : isGrande
+      ? "w-full lg:w-1/2 h-80 lg:h-full order-2"
+      : "w-full h-80 pt-10"
+  }`}
                     >
-                      <Image
-                        src={product.image}
-                        alt={product.name}
-                        fill
-                        className={`object-contain transition-transform duration-700 ease-out group-hover:scale-110
-                          ${isHorizontal ? "p-12" : "p-8"}
-                        `}
-                        sizes="(max-width: 768px) 100vw, 50vw"
-                      />
+                      {isGigante && product.video ? (
+                        <video
+                          key={product.video} // 👈 1. AGREGAR ESTA KEY ES VITAL
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                          poster={product.image}
+                          className="absolute inset-0 w-full h-full object-cover"
+                        >
+                          <source src={product.video} type="video/mp4" />
+                        </video>
+                      ) : (
+                        /* SI NO HAY VIDEO, MUESTRA LA IMAGEN DE SIEMPRE */
+                        <Image
+                          src={product.image}
+                          alt={product.name}
+                          fill
+                          className={`object-contain transition-transform duration-700 ease-out group-hover:scale-110
+        ${isHorizontal ? "p-12" : "p-8"}
+      `}
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                        />
+                      )}
                     </div>
 
                     {/* 📝 INFO (Lado Izquierdo o Abajo)
@@ -171,7 +187,7 @@ export default function ProductGrid({ products, theme, category }: Props) {
                     <div
                       className={`flex flex-col p-8 md:p-12 ${
                         isGigante
-                          ? "w-full lg:w-[34%] order-1 justify-center" // 👉 GIGANTE: 1/3 Texto (Blanco)
+                          ? "w-full lg:w-[31.6%] order-1 justify-center" // 👉 GIGANTE: 1/3 Texto (Blanco)
                           : isGrande
                           ? "w-full lg:w-1/2 order-1 justify-center" // 👉 GRANDE: 1/2 Texto
                           : "flex-1" // NORMAL

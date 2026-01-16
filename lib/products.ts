@@ -53,9 +53,9 @@ export interface Product {
 
   // 👇 AGREGA ESTO:
   sizes?: {
-    name: string;          // "13", "15"
-    label: string;         // "13 pulgadas"
-    description?: string;  // "Desde S/ 5,499" (Opcional para mostrar texto extra)
+    name: string; // "13", "15"
+    label: string; // "13 pulgadas"
+    description?: string; // "Desde S/ 5,499" (Opcional para mostrar texto extra)
     priceModifier: number; // 0 para el base, +1200 para el grande
   }[];
 }
@@ -69,29 +69,33 @@ export const products: Product[] = [
     id: "macbook-pro-14-m5",
     slug: "macbook-pro-14-m5",
     name: 'MacBook Pro 14" (M5)',
-    description: "Poder sin precedentes con el nuevo chip M5. Rendimiento Pro llevado al límite.",
-    
+    description:
+      "Poder sin precedentes con el nuevo chip M5. Rendimiento Pro llevado al límite.",
+
     // ESTRATEGIA: FLAGSHIP (Nuevo) -> Precio Limpio
     price: 8499,
-    // originalPrice: undefined, 
-    
+    // originalPrice: undefined,
+
     category: "mac",
-    
-    image: "/images/mac/Apple-MacBook-Pro-14-in-macOS-Tahoe-Apple-Intelligence-Rewrite-251015.jpg",
-    
+
+    // 1. 'image': Debe ser una FOTO estática (se ve mientras carga el video o si falla).
+    image: "/images/mac/MacBook-Pro-14-lineup.webp",
+
+    // 2. 'video': Aquí va el archivo MP4 real.
+    video: "/images/mac/xlarge.mp4",
     colors: [
-      { 
-        name: "Negro Espacial", 
+      {
+        name: "Negro Espacial",
         hex: "#2E3133", // El negro profundo de los modelos Pro
-        image: "/images/mac/Apple-MacBook-Pro-14-in-macOS-Tahoe-Apple-Intelligence-Rewrite-251015.jpg" 
+        image: "/images/mac/MacBoo.webp",
       },
-      { 
-        name: "Plata", 
+      {
+        name: "Plata",
         hex: "#E3E4E5",
-        image: "/images/mac/MacBook-Pro-14-lineup.webp" 
+        image: "/images/mac/MacBook-Pro-14-lineup.webp",
       },
     ],
-    
+
     // Los Pro nuevos suelen arrancar en 512GB y saltar a 1TB/2TB
     storage: [
       { capacity: "512GB", price: 8499 },
@@ -101,11 +105,20 @@ export const products: Product[] = [
     isNew: true,
     marketing: {
       slogan: "Pro. Más allá de lo posible.",
-      subSlogan: "El chip M5 redefine la velocidad en flujos de trabajo profesionales.",
+      subSlogan:
+        "El chip M5 redefine la velocidad en flujos de trabajo profesionales.",
       features: [
         { title: "Chip M5", description: "Arquitectura de 2nm.", icon: "chip" },
-        { title: "Pantalla XDR", description: "1600 nits sostenidos.", icon: "screen" },
-        { title: "Batería Pro", description: "Hasta 24 horas de uso.", icon: "battery" },
+        {
+          title: "Pantalla XDR",
+          description: "1600 nits sostenidos.",
+          icon: "screen",
+        },
+        {
+          title: "Batería Pro",
+          description: "Hasta 24 horas de uso.",
+          icon: "battery",
+        },
       ],
     },
   },
@@ -113,37 +126,54 @@ export const products: Product[] = [
     id: "macbook-air-m4",
     slug: "macbook-air-m4",
     name: 'MacBook Air 13" & 15" (M4)',
-    description: "Sorprendentemente delgada. Increíblemente potente con el chip M4.",
-    
+    description:
+      "Sorprendentemente delgada. Increíblemente potente con el chip M4.",
+
     // ESTRATEGIA: MID-RANGE (Novedad accesible) -> Descuento Táctico
     price: 5499,
-    originalPrice: 5999, 
+    originalPrice: 5999,
 
     category: "mac",
     image: "/images/mac/macbook-air-m4.png",
     // 👇 AQUÍ ESTÁ LA MAGIA DE LOS TAMAÑOS
     sizes: [
-      { 
-        name: "13", 
-        label: '13 pulgadas', 
-        description: "El clásico portátil.", 
-        priceModifier: 0 // Precio base
+      {
+        name: "13",
+        label: "13 pulgadas",
+        description: "El clásico portátil.",
+        priceModifier: 0, // Precio base
       },
-      { 
-        name: "15", 
-        label: '15 pulgadas', 
-        description: "Más pantalla para ver más.", 
-        priceModifier: 1200 // S/ 1200 adicionales
+      {
+        name: "15",
+        label: "15 pulgadas",
+        description: "Más pantalla para ver más.",
+        priceModifier: 1200, // S/ 1200 adicionales
       },
     ],
     // Colores exactos de la línea Air actual
     colors: [
-      { name: "Medianoche", hex: "#2E3642", image: "/images/mac/macbook-air-m4.png" }, // Azul oscuro casi negro
-      { name: "Blanco Estelar", hex: "#F0E5D3", image: "/images/mac/macbook-air-m4-starlight.png" }, // Dorado suave
-      { name: "Gris Espacial", hex: "#7D7E80", image: "/images/mac/macbook-air-m4-spacegray.png" },
-      { name: "Plata", hex: "#E3E4E5", image: "/images/mac/macbook-air-m4-silver.png" },
+      {
+        name: "Medianoche",
+        hex: "#2E3642",
+        image: "/images/mac/macbook-air-m4.png",
+      }, // Azul oscuro casi negro
+      {
+        name: "Blanco Estelar",
+        hex: "#F0E5D3",
+        image: "/images/mac/macbook-air-m4-starlight.png",
+      }, // Dorado suave
+      {
+        name: "Gris Espacial",
+        hex: "#7D7E80",
+        image: "/images/mac/macbook-air-m4-spacegray.png",
+      },
+      {
+        name: "Plata",
+        hex: "#E3E4E5",
+        image: "/images/mac/macbook-air-m4-silver.png",
+      },
     ],
-    
+
     storage: [
       { capacity: "256GB", price: 5499 },
       { capacity: "512GB", price: 6499 },
@@ -152,10 +182,19 @@ export const products: Product[] = [
     isNew: true,
     marketing: {
       slogan: "Poder que vuela.",
-      subSlogan: "La laptop más querida del mundo, ahora con el poder del chip M4.",
+      subSlogan:
+        "La laptop más querida del mundo, ahora con el poder del chip M4.",
       features: [
-        { title: "Chip M4", description: "1.5x más rápido que M2.", icon: "chip" },
-        { title: "Diseño Air", description: "Sin ventiladores, silencio total.", icon: "shield" },
+        {
+          title: "Chip M4",
+          description: "1.5x más rápido que M2.",
+          icon: "chip",
+        },
+        {
+          title: "Diseño Air",
+          description: "Sin ventiladores, silencio total.",
+          icon: "shield",
+        },
       ],
     },
   },
@@ -164,22 +203,22 @@ export const products: Product[] = [
     slug: "mac-studio-m4-max",
     name: "Mac Studio (M4 Max)",
     description: "Una central de potencia compacta para estudios creativos.",
-    
+
     // ESTRATEGIA: PRO NICHE -> Precio Limpio (Herramienta de trabajo)
     price: 9999,
-    
+
     category: "mac",
     image: "/images/mac/mac-studio-m4.png",
-    
+
     // Mac Studio solo viene en Plata
     colors: [
-      { name: "Plata", hex: "#E3E4E5", image: "/images/mac/mac-studio-m4.png" }
+      { name: "Plata", hex: "#E3E4E5", image: "/images/mac/mac-studio-m4.png" },
     ],
-    
+
     storage: [
-      { capacity: "512GB", price: 9999 }, 
+      { capacity: "512GB", price: 9999 },
       { capacity: "1TB", price: 11499 },
-      { capacity: "2TB", price: 13499 }
+      { capacity: "2TB", price: 13499 },
     ],
     isNew: true,
   },
@@ -187,49 +226,63 @@ export const products: Product[] = [
     id: "macbook-pro-m4-pro",
     slug: "macbook-pro-m4-pro",
     name: 'MacBook Pro 16" (M4 Pro)',
-    description: "Pantalla grande, rendimiento masivo. El estándar de la industria.",
-    
+    description:
+      "Pantalla grande, rendimiento masivo. El estándar de la industria.",
+
     // ESTRATEGIA: GEN ANTERIOR (High End) -> Descuento Táctico
     price: 10999,
-    originalPrice: 11699, 
+    originalPrice: 11699,
 
     category: "mac",
     image: "/images/mac/macbook-pro-16.png",
-    
+
     colors: [
-      { name: "Negro Espacial", hex: "#2E3133", image: "/images/mac/macbook-pro-16.png" },
-      { name: "Plata", hex: "#E3E4E5", image: "/images/mac/macbook-pro-16-silver.png" }
+      {
+        name: "Negro Espacial",
+        hex: "#2E3133",
+        image: "/images/mac/macbook-pro-16.png",
+      },
+      {
+        name: "Plata",
+        hex: "#E3E4E5",
+        image: "/images/mac/macbook-pro-16-silver.png",
+      },
     ],
-    
+
     storage: [
       { capacity: "512GB", price: 10999 },
       { capacity: "1TB", price: 11999 },
-      { capacity: "4TB", price: 15999 } // Pro users buscan alto almacenamiento
+      { capacity: "4TB", price: 15999 }, // Pro users buscan alto almacenamiento
     ],
   },
   {
     id: "imac-24-m4",
     slug: "imac-24-m4",
     name: 'iMac 24" (M4)',
-    description: "Todo en uno. Ahora con el poder de la inteligencia artificial M4.",
-    
+    description:
+      "Todo en uno. Ahora con el poder de la inteligencia artificial M4.",
+
     // ESTRATEGIA: NUEVO LANZAMIENTO -> Precio Limpio
     price: 6299,
 
     category: "mac",
     image: "/images/mac/imac-m4.png",
-    
+
     // Colores vibrantes reales del iMac
     colors: [
       { name: "Azul", hex: "#486C8C", image: "/images/mac/imac-m4.png" },
       { name: "Verde", hex: "#4B6F57", image: "/images/mac/imac-m4-green.png" },
       { name: "Rosa", hex: "#983842", image: "/images/mac/imac-m4-pink.png" },
-      { name: "Plata", hex: "#E3E4E5", image: "/images/mac/imac-m4-silver.png" },
+      {
+        name: "Plata",
+        hex: "#E3E4E5",
+        image: "/images/mac/imac-m4-silver.png",
+      },
     ],
-    
+
     storage: [
       { capacity: "256GB", price: 6299 },
-      { capacity: "512GB", price: 7299 }
+      { capacity: "512GB", price: 7299 },
     ],
     isNew: true,
   },
@@ -238,18 +291,18 @@ export const products: Product[] = [
     slug: "mac-mini-m4",
     name: "Mac mini (M4)",
     description: "Completamente rediseñada. Más pequeña, más rápida, más Mac.",
-    
+
     // ESTRATEGIA: ENTRY FLAGSHIP -> Precio Limpio
     price: 2999,
-    
+
     category: "mac",
     image: "/images/mac/mac-mini-m4.png",
     colors: [
-      { name: "Plata", hex: "#E3E4E5", image: "/images/mac/mac-mini-m4.png" }
+      { name: "Plata", hex: "#E3E4E5", image: "/images/mac/mac-mini-m4.png" },
     ],
     storage: [
       { capacity: "256GB", price: 2999 },
-      { capacity: "512GB", price: 3999 }
+      { capacity: "512GB", price: 3999 },
     ],
     isNew: true,
   },
@@ -258,22 +311,30 @@ export const products: Product[] = [
     slug: "macbook-pro-m3",
     name: 'MacBook Pro 14" (M3)',
     description: "Eficiencia y potencia balanceadas con el chip M3.",
-    
+
     // ESTRATEGIA: OLD (Clearance) -> Descuento Agresivo
     price: 6499,
-    originalPrice: 7999, 
+    originalPrice: 7999,
 
     category: "mac",
     image: "/images/mac/macbook-pro-14-m3.png",
-    
+
     colors: [
-      { name: "Gris Espacial", hex: "#7D7E80", image: "/images/mac/macbook-pro-14-m3.png" }, // El M3 base era Gris, no Negro
-      { name: "Plata", hex: "#E3E4E5", image: "/images/mac/macbook-pro-14-m3-silver.png" }
+      {
+        name: "Gris Espacial",
+        hex: "#7D7E80",
+        image: "/images/mac/macbook-pro-14-m3.png",
+      }, // El M3 base era Gris, no Negro
+      {
+        name: "Plata",
+        hex: "#E3E4E5",
+        image: "/images/mac/macbook-pro-14-m3-silver.png",
+      },
     ],
-    
+
     storage: [
       { capacity: "512GB", price: 6499 },
-      { capacity: "1TB", price: 7499 }
+      { capacity: "1TB", price: 7499 },
     ],
   },
   {
@@ -281,69 +342,98 @@ export const products: Product[] = [
     slug: "macbook-air-15-m2",
     name: 'MacBook Air 15" (M2)',
     description: "La laptop de 15 pulgadas más delgada del mundo.",
-    
+
     // ESTRATEGIA: OLD -> Descuento Agresivo
     price: 4999,
     originalPrice: 5999,
 
     category: "mac",
     image: "/images/mac/macbook-air-15-m2.png",
-    
+
     colors: [
-      { name: "Medianoche", hex: "#2E3642", image: "/images/mac/macbook-air-15-m2.png" },
-      { name: "Blanco Estelar", hex: "#F0E5D3", image: "/images/mac/macbook-air-15-m2-starlight.png" },
-      { name: "Gris Espacial", hex: "#7D7E80", image: "/images/mac/macbook-air-15-m2-spacegray.png" },
+      {
+        name: "Medianoche",
+        hex: "#2E3642",
+        image: "/images/mac/macbook-air-15-m2.png",
+      },
+      {
+        name: "Blanco Estelar",
+        hex: "#F0E5D3",
+        image: "/images/mac/macbook-air-15-m2-starlight.png",
+      },
+      {
+        name: "Gris Espacial",
+        hex: "#7D7E80",
+        image: "/images/mac/macbook-air-15-m2-spacegray.png",
+      },
     ],
-    
+
     storage: [
       { capacity: "256GB", price: 4999 },
-      { capacity: "512GB", price: 5999 }
+      { capacity: "512GB", price: 5999 },
     ],
   },
   {
     id: "macbook-air-m2-redesign",
     slug: "macbook-air-m2-redesign",
-    name: "MacBook Air 13\" (M2)",
+    name: 'MacBook Air 13" (M2)',
     description: "Rediseño total con carga MagSafe y pantalla Liquid Retina.",
-    
+
     // ESTRATEGIA: ENTRY LEVEL -> Precio Gancho
     price: 3999,
-    originalPrice: 4799, 
+    originalPrice: 4799,
 
     category: "mac",
     image: "/images/mac/macbook-air-m2.png",
-    
+
     colors: [
-      { name: "Blanco Estelar", hex: "#F0E5D3", image: "/images/mac/macbook-air-m2.png" }, // Asumiendo foto starlight
-      { name: "Medianoche", hex: "#2E3642", image: "/images/mac/macbook-air-m2-midnight.png" },
-      { name: "Plata", hex: "#E3E4E5", image: "/images/mac/macbook-air-m2-silver.png" },
+      {
+        name: "Blanco Estelar",
+        hex: "#F0E5D3",
+        image: "/images/mac/macbook-air-m2.png",
+      }, // Asumiendo foto starlight
+      {
+        name: "Medianoche",
+        hex: "#2E3642",
+        image: "/images/mac/macbook-air-m2-midnight.png",
+      },
+      {
+        name: "Plata",
+        hex: "#E3E4E5",
+        image: "/images/mac/macbook-air-m2-silver.png",
+      },
     ],
-    
+
     storage: [
       { capacity: "256GB", price: 3999 },
-      { capacity: "512GB", price: 4999 }
+      { capacity: "512GB", price: 4999 },
     ],
   },
   {
     id: "imac-24-m1",
     slug: "imac-24-m1",
     name: 'iMac 24" (M1)',
-    description: "El clásico que inició la era Apple Silicon. Diseño ultra delgado.",
-    
+    description:
+      "El clásico que inició la era Apple Silicon. Diseño ultra delgado.",
+
     // ESTRATEGIA: LIQUIDACIÓN FINAL
     price: 3599,
-    originalPrice: 4999, 
+    originalPrice: 4999,
 
     category: "mac",
     image: "/images/mac/imac-m1.png",
-    
+
     // El iMac M1 tenía colores más pasteles/diferentes
     colors: [
       { name: "Azul", hex: "#486C8C", image: "/images/mac/imac-m1.png" },
-      { name: "Plata", hex: "#E3E4E5", image: "/images/mac/imac-m1-silver.png" },
-      { name: "Rosa", hex: "#EFC3CA", image: "/images/mac/imac-m1-pink.png" }
+      {
+        name: "Plata",
+        hex: "#E3E4E5",
+        image: "/images/mac/imac-m1-silver.png",
+      },
+      { name: "Rosa", hex: "#EFC3CA", image: "/images/mac/imac-m1-pink.png" },
     ],
-    
+
     storage: [{ capacity: "256GB", price: 3599 }],
   },
   // ==========================================
@@ -1440,7 +1530,7 @@ export const products: Product[] = [
 
     category: "airpods",
     image: "/images/airpods/Apple-AirPods-Pro-3-lineup.webp",
-
+    video: "/images/airpods/Apple-AirPods-Pro-3-lineup.mp4",
     colors: [
       {
         name: "Blanco",
