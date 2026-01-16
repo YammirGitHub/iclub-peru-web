@@ -98,9 +98,8 @@ export default async function CategoryPage({ params }: Props) {
           </p>
         </div>
       </div>
-
       {/* 👇 AQUÍ VA EL COMPONENTE CLIENTE CON FILTROS FUNCIONALES */}
-      <ProductGrid products={products} theme={theme} />
+      <ProductGrid products={products} theme={theme} category={category} />{" "}
     </main>
   );
 }

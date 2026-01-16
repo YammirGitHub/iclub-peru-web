@@ -69,7 +69,7 @@ export default function AddToCart({ product, onImageChange }: Props) {
         </div>
       </div>
 
-      {/* Selectores (Resumidos para brevedad, mantener tu lógica original) */}
+      {/* Selectores Tamaño */}
       {product.sizes && (
         <div className="space-y-4">
           <span className="text-sm font-bold text-[#1d1d1f]">Tamaño</span>
@@ -80,7 +80,7 @@ export default function AddToCart({ product, onImageChange }: Props) {
                 onClick={() => setSelectedSize(size)}
                 className={`px-4 py-2 border rounded-lg transition-all ${
                   selectedSize?.name === size.name
-                    ? "border-[#F97316] bg-orange-50 text-[#F97316]"
+                    ? "border-[#F97316] bg-orange-50 text-[#F97316] ring-1 ring-[#F97316]"
                     : "border-gray-200 hover:border-gray-300"
                 }`}
               >
@@ -91,10 +91,15 @@ export default function AddToCart({ product, onImageChange }: Props) {
         </div>
       )}
 
-      {/* ... (Tus otros selectores de color/storage van aquí igual que antes) ... */}
+      {/* Selectores Color */}
       {product.colors && (
         <div className="space-y-4">
-          {/* ... lógica de colores ... */}
+          <div className="flex justify-between items-center">
+            <span className="text-sm font-bold text-[#1d1d1f]">Acabado</span>
+            <span className="text-sm text-gray-500 font-medium">
+              {selectedColor.name}
+            </span>
+          </div>
           <div className="flex flex-wrap gap-4">
             {product.colors.map((color) => (
               <button
@@ -119,9 +124,17 @@ export default function AddToCart({ product, onImageChange }: Props) {
         </div>
       )}
 
+      {/* Selectores Almacenamiento */}
       {product.storage && (
         <div className="space-y-4">
-          {/* ... lógica de storage ... */}
+          <div className="flex justify-between items-center">
+            <span className="text-sm font-bold text-[#1d1d1f]">
+              Almacenamiento
+            </span>
+            <span className="text-sm text-gray-500 font-medium">
+              {selectedStorage.capacity}
+            </span>
+          </div>
           <div className="grid grid-cols-2 gap-3">
             {product.storage.map((storage) => (
               <button
@@ -129,7 +142,7 @@ export default function AddToCart({ product, onImageChange }: Props) {
                 onClick={() => setSelectedStorage(storage)}
                 className={`py-4 px-4 rounded-xl border text-sm transition-all duration-200 flex flex-col items-start gap-1 ${
                   selectedStorage.capacity === storage.capacity
-                    ? "border-[#F97316] ring-1 ring-[#F97316] bg-white"
+                    ? "border-[#F97316] ring-1 ring-[#F97316] bg-white shadow-md shadow-orange-100"
                     : "border-gray-200 hover:border-gray-400 bg-white"
                 }`}
               >
@@ -153,7 +166,7 @@ export default function AddToCart({ product, onImageChange }: Props) {
         </div>
       )}
 
-      {/* BOTÓN PRINCIPAL: SIEMPRE NARANJA (EL CAMBIO CLAVE) */}
+      {/* BOTÓN PRINCIPAL NARANJA (Marca iClub) */}
       <div className="pt-4">
         <motion.button
           whileHover={{ scale: 1.02 }}

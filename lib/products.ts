@@ -647,7 +647,7 @@ export const products: Product[] = [
     // originalPrice: undefined,
 
     category: "iphone",
-    image: "/images/iphone/iphone-17-pro-max-silver.webp",
+    image: "/images/iphone/Apple-iPhone-17-Pro-orange.webp",
 
     colors: [
       {
@@ -658,7 +658,7 @@ export const products: Product[] = [
       {
         name: "Naranja Cósmico",
         hex: "#d46b57",
-        image: "/images/iphone/iphone-17-pro-max-orange.webp",
+        image: "/images/iphone/Apple-iPhone-17-Pro-orange.webp",
       },
       {
         name: "Azul Profundo",
