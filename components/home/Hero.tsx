@@ -35,7 +35,7 @@ export default function Hero() {
   const containerRef = useRef(null);
   const { scrollY } = useScroll();
 
-  // PARALLAX
+  // PARALLAX SUAVE
   const yParallax = useTransform(scrollY, [0, 1000], [0, 150]);
   const opacityParallax = useTransform(scrollY, [0, 500], [1, 0]);
   const scaleParallax = useTransform(scrollY, [0, 1000], [1, 1.1]);
@@ -43,21 +43,28 @@ export default function Hero() {
   return (
     <section
       ref={containerRef}
-      className="relative min-h-[92vh] w-full flex items-center overflow-hidden bg-white pt-20"
+      // CORRECCIÓN DE LAYOUT:
+      // 1. Eliminé 'pt-20' porque el ShopLayout ya tiene padding.
+      // 2. Cambié 'min-h-[92vh]' a algo responsivo:
+      //    - Móvil: 'min-h-auto' (se adapta al contenido, sin huecos).
+      //    - Desktop: 'lg:min-h-[80vh]' (suficiente para verse elegante sin ser enorme).
+      // 3. Agregué 'pb-12' para dar aire abajo en móviles.
+      className="relative w-full flex items-center overflow-hidden bg-white pb-12 lg:pb-0 lg:min-h-[80vh]"
     >
-      <div className="max-w-[1200px] mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-        {/* --- TEXTO --- */}
-        <div className="lg:col-span-6 z-10 text-center lg:text-left order-1">
+      <div className="max-w-[1200px] mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        {/* --- COLUMNA 1: TEXTO --- */}
+        {/* Order-2 en móvil para que la imagen salga primero (estándar e-commerce) o Order-1 si prefieres texto primero */}
+        <div className="lg:col-span-6 z-10 text-center lg:text-left order-1 flex flex-col items-center lg:items-start pt-6 lg:pt-0">
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="visible"
             className="will-change-opacity"
           >
-            {/* Badge con PUNTO VERDE (Stock/Abierto) - Se queda verde por UX */}
+            {/* Badge */}
             <motion.div
               variants={itemVariants}
-              className="mb-6 inline-flex items-center gap-2 py-1.5 px-4 rounded-full bg-[#f5f5f7] text-[#86868b] text-[10px] font-bold tracking-[0.2em] uppercase"
+              className="mb-4 lg:mb-6 inline-flex items-center gap-2 py-1.5 px-4 rounded-full bg-[#f5f5f7] text-[#86868b] text-[10px] font-bold tracking-[0.2em] uppercase"
             >
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
@@ -66,18 +73,17 @@ export default function Hero() {
               iClub Store
             </motion.div>
 
-            {/* Título: "Pro" ahora en Naranja Marca */}
+            {/* Título Responsivo */}
             <motion.div variants={itemVariants}>
-              <h1 className="text-5xl md:text-7xl lg:text-[90px] font-semibold tracking-tighter text-[#1d1d1f] leading-[0.95] mb-6">
+              <h1 className="text-5xl sm:text-6xl lg:text-[90px] font-semibold tracking-tighter text-[#1d1d1f] leading-[0.95] mb-4 lg:mb-6">
                 Experiencia <br />
-                {/* 👇 CAMBIO CLAVE: Naranja Premium (#F97316) */}
                 <span className="text-[#F97316]">Pro.</span>
               </h1>
             </motion.div>
 
             {/* Párrafo */}
             <motion.div variants={itemVariants}>
-              <p className="text-xl text-[#86868b] font-medium mb-8 max-w-md mx-auto lg:mx-0 leading-relaxed">
+              <p className="text-lg sm:text-xl text-[#86868b] font-medium mb-6 lg:mb-8 max-w-md mx-auto lg:mx-0 leading-relaxed">
                 Tecnología que se siente mágica. Disponible hoy en Chiclayo.
               </p>
             </motion.div>
@@ -88,7 +94,6 @@ export default function Hero() {
               className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start"
             >
               <Link href="/iphone">
-                {/* 👇 BOTÓN PRINCIPAL EN NARANJA */}
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -99,7 +104,6 @@ export default function Hero() {
               </Link>
               <Link
                 href="/iphone"
-                // El link secundario se queda azul o gris para no competir
                 className="group flex items-center gap-1 text-[#1d1d1f] font-medium text-[17px] hover:text-[#F97316] transition-colors mt-2 sm:mt-0"
               >
                 Ver modelos{" "}
@@ -112,8 +116,8 @@ export default function Hero() {
           </motion.div>
         </div>
 
-        {/* --- IMAGEN --- */}
-        <div className="lg:col-span-6 relative h-[50vh] lg:h-[85vh] w-full order-2 flex justify-center perspective-1000">
+        {/* --- COLUMNA 2: IMAGEN --- */}
+        <div className="lg:col-span-6 relative h-[400px] sm:h-[500px] lg:h-[80vh] w-full order-2 flex justify-center perspective-1000 mt-8 lg:mt-0">
           <motion.div
             style={{
               y: yParallax,
@@ -131,6 +135,7 @@ export default function Hero() {
               fill
               priority
               quality={95}
+              // Ajuste de imagen: 'object-contain' asegura que se vea todo el teléfono sin recortes
               className="object-contain lg:translate-y-4 drop-shadow-2xl"
               sizes="(max-width: 768px) 100vw, 50vw"
             />

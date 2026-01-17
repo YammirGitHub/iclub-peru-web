@@ -40,14 +40,20 @@ export default function CartSidebar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isCartOpen, toggleCart]);
 
+  // Bloquear scroll del body cuando el carrito está abierto
   useEffect(() => {
     if (isCartOpen) {
       document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden"; // Bloquea HTML (Mejor para iOS)
     } else {
-      document.body.style.overflow = "unset";
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
     }
+
+    // Cleanup
     return () => {
-      document.body.style.overflow = "unset";
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
     };
   }, [isCartOpen]);
 
@@ -89,7 +95,10 @@ export default function CartSidebar() {
             </div>
 
             {/* Lista de Productos */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+            <div
+              className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar"
+              data-lenis-prevent // 👈 AGREGA ESTA LÍNEA MÁGICA
+            >
               {cart.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center space-y-4 opacity-60">
                   <ShoppingBag size={64} className="text-gray-300" />
