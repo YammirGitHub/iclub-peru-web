@@ -21,6 +21,7 @@ type FilterType = "Todos" | "Pro" | "Nuevos" | "Ofertas";
 export default function ProductGrid({ products, theme, category }: Props) {
   const [activeFilter, setActiveFilter] = useState<FilterType>("Todos");
 
+  // ... (Tus funciones getProLabel y filtros se mantienen igual) ...
   const getProLabel = () => {
     if (category === "watch") return "Ultra";
     if (category === "airpods") return "Pro / Max";
@@ -51,21 +52,31 @@ export default function ProductGrid({ products, theme, category }: Props) {
     }).format(amount);
 
   return (
-    <div>
-      {/* 1. BARRA DE FILTROS */}
-      <div className="sticky top-20 z-30 flex justify-center pb-8">
-        <div className="flex gap-2 p-1.5 bg-gray-100/80 backdrop-blur-xl rounded-full overflow-x-auto scrollbar-hide max-w-[90vw] shadow-sm border border-gray-200/50">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="relative min-h-screen"
+    >
+      {/* ... (Tu barra de filtros se mantiene igual) ... */}
+      <div className="sticky top-24 z-30 flex justify-center pb-8 pointer-events-none">
+        <div className="pointer-events-auto flex gap-2 p-1.5 bg-white/80 backdrop-blur-xl rounded-full overflow-x-auto scrollbar-hide max-w-[90vw] shadow-sm border border-gray-200/50">
           {["Todos", getProLabel(), "Nuevos", "Ofertas"].map((filter) => (
             <button
               key={filter}
-              onClick={() => setActiveFilter(filter as FilterType)}
-              className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 whitespace-nowrap
-              ${
-                activeFilter === (filter === getProLabel() ? "Pro" : filter)
-                  ? "bg-[#1d1d1f] text-white shadow-md"
-                  : "text-gray-500 hover:text-[#F97316] hover:bg-white/50"
+              onClick={() =>
+                setActiveFilter(
+                  filter === getProLabel() ? "Pro" : (filter as FilterType)
+                )
               }
-            `}
+              className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 whitespace-nowrap
+      ${
+        // Esta lógica de comparación ya estaba bien, ahora funcionará porque activeFilter será "Pro"
+        activeFilter === (filter === getProLabel() ? "Pro" : filter)
+          ? "bg-[#1d1d1f] text-white shadow-md"
+          : "text-gray-500 hover:text-[#F97316] hover:bg-white/50"
+      }
+    `}
             >
               {filter}
             </button>
@@ -73,7 +84,6 @@ export default function ProductGrid({ products, theme, category }: Props) {
         </div>
       </div>
 
-      {/* 2. GRILLA DE RESULTADOS */}
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pb-32">
         <motion.div
           layout
@@ -81,25 +91,24 @@ export default function ProductGrid({ products, theme, category }: Props) {
         >
           <AnimatePresence mode="popLayout">
             {filteredProducts.map((product, index) => {
-              // --- 🔥 LÓGICA DE GRID 🔥 ---
+              // --- OPTIMIZACIÓN LCP ---
+              // Las primeras 4 imágenes cargan con prioridad máxima.
+              // Esto evita que la imagen aparezca "después" de la tarjeta.
+              const isPriority = index < 4;
 
-              let spanClass = "col-span-1 h-full"; // Normal (1 columna)
-              let isGigante = false; // 3 Columnas
-              let isGrande = false; // 2 Columnas
+              // --- LÓGICA DE GRID ---
+              let spanClass = "col-span-1 h-full";
+              let isGigante = false;
+              let isGrande = false;
               let isHorizontal = false;
 
-              // Solo aplicamos tamaños especiales si es el PRIMER producto y el filtro es "Todos"
               if (index === 0 && activeFilter === "Todos") {
-                // 1. NIVEL GIGANTE (3 Espacios) -> Mac y AirPods
                 if (["mac", "airpods"].includes(category)) {
                   spanClass =
                     "lg:col-span-3 lg:flex-row lg:items-center min-h-[500px]";
                   isHorizontal = true;
                   isGigante = true;
-                }
-
-                // 2. NIVEL AMPLIO (2 Espacios) -> iPhone, iPad, Watch
-                else if (["iphone", "ipad", "watch"].includes(category)) {
+                } else if (["iphone", "ipad", "watch"].includes(category)) {
                   spanClass =
                     "lg:col-span-2 lg:flex-row lg:items-center min-h-[420px]";
                   isHorizontal = true;
@@ -110,18 +119,31 @@ export default function ProductGrid({ products, theme, category }: Props) {
               return (
                 <motion.div
                   layout
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.3 }}
+                  // OPTIMIZACIÓN DE ANIMACIÓN:
+                  // 1. will-change-transform: Prepara la GPU.
+                  // 2. Curve Bezier: [0.25, 0.1, 0.25, 1] (Cubic Bezier suave).
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                    transition: {
+                      duration: 0.5,
+                      delay: index * 0.05, // Stagger rápido (50ms)
+                      ease: [0.25, 0.1, 0.25, 1],
+                    },
+                  }}
+                  exit={{
+                    opacity: 0,
+                    scale: 0.95,
+                    transition: { duration: 0.2 },
+                  }}
                   key={product.id}
+                  style={{ willChange: "transform, opacity" }} // ⚡️ Performance Hack
                   className={`
                     group relative flex flex-col bg-white rounded-[32px] overflow-hidden 
                     shadow-xl shadow-gray-200/60 border border-gray-100
                     hover:shadow-2xl hover:shadow-orange-500/10 hover:-translate-y-2 hover:border-orange-200 
                     transition-all duration-500
-                    
-                    /* Clase calculada arriba */
                     ${spanClass}
                   `}
                 >
@@ -136,26 +158,19 @@ export default function ProductGrid({ products, theme, category }: Props) {
                       </span>
                     )}
 
-                    {/* 📷 IMAGEN (Lado Derecho o Arriba)
-                       Aquí aplicamos tu corrección: 
-                       - Si es Gigante (3 cols) -> Ocupa 2/3 de ancho (66%)
-                       - Si es Grande (2 cols) -> Ocupa 1/2 de ancho (50%)
-                       - Si es Normal -> Ocupa todo el ancho (arriba)
-                    */}
-                    {/* ZONA DE MEDIA (IMAGEN O VIDEO) */}
+                    {/* IMAGEN OPTIMIZADA */}
                     <div
-                      className={`relative bg-[#F5F5F7] overflow-hidden flex items-center justify-center 
-  ${
-    isGigante
-      ? "w-full lg:w-[68.4%] h-80 lg:h-full order-2"
-      : isGrande
-      ? "w-full lg:w-1/2 h-80 lg:h-full order-2"
-      : "w-full h-80 pt-10"
-  }`}
+                      className={`relative bg-[#F5F5F7] overflow-hidden flex items-center justify-center ${
+                        isGigante
+                          ? "w-full lg:w-[68.4%] h-80 lg:h-full order-2"
+                          : isGrande
+                          ? "w-full lg:w-1/2 h-80 lg:h-full order-2"
+                          : "w-full h-80 pt-10"
+                      }`}
                     >
                       {isGigante && product.video ? (
                         <video
-                          key={product.video} // 👈 1. AGREGAR ESTA KEY ES VITAL
+                          key={product.video}
                           autoPlay
                           loop
                           muted
@@ -166,31 +181,29 @@ export default function ProductGrid({ products, theme, category }: Props) {
                           <source src={product.video} type="video/mp4" />
                         </video>
                       ) : (
-                        /* SI NO HAY VIDEO, MUESTRA LA IMAGEN DE SIEMPRE */
                         <Image
                           src={product.image}
                           alt={product.name}
                           fill
-                          className={`object-contain transition-transform duration-700 ease-out group-hover:scale-110
-        ${isHorizontal ? "p-12" : "p-8"}
-      `}
+                          // ⚡️ PERFORMANCE: Prioridad a las primeras, lazy al resto
+                          priority={isPriority}
+                          loading={isPriority ? "eager" : "lazy"}
+                          className={`object-contain transition-transform duration-700 ease-out group-hover:scale-110 ${
+                            isHorizontal ? "p-12" : "p-8"
+                          }`}
                           sizes="(max-width: 768px) 100vw, 50vw"
                         />
                       )}
                     </div>
 
-                    {/* 📝 INFO (Lado Izquierdo o Abajo)
-                       Aquí aplicamos tu corrección:
-                       - Si es Gigante (3 cols) -> Ocupa 1/3 de ancho (33%) [La parte blanca]
-                       - Si es Grande (2 cols) -> Ocupa 1/2 de ancho (50%)
-                    */}
+                    {/* INFO */}
                     <div
                       className={`flex flex-col p-8 md:p-12 ${
                         isGigante
-                          ? "w-full lg:w-[31.6%] order-1 justify-center" // 👉 GIGANTE: 1/3 Texto (Blanco)
+                          ? "w-full lg:w-[31.6%] order-1 justify-center"
                           : isGrande
-                          ? "w-full lg:w-1/2 order-1 justify-center" // 👉 GRANDE: 1/2 Texto
-                          : "flex-1" // NORMAL
+                          ? "w-full lg:w-1/2 order-1 justify-center"
+                          : "flex-1"
                       }`}
                     >
                       <div className="flex gap-2 mb-4">
@@ -233,7 +246,6 @@ export default function ProductGrid({ products, theme, category }: Props) {
                               )}
                           </div>
                         </div>
-
                         <span className="w-12 h-12 rounded-full bg-[#f5f5f7] flex items-center justify-center text-[#1d1d1f] transition-all duration-300 group-hover:text-white group-hover:bg-[#F97316]">
                           <ArrowRight size={20} />
                         </span>
@@ -247,17 +259,18 @@ export default function ProductGrid({ products, theme, category }: Props) {
         </motion.div>
 
         {filteredProducts.length === 0 && (
-          <div className="py-32 text-center bg-white rounded-[32px] border border-dashed border-gray-200 shadow-sm animate-fade-in">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="py-32 text-center bg-white rounded-[32px] border border-dashed border-gray-200 shadow-sm"
+          >
             <ShieldCheck size={48} className="mx-auto text-gray-300 mb-4" />
             <p className="text-[#1d1d1f] text-xl font-semibold mb-2">
               No encontramos productos
             </p>
-            <p className="text-gray-500">
-              Prueba con otro filtro para esta categoría.
-            </p>
-          </div>
+          </motion.div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }

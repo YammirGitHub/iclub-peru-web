@@ -1827,13 +1827,13 @@ export const products: Product[] = [
 
     category: "certificados",
     // Reutilizamos la imagen de la carpeta iphone para optimizar carga
-    image: "/images/iphone/iphone-14-pro.png",
+    image: "/images/iphone/iphone-14-pro-semi.webp",
 
     colors: [
       {
         name: "Morado Oscuro",
         hex: "#594f63",
-        image: "/images/iphone/iphone-14-pro.png",
+        image: "/images/iphone/iphone-14-pro-semi.webp",
       },
     ],
 
@@ -1851,13 +1851,13 @@ export const products: Product[] = [
     originalPrice: 2799, // Casi 30% de descuento percibido
 
     category: "certificados",
-    image: "/images/iphone/iphone-13.png",
+    image: "/images/iphone/iphone-13-semi.webp",
 
     colors: [
       {
         name: "Azul",
         hex: "#3a6ea5",
-        image: "/images/iphone/iphone-13.png",
+        image: "/images/iphone/iphone-13-semi.webp",
       },
     ],
 

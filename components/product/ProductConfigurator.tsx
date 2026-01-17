@@ -55,7 +55,7 @@ export default function ProductConfigurator({ product }: { product: Product }) {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 pt-28 lg:pt-36 pb-32 lg:pb-12 px-4 sm:px-0">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 pt-4 lg:pt-8 pb-32 lg:pb-12 px-4 sm:px-0">
       {/* --- COLUMNA IZQ: IMAGEN --- */}
       <div className="lg:col-span-7">
         <div className="lg:sticky lg:top-32 space-y-6">

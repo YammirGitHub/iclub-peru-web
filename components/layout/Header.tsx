@@ -10,7 +10,7 @@ import SearchOverlay from "@/components/ui/SearchOverlay";
 
 // --- JERARQUÍA DE MENÚ ---
 const NAV_LINKS = [
-  { name: "Tienda", href: "/" },
+  //{ name: "Tienda", href: "/" },
   { name: "Mac", href: "/mac" },
   { name: "iPad", href: "/ipad" },
   { name: "iPhone", href: "/iphone" },

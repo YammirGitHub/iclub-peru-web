@@ -1,6 +1,7 @@
 import { getProductsByCategory, getAllCategories } from "@/lib/products";
 import { notFound } from "next/navigation";
-import ProductGrid from "@/components/product/ProductGrid"; // 👈 Importamos el nuevo componente
+import ProductGrid from "@/components/product/ProductGrid";
+import CategoryHero from "@/components/ui/CategoryHero";
 
 interface Props {
   params: Promise<{ category: string }>;
@@ -11,6 +12,7 @@ export async function generateStaticParams() {
   return categories.map((category) => ({ category }));
 }
 
+// --- CONFIGURACIÓN DE TEMA ---
 const categoryTheme: Record<
   string,
   { subtitle: string; textColor: string; badgeBg: string }
@@ -66,40 +68,51 @@ export default async function CategoryPage({ params }: Props) {
   const { category } = await params;
   const validCategories = getAllCategories();
 
+  // Validación de seguridad (404 si la categoría no existe)
   if (!validCategories.includes(category as any)) {
     notFound();
   }
 
   const products = getProductsByCategory(category);
+
   const theme = categoryTheme[category] || {
     subtitle: "TIENDA",
     textColor: "text-gray-900",
     badgeBg: "bg-gray-50",
   };
+
   const title =
     categoryTitles[category] ||
     category.charAt(0).toUpperCase() + category.slice(1);
 
+  const description =
+    "Explora la gama completa. Encuentra el perfecto para ti.";
+
   return (
     <main className="min-h-screen bg-white">
-      {/* HERO SECTION */}
-      <div className="pt-40 pb-10 px-6 text-center relative overflow-hidden">
-        <div className="max-w-4xl mx-auto relative z-10">
-          <span
-            className={`text-xs font-bold tracking-[0.2em] mb-4 block animate-fade-in-up ${theme.textColor}`}
-          >
-            {theme.subtitle}
-          </span>
-          <h1 className="text-6xl md:text-8xl font-bold text-[#1d1d1f] tracking-tighter mb-6 animate-fade-in-up delay-100">
-            {title}
-          </h1>
-          <p className="text-xl md:text-2xl text-gray-500 font-medium max-w-2xl mx-auto leading-relaxed animate-fade-in-up delay-200">
-            Explora la gama completa. Encuentra el perfecto para ti.
-          </p>
-        </div>
-      </div>
-      {/* 👇 AQUÍ VA EL COMPONENTE CLIENTE CON FILTROS FUNCIONALES */}
-      <ProductGrid products={products} theme={theme} category={category} />{" "}
+      {/* ⚡️ CORRECCIÓN ANIMACIÓN: key={category}
+         Al poner la 'key' aquí, React destruye y crea de nuevo el componente
+         cuando cambia la categoría, disparando la animación 'initial' de Framer Motion.
+      */}
+      <CategoryHero
+        key={category}
+        title={title}
+        subtitle={theme.subtitle}
+        description={description}
+        textColor={theme.textColor}
+        categoryKey={category}
+      />
+
+      {/* ⚡️ CORRECCIÓN ANIMACIÓN: key={category + "-grid"}
+         Lo mismo para la grilla. Esto asegura que las tarjetas hagan su
+         efecto de cascada (stagger) cada vez que navegas.
+      */}
+      <ProductGrid
+        key={`${category}-grid`}
+        products={products}
+        theme={theme}
+        category={category}
+      />
     </main>
   );
 }
