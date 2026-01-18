@@ -95,3 +95,25 @@ html.lenis body {
     scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
   }
 }
+
+
+
+/* ... estilos ... */
+
+
+@layer utilities {
+  /* ... tus otros estilos ... */
+
+  /* CLASE MAESTRA PARA OCULTAR SCROLLBAR PERO PERMITIR SCROLL */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari and Opera */
+  }
+}

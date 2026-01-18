@@ -44,13 +44,11 @@ export default function CartSidebar() {
   useEffect(() => {
     if (isCartOpen) {
       document.body.style.overflow = "hidden";
-      document.documentElement.style.overflow = "hidden"; // Bloquea HTML (Mejor para iOS)
+      document.documentElement.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
       document.documentElement.style.overflow = "";
     }
-
-    // Cleanup
     return () => {
       document.body.style.overflow = "";
       document.documentElement.style.overflow = "";
@@ -61,20 +59,22 @@ export default function CartSidebar() {
     <AnimatePresence>
       {isCartOpen && (
         <>
+          {/* 1. BACKDROP (FONDO OSCURO): z-[140] para tapar el Navbar (z-100) */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity"
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[140] transition-opacity"
           />
 
+          {/* 2. SIDEBAR (PANEL): z-[150] para estar encima de todo */}
           <motion.div
             ref={sidebarRef}
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed top-0 right-0 h-full w-full sm:w-[450px] bg-white shadow-2xl z-50 flex flex-col border-l border-gray-100"
+            className="fixed top-0 right-0 h-full w-full sm:w-[450px] bg-white shadow-2xl z-[150] flex flex-col border-l border-gray-100"
           >
             {/* Header */}
             <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-white/80 backdrop-blur-md sticky top-0 z-10">
@@ -97,7 +97,7 @@ export default function CartSidebar() {
             {/* Lista de Productos */}
             <div
               className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar"
-              data-lenis-prevent // 👈 AGREGA ESTA LÍNEA MÁGICA
+              data-lenis-prevent
             >
               {cart.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center space-y-4 opacity-60">
@@ -107,7 +107,7 @@ export default function CartSidebar() {
                   </p>
                   <button
                     onClick={toggleCart}
-                    className="text-[#F97316] font-medium hover:underline" // Naranja Marca
+                    className="text-[#F97316] font-medium hover:underline"
                   >
                     Seguir comprando
                   </button>
@@ -140,7 +140,7 @@ export default function CartSidebar() {
                           </h3>
                           <button
                             onClick={() => removeFromCart(item.cartItemId)}
-                            className="text-gray-400 hover:text-red-500 transition-colors p-1 -mt-1 -mr-1"
+                            className="text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all p-1.5 -mt-1 -mr-1"
                           >
                             <Trash2 size={16} />
                           </button>
@@ -160,38 +160,45 @@ export default function CartSidebar() {
                       </div>
 
                       <div className="flex justify-between items-end mt-2">
-                        <div className="flex items-center gap-3 bg-[#F5F5F7] rounded-full px-3 py-1.5 h-8">
+                        {/* Control de Cantidad (Estilo Nuevo) */}
+                        <div className="flex items-center bg-[#F5F5F7] rounded-full p-1 h-7">
                           <button
                             onClick={() => {
                               if (item.quantity > 1) {
                                 updateQuantity(
                                   item.cartItemId,
-                                  item.quantity - 1
+                                  item.quantity - 1,
                                 );
-                              } else {
-                                removeFromCart(item.cartItemId);
                               }
                             }}
-                            className="text-gray-500 hover:text-black transition-colors disabled:opacity-30"
+                            disabled={item.quantity <= 1}
+                            className={`w-6 h-full flex items-center justify-center rounded-full transition-colors ${
+                              item.quantity <= 1
+                                ? "text-gray-300 cursor-not-allowed"
+                                : "text-gray-600 hover:bg-white hover:shadow-sm"
+                            }`}
                           >
-                            <Minus size={14} />
+                            <Minus size={12} strokeWidth={3} />
                           </button>
-                          <span className="text-sm font-semibold w-4 text-center">
+
+                          <span className="text-xs font-bold w-6 text-center text-[#1d1d1f]">
                             {item.quantity}
                           </span>
+
                           <button
                             onClick={() =>
                               updateQuantity(item.cartItemId, item.quantity + 1)
                             }
-                            className="text-gray-500 hover:text-black transition-colors"
+                            className="w-6 h-full flex items-center justify-center rounded-full text-gray-600 hover:bg-white hover:shadow-sm transition-colors"
                           >
-                            <Plus size={14} />
+                            <Plus size={12} strokeWidth={3} />
                           </button>
                         </div>
+
                         <p className="font-bold text-[#1d1d1f]">
                           S/{" "}
                           {(item.finalPrice * item.quantity).toLocaleString(
-                            "es-PE"
+                            "es-PE",
                           )}
                         </p>
                       </div>
@@ -216,7 +223,6 @@ export default function CartSidebar() {
                 <Link
                   href="/checkout"
                   onClick={toggleCart}
-                  // 👇 BOTÓN PRINCIPAL NARANJA
                   className="w-full bg-[#F97316] text-white py-4 rounded-full font-bold text-lg hover:bg-[#ea580c] transition-all flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20 active:scale-95"
                 >
                   Continuar <ChevronRight size={20} />

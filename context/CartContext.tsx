@@ -110,7 +110,11 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       ];
     });
 
-    setIsCartOpen(true);
+    // 👇 CORRECCIÓN UX SENIOR:
+    // Comentamos esta línea para que la bolsa NO se abra automáticamente en la cara del usuario.
+    // El feedback visual (botón verde) es suficiente.
+    
+    // setIsCartOpen(true); 
   };
 
   const removeFromCart = (cartItemId: string) => {

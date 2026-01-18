@@ -4,7 +4,6 @@ import { useCart } from "@/context/CartContext";
 import { useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-// Logo y Utils (Asegúrate que estas rutas existan, si no, usa tus imports)
 import Logo from "@/components/ui/Logo";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
 import {
@@ -18,24 +17,24 @@ import {
   ChevronRight,
   AlertCircle,
   Lock,
+  Trash2,
+  Minus,
+  Plus,
 } from "lucide-react";
 
 export default function CheckoutPage() {
-  const { cart } = useCart();
+  const { cart, removeFromCart, updateQuantity } = useCart();
 
-  // Cálculo del total (usamos finalPrice porque es el precio real calculado)
   const total = cart.reduce(
     (acc, item) => acc + item.finalPrice * item.quantity,
-    0
+    0,
   );
 
-  // --- REFERENCIAS PARA FOCUS UX ---
   const nameInputRef = useRef<HTMLInputElement>(null);
   const phoneInputRef = useRef<HTMLInputElement>(null);
   const districtInputRef = useRef<HTMLSelectElement>(null);
   const addressInputRef = useRef<HTMLInputElement>(null);
 
-  // --- ESTADOS ---
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -79,12 +78,11 @@ export default function CheckoutPage() {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
 
     if (name === "phone") {
-      // Filtro estricto: solo números
       const numericValue = value.replace(/\D/g, "").slice(0, 9);
       setFormData((prev) => ({ ...prev, [name]: numericValue }));
       setErrors((prev) => ({ ...prev, [name]: validate(name, numericValue) }));
@@ -95,7 +93,7 @@ export default function CheckoutPage() {
   };
 
   const handleBlur = (
-    e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
     setTouched((prev) => ({ ...prev, [name]: true }));
@@ -112,9 +110,7 @@ export default function CheckoutPage() {
     formData.district !== "" &&
     formData.address.length > 0;
 
-  // --- LÓGICA CENTRAL DE ENVÍO ---
   const handleSendOrder = () => {
-    // 1. Si todo está correcto, generamos el enlace
     if (isFormValid) {
       const customerData = {
         name: formData.name,
@@ -129,7 +125,6 @@ export default function CheckoutPage() {
       return;
     }
 
-    // 2. Si hay errores, UX inteligente: llevar el foco al primer error
     if (!formData.name || errors.name) {
       nameInputRef.current?.focus();
       setTouched((prev) => ({ ...prev, name: true }));
@@ -152,7 +147,6 @@ export default function CheckoutPage() {
     }
   };
 
-  // Helper para clases CSS condicionales
   const getInputClasses = (fieldName: keyof typeof errors) => {
     const hasError = touched[fieldName] && errors[fieldName];
     const base =
@@ -164,7 +158,17 @@ export default function CheckoutPage() {
     return `${base} border-transparent focus:bg-white focus:border-[#0071e3]/20 focus:ring-4 focus:ring-[#0071e3]/10`;
   };
 
-  // --- ESTADO VACÍO ---
+  // --- CONTROL DE CANTIDAD ---
+  const handleDecrease = (itemId: string, currentQty: number) => {
+    if (currentQty > 1) {
+      updateQuantity(itemId, currentQty - 1);
+    }
+  };
+
+  const handleIncrease = (itemId: string, currentQty: number) => {
+    updateQuantity(itemId, currentQty + 1);
+  };
+
   if (cart.length === 0) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#F5F5F7] px-6 text-center">
@@ -188,37 +192,42 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F5F7] pt-8 pb-24 transition-colors">
-      {/* 1. HEADER CON LOGO */}
-      <div className="flex justify-center mb-10 pt-4">
-        <div className="transform scale-110 transition-transform hover:scale-115">
+    <div className="min-h-screen bg-[#F5F5F7] pb-12 lg:pb-24 transition-colors">
+      {/* 1. HEADER LOGO */}
+      <div className="flex justify-center pt-6 pb-6 lg:pt-8">
+        <div className="transform scale-100 lg:scale-110 transition-transform">
           <Logo />
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+      {/* 2. TITULO Y NAVEGACIÓN */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-[#0071e3] transition-colors pl-1 mb-4"
+        >
+          <ArrowLeft size={16} /> Volver a la tienda
+        </Link>
+        <div className="flex items-center gap-3 px-1">
+          <h1 className="text-2xl lg:text-3xl font-semibold text-[#1d1d1f] tracking-tight">
+            Finalizar Pedido
+          </h1>
+        </div>
+      </div>
+
+      {/* 3. GRID PRINCIPAL RESPONSIVE */}
+      {/* items-start: Clave para que las tarjetas no se estiren innecesariamente */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-start">
         {/* --- COLUMNA 1: FORMULARIO --- */}
-        <div className="lg:col-span-7 space-y-6">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-[#0071e3] transition-colors pl-1 mb-4"
-          >
-            <ArrowLeft size={16} /> Volver a la tienda
-          </Link>
-
-          <div className="flex items-center gap-3 mb-2 px-1">
-            <h1 className="text-3xl font-semibold text-[#1d1d1f] tracking-tight">
-              Finalizar Pedido
-            </h1>
-          </div>
-
-          <div className="bg-white p-6 sm:p-10 rounded-[32px] shadow-sm border border-gray-100/50">
+        <div className="lg:col-span-7">
+          {/* p-6 en móvil, p-10 en desktop para mejor aire */}
+          <div className="bg-white p-6 sm:p-10 rounded-[24px] lg:rounded-[32px] shadow-sm border border-gray-100/50">
             <div className="flex items-center gap-4 mb-8 pb-6 border-b border-gray-100">
-              <div className="w-12 h-12 bg-[#F5F5F7] rounded-full flex items-center justify-center text-[#1d1d1f]">
+              <div className="w-12 h-12 bg-[#F5F5F7] rounded-full flex items-center justify-center text-[#1d1d1f] shrink-0">
                 <User size={24} />
               </div>
               <div>
-                <h2 className="text-xl font-semibold text-[#1d1d1f]">
+                <h2 className="text-lg lg:text-xl font-semibold text-[#1d1d1f]">
                   Datos de Envío
                 </h2>
                 <p className="text-sm text-gray-500">
@@ -228,11 +237,10 @@ export default function CheckoutPage() {
             </div>
 
             <form
-              className="space-y-6"
+              className="space-y-5 lg:space-y-6"
               autoComplete="off"
               onSubmit={(e) => e.preventDefault()}
             >
-              {/* NOMBRE */}
               <div className="group">
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">
                   Nombre Completo
@@ -254,8 +262,7 @@ export default function CheckoutPage() {
                 )}
               </div>
 
-              {/* CELULAR Y DISTRITO */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 lg:gap-6">
                 <div className="group">
                   <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">
                     Celular / WhatsApp
@@ -308,7 +315,7 @@ export default function CheckoutPage() {
                       onChange={handleChange}
                       onBlur={handleBlur}
                       className={`${getInputClasses(
-                        "district"
+                        "district",
                       )} pl-12 appearance-none cursor-pointer`}
                     >
                       <option value="">Seleccionar...</option>
@@ -328,7 +335,6 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {/* DIRECCIÓN */}
               <div className="group">
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">
                   Dirección Exacta
@@ -350,69 +356,108 @@ export default function CheckoutPage() {
                 )}
               </div>
             </form>
-          </div>
 
-          <div className="flex items-center justify-center gap-2 text-xs text-gray-400 opacity-80">
-            <ShieldCheck size={14} />
-            <span>Tus datos están protegidos y viajan encriptados.</span>
+            <div className="flex items-center justify-center gap-2 text-xs text-gray-400 opacity-80 mt-8 pt-6 border-t border-gray-50">
+              <ShieldCheck size={14} />
+              <span>Tus datos están protegidos y viajan encriptados.</span>
+            </div>
           </div>
         </div>
 
         {/* --- COLUMNA 2: RESUMEN FLOTANTE --- */}
-        <div className="lg:col-span-5">
-          <div className="bg-white p-8 rounded-[32px] shadow-xl shadow-gray-200/50 sticky top-32 border border-gray-100/50">
+        <div className="lg:col-span-5 w-full">
+          <div className="bg-white p-6 sm:p-8 rounded-[24px] lg:rounded-[32px] shadow-xl shadow-gray-200/50 sticky top-8 border border-gray-100/50">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold text-[#1d1d1f] flex items-center gap-2">
+              <h2 className="text-lg lg:text-xl font-semibold text-[#1d1d1f] flex items-center gap-2">
                 Resumen{" "}
                 <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
                   {cart.length}
                 </span>
               </h2>
-              <Link
-                href="/"
-                className="text-sm font-medium text-[#0071e3] hover:underline transition-colors"
-              >
-                Editar
-              </Link>
             </div>
 
-            <div className="space-y-4 mb-8 max-h-[40vh] overflow-y-auto custom-scrollbar pr-2">
+            <div className="space-y-6 mb-8 max-h-[50vh] overflow-y-auto custom-scrollbar pr-2">
               {cart.map((item) => (
                 <div
-                  key={item.cartItemId} // ✅ KEY CORRECTA: Usamos el ID único del carrito
-                  className="flex gap-4 items-center p-3 hover:bg-[#F5F5F7] rounded-2xl transition-colors group cursor-default"
+                  key={item.cartItemId}
+                  className="flex gap-4 items-start pb-6 border-b border-gray-50 last:border-0 last:pb-0 relative group"
                 >
-                  <div className="relative w-16 h-16 bg-white rounded-xl shrink-0 border border-gray-100 shadow-sm">
+                  {/* IMAGEN */}
+                  <div className="relative w-16 h-16 lg:w-20 lg:h-20 bg-[#F5F5F7] rounded-xl shrink-0 border border-gray-100/50">
                     <Image
                       src={item.image}
-                      alt={item.name} // ✅ CORREGIDO: item.name en lugar de item.title
+                      alt={item.name}
                       fill
                       className="object-contain p-2"
                     />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-[#1d1d1f] truncate leading-tight mb-1">
-                      {item.name} {/* ✅ CORREGIDO */}
-                    </p>
-                    {/* INFO DE LA VARIANTE */}
-                    <div className="flex flex-col text-xs text-gray-500">
-                      {item.selectedSize && (
-                        <span>{item.selectedSize.label}</span>
-                      )}
-                      {item.selectedColor && (
-                        <span>{item.selectedColor.name}</span>
-                      )}
-                      {item.selectedStorage && (
-                        <span>{item.selectedStorage.capacity}</span>
-                      )}
-                      <span>Cant: {item.quantity}</span>
+
+                  {/* FLEX ROW: INFO + ACCIONES (SOLUCIÓN A LA COLISIÓN) */}
+                  <div className="flex flex-1 justify-between gap-2">
+                    {/* IZQUIERDA: DETALLES */}
+                    <div className="flex flex-col gap-1 min-w-0">
+                      <p className="text-sm font-bold text-[#1d1d1f] leading-tight line-clamp-2">
+                        {item.name}
+                      </p>
+                      <div className="flex flex-col text-[11px] lg:text-xs text-gray-500 gap-0.5">
+                        {item.selectedSize && (
+                          <span>{item.selectedSize.label}</span>
+                        )}
+                        {item.selectedColor && (
+                          <span>{item.selectedColor.name}</span>
+                        )}
+                        {item.selectedStorage && (
+                          <span>{item.selectedStorage.capacity}</span>
+                        )}
+                      </div>
+
+                      {/* CONTROLADORES DE CANTIDAD */}
+                      <div className="flex items-center gap-3 mt-2">
+                        <div className="flex items-center bg-[#F5F5F7] rounded-full p-1 h-7 border border-gray-200/50">
+                          <button
+                            onClick={() =>
+                              handleDecrease(item.cartItemId, item.quantity)
+                            }
+                            disabled={item.quantity <= 1}
+                            className={`w-6 h-full flex items-center justify-center rounded-full transition-colors ${item.quantity <= 1 ? "text-gray-300 cursor-not-allowed" : "text-gray-600 hover:bg-white hover:shadow-sm"}`}
+                          >
+                            <Minus size={12} strokeWidth={3} />
+                          </button>
+                          <span className="text-xs font-bold w-5 text-center text-[#1d1d1f]">
+                            {item.quantity}
+                          </span>
+                          <button
+                            onClick={() =>
+                              handleIncrease(item.cartItemId, item.quantity)
+                            }
+                            className="w-6 h-full flex items-center justify-center rounded-full text-gray-600 hover:bg-white hover:shadow-sm transition-colors"
+                          >
+                            <Plus size={12} strokeWidth={3} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* DERECHA: PRECIO Y ELIMINAR (ALINEADOS PERFECTAMENTE) */}
+                    <div className="flex flex-col items-end justify-between">
+                      {/* Botón Eliminar (Ya no es absolute, respeta el flujo) */}
+                      <button
+                        onClick={() => removeFromCart(item.cartItemId)}
+                        className="text-gray-300 hover:text-red-500 hover:bg-red-50 p-1.5 rounded-full transition-all"
+                        title="Eliminar producto"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+
+                      {/* Precio */}
+                      <p className="text-sm font-bold text-[#1d1d1f] whitespace-nowrap mt-auto">
+                        S/{" "}
+                        {(item.finalPrice * item.quantity).toLocaleString(
+                          "es-PE",
+                        )}
+                      </p>
                     </div>
                   </div>
-                  <p className="text-sm font-bold text-[#1d1d1f] whitespace-nowrap">
-                    {/* ✅ PRECIO REAL CALCULADO */}
-                    S/{" "}
-                    {(item.finalPrice * item.quantity).toLocaleString("es-PE")}
-                  </p>
                 </div>
               ))}
             </div>
