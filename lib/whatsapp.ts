@@ -14,7 +14,7 @@ export const generateWhatsAppLink = (
   total: number,
   customer?: CustomerData
 ) => {
-  const phoneNumber = "51953654313"; // Tu número actualizado
+  const phoneNumber = "51945341516"; // Tu número actualizado
   const baseUrl = "https://wa.me/";
   let message = "";
 
