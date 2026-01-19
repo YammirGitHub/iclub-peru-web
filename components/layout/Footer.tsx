@@ -7,133 +7,158 @@ import {
   Twitter,
   Mail,
   Phone,
-  ArrowRight,
+  Clock,
+  MapPin,
 } from "lucide-react";
 import Logo from "@/components/ui/Logo";
+import { SHOP_CONFIG } from "@/lib/constants";
+
+// --- DATA STRUCTURES (Clean Code: Separar datos de la UI) ---
+const FOOTER_LINKS = {
+  shop: [
+    { name: "iPhone", href: "/iphone" },
+    { name: "Mac", href: "/mac" },
+    { name: "iPad", href: "/ipad" },
+    { name: "Watch", href: "/watch" },
+    { name: "AirPods", href: "/airpods" },
+    { name: "Accesorios", href: "/accesorios" },
+  ],
+  support: [
+    { name: "Servicio Técnico", href: "/soporte" },
+    { name: "Estado de reparación", href: "/soporte/estado" },
+    { name: "Garantía iClub", href: "/politicas/garantia" },
+    { name: "Política de Devoluciones", href: "/politicas/devoluciones" },
+    { name: "Términos y Condiciones", href: "/politicas/terminos" },
+  ],
+};
 
 export default function Footer() {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="bg-[#F5F5F7] text-[#1d1d1f] pt-16 pb-8 border-t border-gray-200">
-      <div className="max-w-7xl mx-auto px-6">
-        {/* Grid Principal */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 lg:gap-12 mb-12">
-          {/* COLUMNA 1: MARCA */}
-          <div className="col-span-2 lg:col-span-1 space-y-4">
-            <div className="scale-90 origin-left">
+    <footer className="bg-[#F5F5F7] text-[#1d1d1f] border-t border-gray-200/80 font-sans">
+      {/* 1. SECCIÓN PRINCIPAL (Padding generoso para aire "Premium") */}
+      <div className="max-w-[1280px] mx-auto px-6 pt-16 pb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
+          {/* BLOQUE A: MARCA & MISIÓN (Ocupa 4 columnas en Desktop) */}
+          <div className="lg:col-span-4 flex flex-col items-start gap-6">
+            <div className="origin-left scale-100">
               <Logo />
             </div>
-            <p className="text-xs text-gray-500 leading-relaxed max-w-xs">
-              La experiencia Apple premium en Perú. Dispositivos originales,
-              garantía real y el soporte que mereces.
+            <p className="text-[13px] leading-relaxed text-[#424245] max-w-sm font-medium">
+              Tu destino premium para tecnología Apple en Perú. Nos dedicamos a
+              ofrecer productos originales, garantía certificada y una
+              experiencia de compra excepcional y segura.
             </p>
-            <div className="flex gap-4 pt-2">
-              <SocialIcon icon={<Facebook size={18} />} href="#" />
-              <SocialIcon icon={<Instagram size={18} />} href="#" />
-              <SocialIcon icon={<Twitter size={18} />} href="#" />
+
+            {/* Redes Sociales (Estilo Minimalista) */}
+            <div className="flex items-center gap-3">
+              <SocialButton
+                href={SHOP_CONFIG.socials.facebook}
+                icon={<Facebook size={18} />}
+                label="Facebook"
+              />
+              <SocialButton
+                href={SHOP_CONFIG.socials.instagram}
+                icon={<Instagram size={18} />}
+                label="Instagram"
+              />
+              <SocialButton
+                href={SHOP_CONFIG.socials.tiktok}
+                icon={<Twitter size={18} />}
+                label="TikTok"
+              />
             </div>
           </div>
 
-          {/* COLUMNA 2: TIENDA */}
-          <div>
-            <h3 className="font-semibold text-sm text-[#1d1d1f] mb-4">
-              Tienda
-            </h3>
-            <ul className="space-y-2.5 text-xs text-[#424245]">
-              <li>
-                <FooterLink href="/iphone">iPhone</FooterLink>
-              </li>
-              <li>
-                <FooterLink href="/mac">Mac</FooterLink>
-              </li>
-              <li>
-                <FooterLink href="/ipad">iPad</FooterLink>
-              </li>
-              <li>
-                <FooterLink href="/watch">Watch</FooterLink>
-              </li>
-              <li>
-                <FooterLink href="/airpods">AirPods</FooterLink>
-              </li>
-              <li>
-                <FooterLink href="/accesorios">Accesorios</FooterLink>
-              </li>
-            </ul>
-          </div>
+          {/* BLOQUE B: NAVEGACIÓN (Grid interno para enlaces) */}
+          <div className="lg:col-span-8 grid grid-cols-2 sm:grid-cols-3 gap-8 lg:gap-4">
+            {/* Columna Tienda */}
+            <div className="flex flex-col gap-4">
+              <h4 className="text-[12px] font-semibold text-[#1d1d1f] uppercase tracking-wider">
+                Tienda
+              </h4>
+              <ul className="flex flex-col gap-3">
+                {FOOTER_LINKS.shop.map((link) => (
+                  <li key={link.name}>
+                    <FooterLink href={link.href}>{link.name}</FooterLink>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          {/* COLUMNA 3: SOPORTE */}
-          <div>
-            <h3 className="font-semibold text-sm text-[#1d1d1f] mb-4">
-              Soporte
-            </h3>
-            <ul className="space-y-2.5 text-xs text-[#424245]">
-              <li>
-                <FooterLink href="#">Estado del pedido</FooterLink>
-              </li>
-              <li>
-                <FooterLink href="#">Garantía</FooterLink>
-              </li>
-              <li>
-                <FooterLink href="#">Devoluciones</FooterLink>
-              </li>
-              <li>
-                <FooterLink href="#">Métodos de pago</FooterLink>
-              </li>
-              <li>
-                <FooterLink href="#">Contacto</FooterLink>
-              </li>
-            </ul>
-          </div>
+            {/* Columna Soporte */}
+            <div className="flex flex-col gap-4">
+              <h4 className="text-[12px] font-semibold text-[#1d1d1f] uppercase tracking-wider">
+                Soporte
+              </h4>
+              <ul className="flex flex-col gap-3">
+                {FOOTER_LINKS.support.map((link) => (
+                  <li key={link.name}>
+                    <FooterLink href={link.href}>{link.name}</FooterLink>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          {/* COLUMNA 4: LEGAL */}
-          <div>
-            <h3 className="font-semibold text-sm text-[#1d1d1f] mb-4">Legal</h3>
-            <ul className="space-y-2.5 text-xs text-[#424245]">
-              <li>
-                <FooterLink href="#">Términos de uso</FooterLink>
-              </li>
-              <li>
-                <FooterLink href="#">Política de privacidad</FooterLink>
-              </li>
-              <li>
-                <FooterLink href="#">Libro de reclamaciones</FooterLink>
-              </li>
-              <li>
-                <FooterLink href="#">Cookies</FooterLink>
-              </li>
-            </ul>
-          </div>
-
-          {/* COLUMNA 5: CONTACTO */}
-          <div className="col-span-2 md:col-span-4 lg:col-span-1 bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
-            <h3 className="font-semibold text-sm text-[#1d1d1f] mb-3">
-              ¿Necesitas ayuda?
-            </h3>
-            <p className="text-xs text-gray-500 mb-4">
-              Nuestro equipo de expertos está listo para asesorarte.
-            </p>
-            <a
-              href="https://wa.me/51953654313"
-              target="_blank"
-              // 👇 BOTÓN WHATSAPP NARANJA
-              className="flex items-center justify-center gap-2 w-full bg-[#F97316] hover:bg-[#ea580c] text-white text-xs font-medium py-3 rounded-full transition-colors mb-4 shadow-sm shadow-orange-100"
-            >
-              Chat en WhatsApp <ArrowRight size={14} />
-            </a>
-            <div className="space-y-2">
-              <ContactItem icon={<Mail size={14} />} text="hola@iclub.pe" />
-              <ContactItem icon={<Phone size={14} />} text="+51 953 654 313" />
+            {/* Columna Contacto (Diseño Integrado) */}
+            <div className="flex flex-col gap-4 sm:col-span-1 col-span-2">
+              <h4 className="text-[12px] font-semibold text-[#1d1d1f] uppercase tracking-wider">
+                Contacto
+              </h4>
+              <ul className="flex flex-col gap-4">
+                <li>
+                  <ContactItem
+                    icon={<Mail size={16} />}
+                    title="Escríbenos"
+                    value={SHOP_CONFIG.email}
+                  />
+                </li>
+                <li>
+                  <ContactItem
+                    icon={<Phone size={16} />}
+                    title="Llámanos"
+                    value={SHOP_CONFIG.phoneDisplay}
+                  />
+                </li>
+                <li>
+                  <div className="flex items-start gap-3 group">
+                    <div className="mt-0.5 w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center text-[#F97316] shadow-sm shrink-0">
+                      <Clock size={15} />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[11px] font-bold text-[#1d1d1f] uppercase mb-0.5">
+                        Horario
+                      </span>
+                      <span className="text-[13px] text-[#424245]">
+                        Lun - Sáb: 10am - 8pm
+                      </span>
+                    </div>
+                  </div>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* COPYRIGHT BAR */}
-        <div className="pt-6 border-t border-gray-300 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-xs text-gray-500">
-            © {new Date().getFullYear()} iClub Perú. Todos los derechos
-            reservados.
-          </p>
-          <div className="flex gap-6">
-            <span className="text-xs text-gray-400">Diseñado en Chiclayo</span>
+      {/* 2. BARRA INFERIOR (Copyright & Legal) */}
+      <div className="bg-[#F5F5F7] border-t border-gray-200">
+        <div className="max-w-[1280px] mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex flex-col md:flex-row items-center gap-1 md:gap-4 text-center md:text-left">
+            <p className="text-[11px] text-[#86868b]">
+              © {currentYear} iClub Perú S.A.C. RUC: 20601234567.
+            </p>
+            <div className="hidden md:block w-px h-3 bg-gray-300"></div>
+            <p className="text-[11px] text-[#86868b]">
+              Todos los derechos reservados.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-6">
+            <span className="text-[11px] font-medium text-[#424245]">
+              Perú 🇵🇪
+            </span>
           </div>
         </div>
       </div>
@@ -141,7 +166,7 @@ export default function Footer() {
   );
 }
 
-// --- SUBCOMPONENTES ---
+// --- SUBCOMPONENTES ESTILIZADOS (Clean UI) ---
 
 function FooterLink({
   href,
@@ -153,29 +178,57 @@ function FooterLink({
   return (
     <Link
       href={href}
-      className="hover:text-[#F97316] hover:underline transition-all"
+      className="text-[13px] text-[#424245] hover:text-[#F97316] hover:translate-x-0.5 transition-all duration-200 inline-block font-medium"
     >
       {children}
     </Link>
   );
 }
 
-function SocialIcon({ icon, href }: { icon: React.ReactNode; href: string }) {
+function SocialButton({
+  href,
+  icon,
+  label,
+}: {
+  href: string;
+  icon: React.ReactNode;
+  label: string;
+}) {
   return (
     <a
       href={href}
-      className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full text-gray-600 hover:bg-[#F97316] hover:text-white transition-all"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={label}
+      className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-200/60 text-[#1d1d1f] hover:bg-[#1d1d1f] hover:text-white transition-all duration-300 hover:scale-110"
     >
       {icon}
     </a>
   );
 }
 
-function ContactItem({ icon, text }: { icon: React.ReactNode; text: string }) {
+function ContactItem({
+  icon,
+  title,
+  value,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  value: string;
+}) {
   return (
-    <div className="flex items-center gap-2 text-xs text-gray-500">
-      <span className="text-[#F97316]">{icon}</span>
-      <span>{text}</span>
+    <div className="flex items-start gap-3 group cursor-default">
+      <div className="mt-0.5 w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center text-[#1d1d1f] shadow-sm shrink-0 group-hover:border-[#F97316]/30 group-hover:text-[#F97316] transition-colors">
+        {icon}
+      </div>
+      <div className="flex flex-col">
+        <span className="text-[11px] font-bold text-[#1d1d1f] uppercase mb-0.5">
+          {title}
+        </span>
+        <span className="text-[13px] text-[#424245] group-hover:text-black transition-colors">
+          {value}
+        </span>
+      </div>
     </div>
   );
 }

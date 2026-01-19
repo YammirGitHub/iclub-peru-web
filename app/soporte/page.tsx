@@ -4,22 +4,24 @@ import {
   ArrowRight,
   Battery,
   Smartphone,
-  Wifi,
-  HardDrive,
-  Camera,
   ShieldAlert,
   Wrench,
   CheckCircle2,
   Volume2,
   Sparkles,
+  Camera,
 } from "lucide-react";
+import { SHOP_CONFIG } from "@/lib/constants"; // 👈 IMPORTACIÓN CLAVE
 
 export default function SoportePage() {
+  // Helper para generar links limpios sin repetir código
+  const getWALink = (msg: string) =>
+    `${SHOP_CONFIG.whatsappUrl}${SHOP_CONFIG.phone}?text=${encodeURIComponent(msg)}`;
+
   return (
-    // FONDO BLANCO (Como pediste)
     <main className="min-h-screen bg-white">
-      {/* HEADER CORREGIDO: Pegado arriba (pt-0 en móvil, pt-4 en PC) */}
-      <section className="pt-0 md:pt-4 pb-20 px-6 lg:px-12 text-center max-w-[1400px] mx-auto">
+      {/* HEADER CORREGIDO: pt-32 en móvil para no ser tapado por el Navbar */}
+      <section className="pt-0 pb-12 px-6 lg:px-12 text-center max-w-[1400px] mx-auto">
         <div className="inline-flex items-center gap-2 mb-8 px-4 py-2 bg-white rounded-full shadow-md border border-gray-100 animate-fade-in-up">
           <span className="flex h-2 w-2 relative">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -46,7 +48,7 @@ export default function SoportePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 auto-rows-[380px]">
           {/* 1. PANTALLA (Gigante) - Color AZUL */}
           <a
-            href="https://wa.me/51953654313?text=Hola, necesito cambio de pantalla"
+            href={getWALink("Hola iClub, necesito cambio de pantalla")}
             target="_blank"
             className="group relative col-span-1 lg:col-span-2 lg:row-span-2 bg-white rounded-[40px] p-10 flex flex-col justify-between overflow-hidden 
             border border-gray-200 shadow-[0_8px_30px_rgba(0,0,0,0.04)] 
@@ -73,7 +75,7 @@ export default function SoportePage() {
 
           {/* 2. BATERÍA (Oscura) - Color VERDE */}
           <a
-            href="https://wa.me/51953654313?text=Hola, necesito cambio de batería"
+            href={getWALink("Hola iClub, necesito cambio de batería")}
             target="_blank"
             className="group relative col-span-1 lg:col-span-2 bg-[#1d1d1f] rounded-[40px] p-10 flex flex-col justify-center overflow-hidden 
             shadow-[0_20px_50px_-12px_rgba(0,0,0,0.3)] 
@@ -105,7 +107,7 @@ export default function SoportePage() {
 
           {/* 3. FACE ID - Color MORADO */}
           <a
-            href="https://wa.me/51953654313?text=Hola, falla mi Face ID"
+            href={getWALink("Hola iClub, falla mi Face ID")}
             target="_blank"
             className="group relative col-span-1 bg-white rounded-[40px] p-8 flex flex-col justify-between 
             border border-gray-200 shadow-[0_8px_30px_rgba(0,0,0,0.04)] 
@@ -130,7 +132,7 @@ export default function SoportePage() {
 
           {/* 4. CÁMARAS - Color ROSA */}
           <a
-            href="https://wa.me/51953654313?text=Hola, falla mi cámara"
+            href={getWALink("Hola iClub, falla mi cámara")}
             target="_blank"
             className="group relative col-span-1 bg-white rounded-[40px] p-8 flex flex-col justify-between 
             border border-gray-200 shadow-[0_8px_30px_rgba(0,0,0,0.04)] 
@@ -155,7 +157,7 @@ export default function SoportePage() {
 
           {/* 5. AUDIO - Color INDIGO */}
           <a
-            href="https://wa.me/51953654313?text=Hola, falla mi audio"
+            href={getWALink("Hola iClub, falla mi audio")}
             target="_blank"
             className="group relative col-span-1 bg-white rounded-[40px] p-8 flex flex-col justify-between 
             border border-gray-200 shadow-[0_8px_30px_rgba(0,0,0,0.04)] 
@@ -178,7 +180,7 @@ export default function SoportePage() {
 
           {/* 6. LIMPIEZA - Color CYAN */}
           <a
-            href="https://wa.me/51953654313?text=Hola, quiero mantenimiento"
+            href={getWALink("Hola iClub, quiero mantenimiento")}
             target="_blank"
             className="group relative col-span-1 bg-white rounded-[40px] p-8 flex flex-col justify-between 
             border border-gray-200 shadow-[0_8px_30px_rgba(0,0,0,0.04)] 
@@ -201,7 +203,7 @@ export default function SoportePage() {
 
           {/* 7. MICROSOLDADURA - Color NARANJA */}
           <a
-            href="https://wa.me/51953654313?text=Hola, tengo un problema de placa"
+            href={getWALink("Hola iClub, tengo un problema de placa")}
             target="_blank"
             className="group relative col-span-1 md:col-span-2 lg:col-span-2 bg-white rounded-[40px] p-10 flex items-center justify-between 
             border border-gray-200 shadow-[0_8px_30px_rgba(0,0,0,0.04)] 

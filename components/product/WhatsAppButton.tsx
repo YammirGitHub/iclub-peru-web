@@ -1,6 +1,7 @@
 "use client";
 
 import { MessageCircle } from "lucide-react";
+import { SHOP_CONFIG } from "@/lib/constants"; // 👈 Conexión al cerebro
 
 interface WhatsAppButtonProps {
   productName: string;
@@ -8,17 +9,19 @@ interface WhatsAppButtonProps {
   className?: string;
 }
 
-export default function WhatsAppButton({ productName, price, className }: WhatsAppButtonProps) {
-  // Número real de tu PDF (Pág 13): 945 341 516
-  const phoneNumber = "51945341516"; 
-  
-  // Mensaje automático
-  const message = `Hola iClub Perú, estoy interesado en el ${productName} de ${price}. ¿Tienen stock disponible?`;
-  
-  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+export default function WhatsAppButton({
+  productName,
+  price,
+  className,
+}: WhatsAppButtonProps) {
+  // Generamos el mensaje dinámico
+  const message = `Hola iClub, estoy interesado en el ${productName} de ${price}. ¿Tienen stock?`;
+
+  // URL usando la constante centralizada
+  const whatsappUrl = `${SHOP_CONFIG.whatsappUrl}${SHOP_CONFIG.phone}?text=${encodeURIComponent(message)}`;
 
   return (
-    <a 
+    <a
       href={whatsappUrl}
       target="_blank"
       rel="noopener noreferrer"
